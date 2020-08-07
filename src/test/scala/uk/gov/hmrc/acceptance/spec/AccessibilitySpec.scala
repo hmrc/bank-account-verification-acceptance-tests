@@ -6,7 +6,7 @@ import uk.gov.hmrc.acceptance.tags.Accessibility
 class AccessibilitySpec extends SpecBase {
 
   Scenario("Accessibility - Bank Account Verification errors", Accessibility) {
-    Given("i want to collect and validate a customers bank account details")
+    Given("I want to collect and validate a customers bank account details")
     go to initializeJourneyPage()
     assert(AccountEntryPage().isOnPage)
 

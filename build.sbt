@@ -12,6 +12,7 @@ resolvers += Resolver.bintrayRepo("hmrc", "releases")
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.0" % "test"
 libraryDependencies += "org.scalatestplus" %% "selenium-3-141" % "3.2.0.0" % "test"
+libraryDependencies += "com.vladsch.flexmark" % "flexmark-all" % "0.35.10" % "test"
 libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.24.0" % "test"
 libraryDependencies += "uk.gov.hmrc" %% "webdriver-factory" % "0.+" % "test"
 libraryDependencies += "uk.gov.hmrc" %% "zap-automation" % "2.+" % "test"

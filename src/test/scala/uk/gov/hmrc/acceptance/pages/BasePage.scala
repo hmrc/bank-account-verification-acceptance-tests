@@ -54,11 +54,7 @@ trait BasePage extends SpecBase {
       case _ =>
         assert(errorMessage.findElement.get.isDisplayed, s"Error message for $elementIdentifier is not displayed!")
         assert(errorMessage.findElement.get.text.equals(s"Error:\n${expectedErrorMessage.get}"), s"\n\nExpected: ${expectedErrorMessage.get}\nGot: ${errorMessage.findElement.get.text}\n\n")
-        if (elementIdentifier == "countryCode") {
-          assert(dataEntryField.underlying.getCssValue("border-color").equals("rgb(212, 53, 28)"), s"$elementIdentifier border colour is not set to Red! Expecting rgb(212, 53, 28)")
-        } else {
-          assert(dataEntryField.attribute("class").get.contains(errorBorderClass), s"$elementIdentifier is not being highlighted!")
-        }
+        assert(dataEntryField.attribute("class").get.contains(errorBorderClass), s"$elementIdentifier is not being highlighted!")
     }
   }
 
