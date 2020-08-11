@@ -10,12 +10,14 @@ resolvers += "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases
 resolvers += "hmrc-releases" at "https://artefacts.tax.service.gov.uk/artifactory/hmrc-releases/"
 resolvers += Resolver.bintrayRepo("hmrc", "releases")
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.0" % "test"
-libraryDependencies += "org.scalatestplus" %% "selenium-3-141" % "3.2.0.0" % "test"
-libraryDependencies += "com.vladsch.flexmark" % "flexmark-all" % "0.35.10" % "test"
-libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.24.0" % "test"
-libraryDependencies += "uk.gov.hmrc" %% "webdriver-factory" % "0.+" % "test"
-libraryDependencies += "uk.gov.hmrc" %% "zap-automation" % "2.+" % "test"
+libraryDependencies += "org.scalatest"          %% "scalatest"          % "3.2.0"   % Test
+libraryDependencies += "org.scalatestplus"      %% "selenium-3-141"     % "3.2.0.0" % Test
+libraryDependencies += "com.vladsch.flexmark"   % "flexmark-all"        % "0.35.10" % Test
+libraryDependencies += "com.github.nscala-time" %% "nscala-time"        % "2.24.0"  % Test
+libraryDependencies += "uk.gov.hmrc"            %% "webdriver-factory"  % "0.+"     % Test
+libraryDependencies += "uk.gov.hmrc"            %% "zap-automation"     % "2.+"     % Test
+libraryDependencies += "io.findify"             %% "s3mock"             % "0.2.5"   % Test
+
 
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-u", "target/test-reports")
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-h", "target/test-reports/html-report")

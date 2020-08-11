@@ -4,9 +4,9 @@ import org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLoca
 import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
 import org.openqa.selenium.{By, WebElement}
 import org.scalatest.Assertion
-import uk.gov.hmrc.acceptance.spec.SpecBase
+import uk.gov.hmrc.acceptance.spec.BaseSpec
 
-trait BasePage extends SpecBase {
+trait BasePage extends BaseSpec {
 
   lazy val webDriverWillWait: WebDriverWait = new WebDriverWait(webDriver, 5, 250)
 

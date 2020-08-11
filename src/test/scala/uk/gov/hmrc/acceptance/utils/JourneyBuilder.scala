@@ -19,10 +19,21 @@ trait JourneyBuilder {
       .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
     val response = httpClient.newCall(request.build()).execute()
     if (response.isSuccessful) {
-      val journeyId: String = response.body().string()
+      //TODO do this properly when we respond with the correct JSON block.
+      val journeyId: String = response.body().string().replaceAll("\"", "")
       s"${TestConfig.url("bank-account-verification")}/start/$journeyId"
     } else {
       throw new IllegalStateException("Unable to initialize a new journey!")
+    }
+  }
+
+  def initializeEISCDCache(): Unit = {
+    val request = new Request.Builder()
+      .url(s"${TestConfig.apiUrl("bank-account-reputation")}/refresh/eiscdcache")
+      .method("POST", RequestBody.create(MediaType.parse("application/json"), ""))
+    val response = httpClient.newCall(request.build()).execute()
+    if (!response.isSuccessful) {
+      throw new IllegalStateException("Unable to initialize EISCD Cache")
     }
   }
 }

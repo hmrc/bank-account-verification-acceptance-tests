@@ -31,4 +31,8 @@ object TestConfig {
   def serviceRoute(serviceName: String): String = envConfig.getString(s"services.$serviceName.productionRoute")
 
   def serviceAPIRoute(serviceName: String): String = envConfig.getString(s"services.$serviceName.api")
+
+  def mockServerPort(): Int = envConfig.getInt(s"mock.server.port")
+
+  def s3MockPort(): Int = envConfig.getInt(s"mock.server.port")
 }

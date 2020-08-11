@@ -3,7 +3,7 @@ package uk.gov.hmrc.acceptance.spec
 import uk.gov.hmrc.acceptance.pages._
 import uk.gov.hmrc.acceptance.tags.Accessibility
 
-class AccessibilitySpec extends SpecBase {
+class AccessibilitySpec extends BaseSpec {
 
   Scenario("Accessibility - Bank Account Verification errors", Accessibility) {
     Given("I want to collect and validate a customers bank account details")
@@ -14,12 +14,12 @@ class AccessibilitySpec extends SpecBase {
     AccountEntryPage().clickContinue()
 
     Then("errors are displayed to the user")
-    AccountEntryPage().assertErrorMessage("accountName", Some("Account Name is required"))
-    AccountEntryPage().assertErrorSummaryLink("accountName", Some("Account Name is required"))
-    AccountEntryPage().assertErrorMessage("sortCode", Some("Sort Code is required"))
-    AccountEntryPage().assertErrorSummaryLink("sortCode", Some("Sort Code is required"))
-    AccountEntryPage().assertErrorMessage("accountNumber", Some("Account Number is required"))
-    AccountEntryPage().assertErrorSummaryLink("accountNumber", Some("Account Number is required"))
+    AccountEntryPage().assertErrorMessage("accountName", Some("Account name is required"))
+    AccountEntryPage().assertErrorSummaryLink("accountName", Some("Account name is required"))
+    AccountEntryPage().assertErrorMessage("sortCode", Some("Sort code is required"))
+    AccountEntryPage().assertErrorSummaryLink("sortCode", Some("Sort code is required"))
+    AccountEntryPage().assertErrorMessage("accountNumber", Some("Account number is required"))
+    AccountEntryPage().assertErrorSummaryLink("accountNumber", Some("Account number is required"))
     AccountEntryPage().assertErrorMessageSummaryCountIsEqualTo(6)
   }
 }
