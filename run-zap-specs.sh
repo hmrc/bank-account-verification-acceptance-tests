@@ -2,14 +2,21 @@
 
 # This script requires:
 # 1. ZAP running in port 11000
-# 2. By default runs using a containerised Chrome.
-#    Use the command './run-browser-with-docker.sh remote-chrome'  to start a containerised chrome on a local machine.
+# 2. By default it will try to connect to a containerised Chrome.
 
+DEFAULT_BROWSER=remote-chrome
 BROWSER_TYPE=$1
 ENV=$2
 
-sbt -Dbrowser=${BROWSER_TYPE:=remote-chrome} -Denv=${ENV:=local} -Dzap.proxy=true "testOnly -- -l uk.gov.hmrc.acceptance.tags.Accessibility"
+if [ -z "$BROWSER_TYPE" ]; then
+    echo "BROWSER_TYPE value not set, defaulting to $DEFAULT_BROWSER..."
+    echo ""
+fi
 
+sbt -Dbrowser=${BROWSER_TYPE:=$DEFAULT_BROWSER} -Denv=${ENV:=local} -Dzap.proxy=true "testOnly -- -l uk.gov.hmrc.acceptance.tags.Zap"
+
+echo ""
 echo "**** Running ZapSpec ****"
+echo ""
 
-sbt "testOnly uk.gov.hmrc.acceptance.spec.ZapSpec"
+sbt "testOnly -- -n uk.gov.hmrc.acceptance.tags.Zap"
