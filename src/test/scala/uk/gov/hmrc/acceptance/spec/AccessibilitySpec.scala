@@ -20,6 +20,6 @@ class AccessibilitySpec extends BaseSpec {
     AccountEntryPage().assertErrorSummaryLink("sortCode", Some("Enter a sort code"))
     AccountEntryPage().assertErrorMessage("accountNumber", Some("Enter an account number"))
     AccountEntryPage().assertErrorSummaryLink("accountNumber", Some("Enter an account number"))
-    AccountEntryPage().assertErrorMessageSummaryCountIsEqualTo(6)
+    AccountEntryPage().assertErrorMessageSummaryCountIsEqualTo(3)
   }
 }
