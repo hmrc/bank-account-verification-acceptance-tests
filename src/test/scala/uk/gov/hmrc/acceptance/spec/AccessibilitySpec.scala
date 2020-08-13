@@ -14,12 +14,12 @@ class AccessibilitySpec extends BaseSpec {
     AccountEntryPage().clickContinue()
 
     Then("errors are displayed to the user")
-    AccountEntryPage().assertErrorMessage("accountName", Some("Account name is required"))
-    AccountEntryPage().assertErrorSummaryLink("accountName", Some("Account name is required"))
-    AccountEntryPage().assertErrorMessage("sortCode", Some("Sort code is required"))
-    AccountEntryPage().assertErrorSummaryLink("sortCode", Some("Sort code is required"))
-    AccountEntryPage().assertErrorMessage("accountNumber", Some("Account number is required"))
-    AccountEntryPage().assertErrorSummaryLink("accountNumber", Some("Account number is required"))
+    AccountEntryPage().assertErrorMessage("accountName", Some("Enter the name on the account"))
+    AccountEntryPage().assertErrorSummaryLink("accountName", Some("Enter the name on the account"))
+    AccountEntryPage().assertErrorMessage("sortCode", Some("Enter a sort code"))
+    AccountEntryPage().assertErrorSummaryLink("sortCode", Some("Enter a sort code"))
+    AccountEntryPage().assertErrorMessage("accountNumber", Some("Enter an account number"))
+    AccountEntryPage().assertErrorSummaryLink("accountNumber", Some("Enter an account number"))
     AccountEntryPage().assertErrorMessageSummaryCountIsEqualTo(6)
   }
 }
