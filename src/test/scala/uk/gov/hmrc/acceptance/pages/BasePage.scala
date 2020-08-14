@@ -31,31 +31,20 @@ trait BasePage extends BaseSpec {
     click on backLink
   }
 
-  def assertErrorSummaryLink(elementIdentifier: String, expectedErrorMessage: Option[String] = None): Unit = {
+  def assertErrorSummaryLinkExists(elementIdentifier: String): Unit = {
     val linkToError = cssSelector(s"a[href*='$elementIdentifier']")
-    expectedErrorMessage match {
-      case None =>
-        assert(linkToError.findAllElements.isEmpty, s": Error link to $elementIdentifier is displayed when it should not be!")
-      case _ =>
-        assert(linkToError.findElement.get.isDisplayed, s"Error link to $elementIdentifier is not displayed!")
-        assert(linkToError.findElement.get.text.equals(expectedErrorMessage.get), s"\n\nExpected: ${expectedErrorMessage.get}\nGot: ${linkToError.findElement.get.text}\n\n")
-    }
+    assert(linkToError.findElement.get.isDisplayed, s"Error link to $elementIdentifier is not displayed!")
+    assert(!linkToError.findElement.get.text.isEmpty, s"\n\nExpected a link to an error with some text, could not find any!\n\n")
   }
 
-  def assertErrorMessage(elementIdentifier: String, expectedErrorMessage: Option[String] = None): Assertion = {
+  def assertErrorMessageExists(elementIdentifier: String): Assertion = {
     val errorMessage = id(s"$elementIdentifier-error")
     val dataEntryField = id(s"$elementIdentifier").findElement.get
     val errorBorderClass = "govuk-input--error"
     webDriverWillWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".govuk-error-summary")))
-    expectedErrorMessage match {
-      case None =>
-        assert(errorMessage.findAllElements.isEmpty, s": Error message for $elementIdentifier is displayed when it should not be!")
-        assert(!dataEntryField.attribute("class").get.contains(errorBorderClass), s"$elementIdentifier is highlighted when it should not be!")
-      case _ =>
-        assert(errorMessage.findElement.get.isDisplayed, s"Error message for $elementIdentifier is not displayed!")
-        assert(errorMessage.findElement.get.text.equals(s"Error:\n${expectedErrorMessage.get}"), s"\n\nExpected: ${expectedErrorMessage.get}\nGot: ${errorMessage.findElement.get.text}\n\n")
-        assert(dataEntryField.attribute("class").get.contains(errorBorderClass), s"$elementIdentifier is not being highlighted!")
-    }
+    assert(errorMessage.findElement.get.isDisplayed, s"Error message for $elementIdentifier is not displayed!")
+    assert(!errorMessage.findElement.get.text.isEmpty, s"\n\nExpected some error text, could not find any!\n\n")
+    assert(dataEntryField.attribute("class").get.contains(errorBorderClass), s"$elementIdentifier is not being highlighted!")
   }
 
   def assertErrorMessageSummaryCountIsEqualTo(expectedErrorCount: Int): Unit = {
