@@ -13,15 +13,14 @@ trait JourneyBuilder {
     .readTimeout(10L, SECONDS)
     .build()
 
-  def initializeJourneyPage(configuration: String = "{}"): String = {
+  def initializeJourneyPage(configuration: String = s"""{"continueUrl" : "${TestConfig.url("bank-account-verification-frontend-example")}/done"}"""): String = {
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/init")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
     val response = httpClient.newCall(request.build()).execute()
     if (response.isSuccessful) {
       //TODO do this properly when we respond with the correct JSON block.
-      val journeyId: String = response.body().string().replaceAll("\"", "")
-      s"${TestConfig.url("bank-account-verification")}/start/$journeyId"
+      response.body().string().replaceAll("\"", "")
     } else {
       throw new IllegalStateException("Unable to initialize a new journey!")
     }
