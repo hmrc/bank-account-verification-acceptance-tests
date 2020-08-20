@@ -21,7 +21,7 @@ trait JourneyBuilder {
     .readTimeout(10L, SECONDS)
     .build()
 
-  def initializeJourneyPage(configuration: String = defaultConfiguration): String = {
+  def initializeJourney(configuration: String = defaultConfiguration): String = {
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/init")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
@@ -32,6 +32,10 @@ trait JourneyBuilder {
     } else {
       throw new IllegalStateException("Unable to initialize a new journey!")
     }
+  }
+
+  def journeyStartPage(journeyId: String): String = {
+    s"${TestConfig.url("bank-account-verification")}/start/$journeyId"
   }
 
   def initializeEISCDCache(): Unit = {

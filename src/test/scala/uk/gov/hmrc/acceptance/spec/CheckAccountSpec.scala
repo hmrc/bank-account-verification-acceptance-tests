@@ -7,8 +7,8 @@ class CheckAccountSpec extends BaseSpec {
 
   Scenario("Bank Account Verification happy path") {
     Given("I want to collect and validate a customers bank account details")
-    val journeyId: String = initializeJourneyPage()
-    go to s"${TestConfig.url("bank-account-verification")}/start/$journeyId"
+    val journeyId: String = initializeJourney()
+    go to journeyStartPage(journeyId)
     assert(AccountEntryPage().isOnPage)
 
     When("a customer enters all required information and clicks continue")
