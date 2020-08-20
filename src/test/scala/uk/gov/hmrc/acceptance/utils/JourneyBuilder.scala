@@ -8,12 +8,20 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 
 trait JourneyBuilder {
 
+  val defaultConfiguration: String =
+    s"""
+       |{
+       |    "continueUrl" : "${TestConfig.url("bank-account-verification-frontend-example")}/done",
+       |    "serviceIdentifier" : "BAVF Acceptance Test"
+       |}
+       |""".stripMargin
+
   val httpClient: OkHttpClient = new OkHttpClient().newBuilder()
     .connectTimeout(10L, SECONDS)
     .readTimeout(10L, SECONDS)
     .build()
 
-  def initializeJourneyPage(configuration: String = s"""{"continueUrl" : "${TestConfig.url("bank-account-verification-frontend-example")}/done"}"""): String = {
+  def initializeJourneyPage(configuration: String = defaultConfiguration): String = {
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/init")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
