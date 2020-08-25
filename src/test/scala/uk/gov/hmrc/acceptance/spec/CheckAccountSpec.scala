@@ -1,7 +1,7 @@
 package uk.gov.hmrc.acceptance.spec
 
 import uk.gov.hmrc.acceptance.config.TestConfig
-import uk.gov.hmrc.acceptance.pages.AccountEntryPage
+import uk.gov.hmrc.acceptance.pages.{AccountEntryPage, SelectAccountTypePage}
 
 class CheckAccountSpec extends BaseSpec {
 
@@ -9,7 +9,8 @@ class CheckAccountSpec extends BaseSpec {
     Given("I want to collect and validate a customers bank account details")
     val journeyId: String = initializeJourney()
     go to journeyStartPage(journeyId)
-    assert(AccountEntryPage().isOnPage)
+    assert(SelectAccountTypePage().isOnPage)
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     When("a customer enters all required information and clicks continue")
     AccountEntryPage()

@@ -8,7 +8,8 @@ class AccessibilitySpec extends BaseSpec {
   Scenario("Accessibility - Bank Account Verification errors", Accessibility) {
     Given("I want to collect and validate a customers bank account details")
     go to journeyStartPage(initializeJourney())
-    assert(AccountEntryPage().isOnPage)
+    assert(SelectAccountTypePage().isOnPage)
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     When("a customer does not enter all required information")
     AccountEntryPage().clickContinue()
