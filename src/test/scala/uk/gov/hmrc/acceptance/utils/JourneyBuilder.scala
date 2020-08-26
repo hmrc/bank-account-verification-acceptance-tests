@@ -8,11 +8,12 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 
 trait JourneyBuilder {
 
+  //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
   val defaultConfiguration: String =
     s"""
        |{
        |    "continueUrl" : "${TestConfig.url("bank-account-verification-frontend-example")}/done",
-       |    "serviceIdentifier" : "BAVF Acceptance Test"
+       |    "serviceIdentifier" : "bavf-acceptance-test"
        |}
        |""".stripMargin
 
