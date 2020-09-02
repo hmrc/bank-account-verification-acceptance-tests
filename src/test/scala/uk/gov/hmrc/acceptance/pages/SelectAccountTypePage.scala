@@ -1,6 +1,7 @@
 package uk.gov.hmrc.acceptance.pages
 
 import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
+import uk.gov.hmrc.acceptance.utils.BasePage
 
 case class SelectAccountTypePage() extends BasePage {
 
@@ -23,6 +24,6 @@ case class SelectAccountTypePage() extends BasePage {
   }
 
   override def isOnPage: Boolean = {
-    webDriverWillWait.until(titleIs("Bank Account Verification"))
+    webDriverWillWait.until(titleIs("Account Type - GOV.UK"))
   }
 }

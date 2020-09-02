@@ -798,6 +798,108 @@
                     <NCBCountryCode/>
                 </BankOffices>
             </Bank>
+            <Bank BankCode="0013">
+                <SupervisoryBody>A</SupervisoryBody>
+                <AbbreviatedBankName>NATIONWIDE BLDG SCTY</AbbreviatedBankName>
+                <BankName>NATIONWIDE BUILDING SOCIETY</BankName>
+                <BankOffices SortCode="070093" BicBank="" BicBranch="" Suffix="00">
+                    <BankOfficeTitle>NATIONWIDE BUILDING SOCIETY</BankOfficeTitle>
+                    <BankOfficeType>M</BankOfficeType>
+                    <DateLastChanged>2017-07-18</DateLastChanged>
+                    <PrintIndicator>0</PrintIndicator>
+                    <Address>
+                        <AddresseeName>P.O. Box 8888</AddresseeName>
+                        <PostalName>Nationwide Hse</PostalName>
+                        <AddressLine1>Pipers Way</AddressLine1>
+                        <AddressLine2/>
+                        <CityOrTown>Swindon L</CityOrTown>
+                        <AreaOrCounty>Wilts.</AreaOrCounty>
+                        <Country>UNITED KINGDOM</Country>
+                        <PostCodeOutcode>SN38</PostCodeOutcode>
+                        <PostCodeIncode>1NW</PostCodeIncode>
+                        <ZipCode/>
+                    </Address>
+                    <CHAPSEuroNull>
+                        <Status>N</Status>
+                        <DateLastChanged/>
+                        <DateClosed/>
+                        <RoutingBICBank/>
+                        <RoutingBICBranch/>
+                        <CHAPSEuroID/>
+                        <ReturnIndicator/>
+                        <RTGSIndicatorTargetStatus/>
+                    </CHAPSEuroNull>
+                    <CHAPSSterling>
+                        <Status>I</Status>
+                        <ReturnIndicator/>
+                        <DateLastChanged>1991-12-02</DateLastChanged>
+                        <DateClosed/>
+                        <CHAPSSterlingID>005</CHAPSSterlingID>
+                        <RoutingBICBank>MIDLGB22</RoutingBICBank>
+                        <RoutingBICBranch>XXX</RoutingBICBranch>
+                    </CHAPSSterling>
+                    <CnCCC>
+                        <Status>M</Status>
+                        <ReturnIndicator/>
+                        <DateLastChanged>2017-07-18</DateLastChanged>
+                        <DateClosed/>
+                        <SettlementBank>0013</SettlementBank>
+                        <DebitAgencySortCode>000013</DebitAgencySortCode>
+                        <GBNIIndicator>GB</GBNIIndicator>
+                    </CnCCC>
+                    <BACSServiceOffice>
+                        <Stream HandlingBank="0013" HandlingBankStream="01"/>
+                        <Status>M</Status>
+                        <AccountNumbersFlag>N</AccountNumbersFlag>
+                        <DDIVoucherFlag>N</DDIVoucherFlag>
+                        <DisallowedTransactions>
+                            <TransactionGroupCode>DR</TransactionGroupCode>
+                            <TransactionGroupCode>CU</TransactionGroupCode>
+                            <TransactionGroupCode>AU</TransactionGroupCode>
+                        </DisallowedTransactions>
+                        <DateLastChanged>2005-06-06</DateLastChanged>
+                        <DateClosed/>
+                        <RedirectionFromFlag/>
+                        <RedirectionToSortCode/>
+                        <SettlementBank>0013</SettlementBank>
+                        <SettlementSection>01</SettlementSection>
+                        <SettlementSubSection>08</SettlementSubSection>
+                        <ToDDaSO4/>
+                    </BACSServiceOffice>
+                    <FPServiceOffice>
+                        <Status>M</Status>
+                        <AccountNumbersFlag>N</AccountNumbersFlag>
+                        <DateLastChanged>2011-12-02</DateLastChanged>
+                        <DateClosed/>
+                        <RedirectionFromFlag/>
+                        <RedirectionToSortCode/>
+                        <SettlementBankCode>0013</SettlementBankCode>
+                        <SettlementBankConnection>01</SettlementBankConnection>
+                        <HandlingBankCode>0013</HandlingBankCode>
+                        <HandlingBankConnection>01</HandlingBankConnection>
+                        <AgencyType/>
+                    </FPServiceOffice>
+                    <Telephone>
+                        <InternationalPrefix/>
+                        <Std>0800</Std>
+                        <Number>302011</Number>
+                    </Telephone>
+                    <SecondTelephoneNumber>
+                        <InternationalPrefix/>
+                        <Std/>
+                        <Number/>
+                    </SecondTelephoneNumber>
+                    <MainBankOfficeSortCode/>
+                    <MajorLocation>SWINDON</MajorLocation>
+                    <MinorLocation/>
+                    <OfficeOrPlaceName>Investment Credits</OfficeOrPlaceName>
+                    <OfficeOrPlaceNameSecond/>
+                    <SecondEntryIndicator>1</SecondEntryIndicator>
+                    <OfficeTitle>Investment Credits</OfficeTitle>
+                    <DeletedDate/>
+                    <NCBCountryCode/>
+                </BankOffices>
+            </Bank>
         </ISCDDocument>
     </Data>
 </BACSDocument>
