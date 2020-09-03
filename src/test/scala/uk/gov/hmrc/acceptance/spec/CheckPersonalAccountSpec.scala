@@ -15,7 +15,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
   val DEFAULT_BANK_SORT_CODE = "40 47 84"
   val DEFAULT_BANK_ACCOUNT_NUMBER = "70872490"
 
-  Scenario("Bank Account Verification successful building society check") {
+  Scenario("Personal Bank Account Verification successful building society check") {
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
@@ -60,7 +60,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
   }
 
-  Scenario("Bank Account Verification successful bank check") {
+  Scenario("Personal Bank Account Verification successful bank check") {
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
