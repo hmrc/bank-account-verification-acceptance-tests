@@ -16,7 +16,7 @@ class AccessibilitySpec extends BaseSpec {
 
     SelectAccountTypePage().clickContinue()
 
-    assertThat(AccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
     assertThatErrorSummaryLinkExists("accountType")
     assertThatRadioButtonErrorMessageIsDisplayed("account-type")
 
@@ -24,11 +24,11 @@ class AccessibilitySpec extends BaseSpec {
 
     When("a customer does not enter all required information")
 
-    AccountEntryPage().clickContinue()
+    PersonalAccountEntryPage().clickContinue()
 
     Then("errors are displayed to the user")
 
-    assertThat(AccountEntryPage().errorMessageSummaryCount()).isEqualTo(3)
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(3)
     assertThatErrorSummaryLinkExists("accountName")
     assertThatInputFieldErrorMessageExists("accountName")
     assertThatErrorSummaryLinkExists("sortCode")

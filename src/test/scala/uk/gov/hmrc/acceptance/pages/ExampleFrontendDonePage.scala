@@ -5,55 +5,62 @@ import uk.gov.hmrc.acceptance.utils.BasePage
 
 case class ExampleFrontendDonePage() extends BasePage {
 
-  private lazy val accountType: XPathQuery = xpath("//dt[normalize-space()='Account Type']/following-sibling::dd")
-  private lazy val accountName: XPathQuery = xpath("//dt[normalize-space()='Account name']/following-sibling::dd")
-  private lazy val sortCode: XPathQuery = xpath("//dt[normalize-space()='Sort code']/following-sibling::dd")
-  private lazy val accountNumber: XPathQuery = xpath("//dt[normalize-space()='Account number']/following-sibling::dd")
-  private lazy val rollNumber: XPathQuery = xpath("//dt[normalize-space()='Roll number']/following-sibling::dd")
-  private lazy val validationResult: XPathQuery = xpath("//dt[normalize-space()='Validation result']/following-sibling::dd")
-  private lazy val accountExists: XPathQuery = xpath("//dt[normalize-space()='Account exists']/following-sibling::dd")
-  private lazy val accountNameMatched: XPathQuery = xpath("//dt[normalize-space()='Account name matched']/following-sibling::dd")
-  private lazy val accountNonConsented: XPathQuery = xpath("//dt[normalize-space()='Account non-consented']/following-sibling::dd")
-  private lazy val accountOwnerDeceased: XPathQuery = xpath("//dt[normalize-space()='Account owner deceased']/following-sibling::dd")
+  private def getDataForSummaryListEntryCalled(entry: String): Option[Element] ={
+    xpath(s"//dt[normalize-space()='$entry']/following-sibling::dd").findElement
+  }
 
   def getAccountType: String = {
-    accountType.findElement.get.text
+    getDataForSummaryListEntryCalled("Account Type").get.text
   }
 
   def getAccountName: String = {
-    accountName.findElement.get.text
+    getDataForSummaryListEntryCalled("Account name").get.text
   }
 
   def getSortCode: String = {
-    sortCode.findElement.get.text
+    getDataForSummaryListEntryCalled("Sort code").get.text
   }
 
   def getAccountNumber: String = {
-    accountNumber.findElement.get.text
+    getDataForSummaryListEntryCalled("Account number").get.text
   }
 
   def getRollNumber: String = {
-    rollNumber.findElement.get.text
+    getDataForSummaryListEntryCalled("Roll number").get.text
   }
 
   def getValidationResult: String = {
-    validationResult.findElement.get.text
+    getDataForSummaryListEntryCalled("Validation result").get.text
   }
 
   def getAccountExists: String = {
-    accountExists.findElement.get.text
+    getDataForSummaryListEntryCalled("Account exists").get.text
   }
 
   def getAccountNameMatched: String = {
-    accountNameMatched.findElement.get.text
+    getDataForSummaryListEntryCalled("Account name matched").get.text
   }
 
   def getAccountNonConsented: String = {
-    accountNonConsented.findElement.get.text
+    getDataForSummaryListEntryCalled("Account non-consented").get.text
   }
 
   def getAccountOwnerDeceased: String = {
-    accountOwnerDeceased.findElement.get.text
+    getDataForSummaryListEntryCalled("Account owner deceased").get.text
+  }
+
+  def getCompanyName: String = {
+    getDataForSummaryListEntryCalled("Company name").get.text
+  }
+
+  def getCompanyNameMatches: String = {
+    getDataForSummaryListEntryCalled("Company name matches").get.text
+  }
+  def getCompanyPostcodeMatches: String = {
+    getDataForSummaryListEntryCalled("Company postcode matches").get.text
+  }
+  def getCompanyRegistrationNumberMatches: String = {
+    getDataForSummaryListEntryCalled("Company registration number matches").get.text
   }
 
   override def isOnPage: Boolean = {

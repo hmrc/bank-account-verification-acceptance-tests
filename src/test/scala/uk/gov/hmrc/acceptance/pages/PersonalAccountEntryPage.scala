@@ -3,7 +3,7 @@ package uk.gov.hmrc.acceptance.pages
 import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
 import uk.gov.hmrc.acceptance.utils.BasePage
 
-case class AccountEntryPage() extends BasePage {
+case class PersonalAccountEntryPage() extends BasePage {
 
   private lazy val accountNameField: TextField = textField(id("accountName"))
   private lazy val sortCodeField: TextField = textField(id("sortCode"))
@@ -11,22 +11,22 @@ case class AccountEntryPage() extends BasePage {
   private lazy val rollNumberField: TextField = textField(id("rollNumber"))
   private lazy val continueButton: IdQuery = id("continue")
 
-  def enterAccountName(accountName: String): AccountEntryPage = {
+  def enterAccountName(accountName: String): PersonalAccountEntryPage = {
     accountNameField.value = accountName
     this
   }
 
-  def enterSortCode(sortCode: String): AccountEntryPage = {
+  def enterSortCode(sortCode: String): PersonalAccountEntryPage = {
     sortCodeField.value = sortCode
     this
   }
 
-  def enterAccountNumber(accountNumber: String): AccountEntryPage = {
+  def enterAccountNumber(accountNumber: String): PersonalAccountEntryPage = {
     accountNumberField.value = accountNumber
     this
   }
 
-  def enterRollNumber(rollNumber: String): AccountEntryPage = {
+  def enterRollNumber(rollNumber: String): PersonalAccountEntryPage = {
     rollNumberField.value = rollNumber
     this
   }
