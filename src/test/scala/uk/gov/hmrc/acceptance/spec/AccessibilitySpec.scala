@@ -7,7 +7,7 @@ import uk.gov.hmrc.acceptance.utils.BaseSpec
 
 class AccessibilitySpec extends BaseSpec {
 
-  Scenario("Accessibility - Bank Account Verification errors", Accessibility) {
+  Scenario("Accessibility - Personal Bank Account Verification errors", Accessibility) {
     Given("I want to collect and validate a customers bank account details")
 
     go to journeyStartPage(initializeJourney())
@@ -31,6 +31,36 @@ class AccessibilitySpec extends BaseSpec {
     assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(3)
     assertThatErrorSummaryLinkExists("accountName")
     assertThatInputFieldErrorMessageExists("accountName")
+    assertThatErrorSummaryLinkExists("sortCode")
+    assertThatInputFieldErrorMessageExists("sortCode")
+    assertThatErrorSummaryLinkExists("accountNumber")
+    assertThatInputFieldErrorMessageExists("accountNumber")
+  }
+
+  Scenario("Accessibility - Company Bank Account Verification errors", Accessibility) {
+    Given("I want to collect and validate a companies bank account details")
+
+    go to journeyStartPage(initializeJourney())
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    SelectAccountTypePage().clickContinue()
+
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    assertThatErrorSummaryLinkExists("accountType")
+    assertThatRadioButtonErrorMessageIsDisplayed("account-type")
+
+    SelectAccountTypePage().selectBusinessAccount().clickContinue()
+
+    When("a company representative does not enter all required information")
+
+    PersonalAccountEntryPage().clickContinue()
+
+    Then("errors are displayed to the user")
+
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(3)
+    assertThatErrorSummaryLinkExists("companyName")
+    assertThatInputFieldErrorMessageExists("companyName")
     assertThatErrorSummaryLinkExists("sortCode")
     assertThatInputFieldErrorMessageExists("sortCode")
     assertThatErrorSummaryLinkExists("accountNumber")
