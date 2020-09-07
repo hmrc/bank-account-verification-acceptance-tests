@@ -57,11 +57,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getRollNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER)
     assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("yes")
-    //FIXME - Should be indeterminate
-    //assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("yes")
-    //FIXME - Should this be indeterminate as well?
-    assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("inapplicable")
+    assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
+    assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
   }
 
@@ -105,11 +102,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
     assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("yes")
-    //FIXME - Should be indeterminate
-    //assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("yes")
-    //FIXME - Should this be indeterminate as well?
-    assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("inapplicable")
+    assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
+    assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
   }
 
