@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse}
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.pages.{ConfirmDetailsPage, ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
-import uk.gov.hmrc.acceptance.utils.{BaseSpec, MockServer}
+import uk.gov.hmrc.acceptance.utils.{BaseSpec, CallValidateResponseBuilder, MockServer}
 
 class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
@@ -104,7 +104,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
   }
 
-  Scenario("Personal Bank Account Verification invalid bank account") {
+  Scenario("Personal Bank Account Verification closed bank account") {
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
@@ -112,7 +112,55 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     ).respond(
       HttpResponse.response()
         .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "CASS"""".stripMargin)
+        .withBody(s"""{"Matched": false, "ReasonCode": "CASS"}""".stripMargin)
+        .withStatusCode(200)
+    )
+
+    Given("I want to collect and validate a customers bank account details")
+
+    val journeyId: String = initializeJourney()
+    go to journeyStartPage(journeyId)
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    When("a customer enters all required information and clicks continue")
+
+    PersonalAccountEntryPage()
+      .enterAccountName("Account Closed")
+      .enterSortCode(DEFAULT_BANK_SORT_CODE)
+      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
+      .clickContinue()
+
+    Then("an error message is displayed to the customer telling them that the account is invalid")
+
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    assertThatErrorSummaryLinkExists("accountNumber")
+    assertThatInputFieldErrorMessageExists("accountNumber")
+  }
+
+  Scenario("Personal Bank Account Verification unable to find bank account") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+        .withStatusCode(200)
+    )
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(TRANSUNION_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/xml")
+        .withBody(new CallValidateResponseBuilder()
+          .withError("BV3: Unknown account")
+          .build())
         .withStatusCode(200)
     )
 
