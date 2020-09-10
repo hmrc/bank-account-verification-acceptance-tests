@@ -3,7 +3,7 @@ package uk.gov.hmrc.acceptance.spec
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse}
 import uk.gov.hmrc.acceptance.config.TestConfig
-import uk.gov.hmrc.acceptance.pages.{BusinessAccountEntryPage, ExampleFrontendDonePage, SelectAccountTypePage}
+import uk.gov.hmrc.acceptance.pages.{BusinessAccountEntryPage, ConfirmDetailsPage, ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.utils.{BaseSpec, MockServer}
 
 class CheckBusinessAccountSpec extends BaseSpec with MockServer {
@@ -105,6 +105,62 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
+  }
+
+  Scenario("Personal Bank Account Verification invalid bank account") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": false, "ReasonCode": "AC01"""".stripMargin)
+        .withStatusCode(200)
+    )
+
+    Given("I want to collect and validate a customers bank account details")
+
+    val journeyId: String = initializeJourney()
+    go to journeyStartPage(journeyId)
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    SelectAccountTypePage().selectBusinessAccount().clickContinue()
+
+    When("a customer enters all required information and clicks continue")
+
+    BusinessAccountEntryPage()
+      .enterCompanyName("Cannot Match")
+      .enterCompanyRegistrationNumber(DEFAULT_COMPANY_REGISTRATION_NUMBER)
+      .enterSortCode(DEFAULT_BANK_SORT_CODE)
+      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
+      .clickContinue()
+
+    Then("the customer is redirected to the confirm account screen")
+
+    assertThat(ConfirmDetailsPage().isOnPage).isTrue
+    assertThat(ConfirmDetailsPage().getCompanyName).isEqualTo("Cannot Match")
+    assertThat(ConfirmDetailsPage().getCompanyRegistrationNumber).isEqualTo(DEFAULT_COMPANY_REGISTRATION_NUMBER)
+    assertThat(ConfirmDetailsPage().getSortCode).isEqualTo(DEFAULT_BANK_SORT_CODE)
+    assertThat(ConfirmDetailsPage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_NUMBER)
+    assertThat(ConfirmDetailsPage().getRollNumber).isEmpty()
+
+    ConfirmDetailsPage().clickContinue()
+
+    Then("the customer is redirected to continue URL")
+
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/$journeyId")
+    assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
+    assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo("Cannot Match")
+    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_SORT_CODE)
+    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_NUMBER)
+    assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
+    assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("no")
   }
 
 }
