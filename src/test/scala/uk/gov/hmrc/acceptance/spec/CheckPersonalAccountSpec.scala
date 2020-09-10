@@ -112,7 +112,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     ).respond(
       HttpResponse.response()
         .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "CASS"}""".stripMargin)
+        .withBody(s"""{"Matched": false, "ReasonCode": "AC01"}""".stripMargin)
         .withStatusCode(200)
     )
 
