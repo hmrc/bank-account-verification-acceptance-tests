@@ -107,7 +107,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
   }
 
-  Scenario("Personal Bank Account Verification invalid bank account") {
+  Scenario("Business Bank Account Verification invalid bank account") {
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
