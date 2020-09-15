@@ -1,93 +1,55 @@
-package uk.gov.hmrc.acceptance.utils
+package uk.gov.hmrc.acceptance.stubs.transunion
 
-class CallValidateResponseBuilder {
+import uk.gov.hmrc.acceptance.utils.Individual
+import uk.gov.hmrc.acceptance.utils.types.Address
 
-  var title = "Mrs"
-  var firstName = "ANNIE"
-  var surname = "MCLAREN"
-  var dateOfBirth = "1970-01-01"
-  var errors = ""
-  var bankEnhancedCompleted = "yes"
-  var BankCheckEnhanced: String =
-    s"""<BankcheckEnhanced>
-       |  <Result>Pass</Result>
-       |  <Score>7</Score>
-       |  <AccountIssuer>HSBC BANK PLC</AccountIssuer>
-       |  <OtherAccountsFoundForIssuer>yes</OtherAccountsFoundForIssuer>
-       |  <AccountStartDate>1999-10-13</AccountStartDate>
-       |</BankcheckEnhanced>""".stripMargin
-  var identityCheck: String =
-    s"""<IdentityCheck>
-       |  <addresspicklistfound>false</addresspicklistfound>
-       |  <appverified>Yes</appverified>
-       |  <cifas/>
-       |  <confirmatorydobs>0</confirmatorydobs>
-       |  <currentaddressmatched>1, BUCK HOUSE, LONDON, SW1A 1AA</currentaddressmatched>
-       |  <dvlawarning>false</dvlawarning>
-       |  <ervalid>1</ervalid>
-       |  <grodeceased>false</grodeceased>
-       |  <halomatch>false</halomatch>
-       |  <IDBasic/>
-       |  <levelofconfidencebai>0</levelofconfidencebai>
-       |  <levelofconfidenceccjs>0</levelofconfidenceccjs>
-       |  <levelofconfidencedob>0</levelofconfidencedob>
-       |  <levelofconfidenceer>3</levelofconfidenceer>
-       |  <levelofconfidenceinvestors>0</levelofconfidenceinvestors>
-       |  <levelofconfidenceshare>5</levelofconfidenceshare>
-       |  <lorwarning>false</lorwarning>
-       |  <matchlevel>IndividualReport</matchlevel>
-       |  <namematched>MR DAVID ANTHONY TEST</namematched>
-       |  <namepicklistfound>false</namepicklistfound>
-       |  <numaddresslinks>0</numaddresslinks>
-       |  <numbais>0</numbais>
-       |  <numccjs>0</numccjs>
-       |  <numcorroborativechecks>4</numcorroborativechecks>
-       |  <numcorroborativeotheridsconfirmed>0</numcorroborativeotheridsconfirmed>
-       |  <numinvestors>0</numinvestors>
-       |  <numprimarychecks>14</numprimarychecks>
-       |  <numprimaryotheridsconfirmed>0</numprimaryotheridsconfirmed>
-       |  <numsharerecords>16</numsharerecords>
-       |  <pafvalid>true</pafvalid>
-       |  <passportwarning>false</passportwarning>
-       |  <readmatch>false</readmatch>
-       |  <totaldobs>13</totaldobs>
-       |</IdentityCheck>""".stripMargin
-  var otherChecks: String =
-    s"""<AgeVerify/>
-       |<OtherChecks>
-       |  <IdentityResult>Pass</IdentityResult>
-       |  <IdentityScore>65</IdentityScore>
-       |</OtherChecks>
-       |<DeviceRisk/>
-       |<Phone>
-       |  <MobileRisk>
-       |    <Standard/>
-       |    <Live/>
-       |    <Score/>
-       |  </MobileRisk>
-       |</Phone>""".stripMargin
-  var warnings: String =
-    s"""<Warnings>
-       |  <NonGBRCardWarning>false</NonGBRCardWarning>
-       |  <NamePicklistWarning>false</NamePicklistWarning>
-       |  <AddressPicklistWarning>false</AddressPicklistWarning>
-       |  <PAFNonValidWarning>false</PAFNonValidWarning>
-       |  <CardAccountClosedWarning>false</CardAccountClosedWarning>
-       |  <BankAccountClosedWarning>false</BankAccountClosedWarning>
-       |</Warnings>""".stripMargin
+class CallValidateResponseBuilder() {
 
-  var additionalChecks: String =
-    s"""
-       |$BankCheckEnhanced
-       |$identityCheck
-       |$otherChecks
-       |$warnings""".stripMargin
+  private var individual: Individual = Individual(title = Some("Mrs"), firstName = Some("Annie"), lastName = Some("Mclaren"))
+  private var address: Address = Address(List("1", "Buck House"), town = Some("London"), postcode = Some("SW1A 1AA"))
+  private var dateOfBirth = "1970-10-01"
+  private var bankCheckEnhanced: String = new BankCheckEnhancedBuilder().build()
+  private var bankEnhancedCompleted = "yes"
+  private var identityCheck: String = new IdentityCheckBuilder()
+    .nameMatched(individual.asString())
+    .build()
+  private var otherChecks: String = new OtherChecksBuilder().build()
+  private var warnings: String = new WarningsBuilder().build()
+  private var additionalChecksFlag: Boolean = true
+  private var errors = ""
 
-  def setIndividualData(title: String, firstName: String, surname: String, dateOfBirth: String): CallValidateResponseBuilder = {
-    this.title = title
-    this.firstName = firstName
-    this.surname = surname
+  def setInputIndividualData(individual: Individual): CallValidateResponseBuilder = {
+    this.individual = individual
+    this
+  }
+
+  def setInputAddress(address: Address): CallValidateResponseBuilder = {
+    this.address = address
+    this
+  }
+
+  def setInputdateOfBirth(dateOfBirth: String): CallValidateResponseBuilder = {
     this.dateOfBirth = dateOfBirth
+    this
+  }
+
+  def bankCheckEnhanced(bankCheckEnhanced: String): CallValidateResponseBuilder = {
+    this.bankCheckEnhanced = bankCheckEnhanced
+    this
+  }
+
+  def identityCheck(identityCheck: String): CallValidateResponseBuilder = {
+    this.identityCheck = identityCheck
+    this
+  }
+
+  def otherChecks(otherChecks: String): CallValidateResponseBuilder = {
+    this.otherChecks = otherChecks
+    this
+  }
+
+  def warnings(warnings: String): CallValidateResponseBuilder = {
+    this.warnings = warnings
     this
   }
 
@@ -97,11 +59,22 @@ class CallValidateResponseBuilder {
          |<Errors>
          |    <Error>$error</Error>
          |</Errors>""".stripMargin
-    this.additionalChecks = ""
+    this.additionalChecksFlag = false
     this.bankEnhancedCompleted = "no"
     this
   }
 
+  private def additionalChecks(): String = {
+    if (additionalChecksFlag) {
+      s"""
+         |$bankCheckEnhanced
+         |$identityCheck
+         |$otherChecks
+         |$warnings""".stripMargin
+    } else {
+      ""
+    }
+  }
 
   def build(): String = {
     scala.xml.XML.loadString(
@@ -109,8 +82,8 @@ class CallValidateResponseBuilder {
          |  <Result RID="CC-TEST-HARNESS" PID="LTJ-CT1-8871-46651-5788" DateTime="21-06-2016 14:29">
          |    <Displays>
          |      <ChecksCompleted>
-         |        <BankStandard>$bankEnhancedCompleted</BankStandard>
-         |        <BankEnhanced>yes</BankEnhanced>
+         |        <BankStandard>yes</BankStandard>
+         |        <BankEnhanced>$bankEnhancedCompleted</BankEnhanced>
          |        <CardLive>no</CardLive>
          |        <CardEnhanced>no</CardEnhanced>
          |        <IDEnhanced>yes</IDEnhanced>
@@ -130,13 +103,13 @@ class CallValidateResponseBuilder {
          |      <InputData>
          |        <Individual>
          |          <Dateofbirth>$dateOfBirth</Dateofbirth>
-         |          <Title>$title</Title>
-         |          <Firstname>$firstName</Firstname>
-         |          <Surname>$surname</Surname>
+         |          <Title>${individual.title.getOrElse("undefined")}</Title>
+         |          <Firstname>${individual.firstName.getOrElse("")}</Firstname>
+         |          <Surname>${individual.lastName.getOrElse("")}</Surname>
          |        </Individual>
          |        <Address>
-         |          <Buildingnumber>1</Buildingnumber>
-         |          <Postcode>X9 9AB</Postcode>
+         |          <Buildingnumber>${address.lineOne()}</Buildingnumber>
+         |          <Postcode>${address.postcode.getOrElse("")}</Postcode>
          |        </Address>
          |      </InputData>
          |      <BankcheckStandard>
@@ -183,7 +156,7 @@ class CallValidateResponseBuilder {
          |        <FPS_HandlingBankConnection>01</FPS_HandlingBankConnection>
          |        <FPS_HandlingBankCode>0005</FPS_HandlingBankCode>
          |        <FPS_AccountNumbersFlag>Y</FPS_AccountNumbersFlag>
-         |      </BankcheckStandard>$additionalChecks$errors
+         |      </BankcheckStandard>${additionalChecks()}$errors
          |    </Displays>
          |  </Result>
          |</Results>

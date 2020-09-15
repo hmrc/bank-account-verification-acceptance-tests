@@ -5,24 +5,17 @@ import java.util.concurrent.TimeUnit.SECONDS
 import okhttp3._
 import play.api.libs.json._
 import uk.gov.hmrc.acceptance.config.TestConfig
+import uk.gov.hmrc.acceptance.utils.types.InitJourney
 
 trait JourneyBuilder {
-
-  //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
-  val defaultConfiguration: String =
-    s"""
-       |{
-       |    "continueUrl" : "${TestConfig.url("bank-account-verification-frontend-example")}/done",
-       |    "serviceIdentifier" : "bavf-acceptance-test"
-       |}
-       |""".stripMargin
 
   val httpClient: OkHttpClient = new OkHttpClient().newBuilder()
     .connectTimeout(10L, SECONDS)
     .readTimeout(10L, SECONDS)
     .build()
 
-  def initializeJourney(configuration: String = defaultConfiguration): String = {
+  //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
+  def initializeJourney(configuration: String = InitJourney.apply().asJsonString()): String = {
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/init")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))

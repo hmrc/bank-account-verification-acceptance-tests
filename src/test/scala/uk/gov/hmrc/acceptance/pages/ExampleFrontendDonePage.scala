@@ -25,6 +25,10 @@ case class ExampleFrontendDonePage() extends BasePage {
     getDataForSummaryListEntryCalled("Account number").get.text
   }
 
+  def getAddress: String = {
+    getDataForSummaryListEntryCalled("Address").get.text
+  }
+
   def getRollNumber: String = {
     getDataForSummaryListEntryCalled("Roll number").get.text
   }
@@ -39,6 +43,10 @@ case class ExampleFrontendDonePage() extends BasePage {
 
   def getAccountNameMatched: String = {
     getDataForSummaryListEntryCalled("Account name matched").get.text
+  }
+
+  def getAccountAddressMatched: String = {
+    getDataForSummaryListEntryCalled("Account address matched").get.text
   }
 
   def getAccountNonConsented: String = {

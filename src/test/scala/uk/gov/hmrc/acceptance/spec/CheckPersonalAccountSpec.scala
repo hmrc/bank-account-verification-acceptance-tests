@@ -4,7 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse}
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.pages.{ConfirmDetailsPage, ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
-import uk.gov.hmrc.acceptance.utils.{BaseSpec, CallValidateResponseBuilder, MockServer}
+import uk.gov.hmrc.acceptance.stubs.transunion.CallValidateResponseBuilder
+import uk.gov.hmrc.acceptance.utils.{BaseSpec, MockServer}
 
 class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
