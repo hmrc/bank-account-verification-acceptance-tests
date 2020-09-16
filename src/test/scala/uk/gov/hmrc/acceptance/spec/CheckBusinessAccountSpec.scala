@@ -193,7 +193,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ConfirmDetailsPage().getCompanyRegistrationNumber).isEqualTo(DEFAULT_COMPANY_REGISTRATION_NUMBER)
     assertThat(ConfirmDetailsPage().getSortCode).isEqualTo(DEFAULT_BANK_SORT_CODE)
     assertThat(ConfirmDetailsPage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_NUMBER)
-    assertThat(ConfirmDetailsPage().getRollNumber).isEmpty()
 
     ConfirmDetailsPage().clickContinue()
 

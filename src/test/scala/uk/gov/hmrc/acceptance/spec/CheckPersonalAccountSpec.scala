@@ -188,7 +188,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ConfirmDetailsPage().getAccountName).isEqualTo("Cannot Match")
     assertThat(ConfirmDetailsPage().getSortCode).isEqualTo(DEFAULT_BANK_SORT_CODE)
     assertThat(ConfirmDetailsPage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_NUMBER)
-    assertThat(ConfirmDetailsPage().getRollNumber).isEmpty()
 
     ConfirmDetailsPage().clickContinue()
 

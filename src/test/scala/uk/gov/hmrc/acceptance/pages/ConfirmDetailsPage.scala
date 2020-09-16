@@ -16,7 +16,7 @@ case class ConfirmDetailsPage() extends BasePage {
   }
 
   def getAccountName: String = {
-    getConfirmationDataForEntryCalled("Account name").get.text
+    getConfirmationDataForEntryCalled("Name on the account").get.text
   }
 
   def changeAccountName(): Unit = {
@@ -68,7 +68,7 @@ case class ConfirmDetailsPage() extends BasePage {
   }
 
   override def isOnPage: Boolean = {
-    webDriverWillWait.until(titleIs("Confirm your bank account details - GOV.UK"))
+    webDriverWillWait.until(titleIs("Check the account details - GOV.UK"))
   }
 
 }
