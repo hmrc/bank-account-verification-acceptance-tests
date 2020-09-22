@@ -10,7 +10,7 @@ case class ExampleFrontendDonePage() extends BasePage {
   }
 
   def getAccountType: String = {
-    getDataForSummaryListEntryCalled("Account Type").get.text
+    getDataForSummaryListEntryCalled("Account type").get.text
   }
 
   def getAccountName: String = {
