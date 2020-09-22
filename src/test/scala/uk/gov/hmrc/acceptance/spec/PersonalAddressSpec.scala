@@ -79,6 +79,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountAddressMatched).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("no")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
 
     mockServer.verify(HttpRequest.request().withPath(TRANSUNION_PATH), VerificationTimes.atLeast(1))
   }

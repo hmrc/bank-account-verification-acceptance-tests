@@ -62,6 +62,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("NATIONWIDE BUILDING SOCIETY")
   }
 
   Scenario("Business Bank Account Verification successful bank check") {
@@ -107,6 +108,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
   }
 
   Scenario("Business Bank Account Verification closed bank account") {
@@ -209,6 +211,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
   }
 
 }

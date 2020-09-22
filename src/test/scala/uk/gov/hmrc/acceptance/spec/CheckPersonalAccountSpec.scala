@@ -59,6 +59,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNameMatched).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("NATIONWIDE BUILDING SOCIETY")
   }
 
   Scenario("Personal Bank Account Verification successful bank check") {
@@ -103,6 +104,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNameMatched).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
   }
 
   Scenario("Personal Bank Account Verification closed bank account") {
@@ -204,6 +206,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNameMatched).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
   }
 
 }

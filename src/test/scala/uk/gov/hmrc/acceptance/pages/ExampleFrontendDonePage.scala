@@ -14,7 +14,7 @@ case class ExampleFrontendDonePage() extends BasePage {
   }
 
   def getAccountName: String = {
-    getDataForSummaryListEntryCalled("Account name").get.text
+    getDataForSummaryListEntryCalled("Name on the account").get.text
   }
 
   def getSortCode: String = {
@@ -69,6 +69,10 @@ case class ExampleFrontendDonePage() extends BasePage {
   }
   def getCompanyRegistrationNumberMatches: String = {
     getDataForSummaryListEntryCalled("Company registration number matches").get.text
+  }
+
+  def getBankName: String = {
+    getDataForSummaryListEntryCalled("Bank name").get.text
   }
 
   override def isOnPage: Boolean = {

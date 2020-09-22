@@ -78,6 +78,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
 
     mockServer.verify(HttpRequest.request().withPath(CREDITSAFE_PATH), VerificationTimes.atLeast(1))
   }
