@@ -9,7 +9,7 @@ import uk.gov.hmrc.acceptance.utils.types.InitJourney
 
 trait JourneyBuilder {
 
-  val httpClient: OkHttpClient = new OkHttpClient().newBuilder()
+  val okHttpClient: OkHttpClient = new OkHttpClient().newBuilder()
     .connectTimeout(10L, SECONDS)
     .readTimeout(10L, SECONDS)
     .build()
@@ -19,7 +19,7 @@ trait JourneyBuilder {
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/init")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
-    val response = httpClient.newCall(request.build()).execute()
+    val response = okHttpClient.newCall(request.build()).execute()
     if (response.isSuccessful) {
       //TODO do this properly when we respond with the correct JSON block.
       response.body().string().replaceAll("\"", "")
@@ -36,7 +36,7 @@ trait JourneyBuilder {
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-reputation")}/refresh/eiscdcache")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), ""))
-    val response = httpClient.newCall(request.build()).execute()
+    val response = okHttpClient.newCall(request.build()).execute()
     if (!response.isSuccessful) {
       throw new IllegalStateException("Unable to initialize EISCD Cache")
     }
