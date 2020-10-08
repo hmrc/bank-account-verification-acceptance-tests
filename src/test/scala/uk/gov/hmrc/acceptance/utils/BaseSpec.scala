@@ -35,6 +35,7 @@ trait BaseSpec extends AnyFeatureSpec
     super.beforeAll()
     s3Mock.start
     initializeEISCDCache()
+    initializeModcheckCache()
     sys.addShutdownHook {
       webDriver.quit()
     }

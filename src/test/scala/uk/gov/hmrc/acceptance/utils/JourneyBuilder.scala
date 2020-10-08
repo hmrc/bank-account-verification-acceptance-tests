@@ -9,6 +9,11 @@ import uk.gov.hmrc.acceptance.utils.types.InitJourney
 
 trait JourneyBuilder {
 
+  object BarsEndpoints {
+    val REFRESH_EISCD_CACHE = "/refresh/cache/eiscd"
+    val REFRESH_MODCHECK_CACHE = "/refresh/cache/modcheck"
+  }
+
   val okHttpClient: OkHttpClient = new OkHttpClient().newBuilder()
     .connectTimeout(10L, SECONDS)
     .readTimeout(10L, SECONDS)
@@ -34,11 +39,21 @@ trait JourneyBuilder {
 
   def initializeEISCDCache(): Unit = {
     val request = new Request.Builder()
-      .url(s"${TestConfig.apiUrl("bank-account-reputation")}/refresh/eiscdcache")
+      .url(s"${TestConfig.apiUrl("bank-account-reputation")}${BarsEndpoints.REFRESH_EISCD_CACHE}")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), ""))
     val response = okHttpClient.newCall(request.build()).execute()
     if (!response.isSuccessful) {
       throw new IllegalStateException("Unable to initialize EISCD Cache")
+    }
+  }
+
+  def initializeModcheckCache(): Unit = {
+    val request = new Request.Builder()
+      .url(s"${TestConfig.apiUrl("bank-account-reputation")}${BarsEndpoints.REFRESH_MODCHECK_CACHE}")
+      .method("POST", RequestBody.create(MediaType.parse("application/json"), ""))
+    val response = okHttpClient.newCall(request.build()).execute()
+    if (!response.isSuccessful) {
+      throw new IllegalStateException("Unable to initialize Modcheck Cache")
     }
   }
 }
