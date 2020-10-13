@@ -12,7 +12,7 @@ if [ -z "$BROWSER_TYPE" ]; then
     echo ""
 fi
 
-sbt -Dbrowser=${BROWSER_TYPE:=$DEFAULT_BROWSER} -Dzap.proxy=true "testOnly -- -l uk.gov.hmrc.acceptance.tags.Zap"
+sbt -Dbrowser=${BROWSER_TYPE:=$DEFAULT_BROWSER} -Dzap.proxy=true "testOnly -- -l uk.gov.hmrc.acceptance.tags.ZAP"
 
 echo ""
 echo "**** Running ZapSpec ****"
