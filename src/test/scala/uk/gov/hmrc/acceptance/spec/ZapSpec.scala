@@ -11,7 +11,7 @@ class ZapSpec extends BaseSpec with MockServer with ZapTest {
 
   override val zapConfiguration: ZapConfiguration = new ZapConfiguration(zapConfig)
 
-  Scenario("Run security checks", Zap) {
+  Scenario("Run security checks") {
     triggerZapScan()
   }
 }
