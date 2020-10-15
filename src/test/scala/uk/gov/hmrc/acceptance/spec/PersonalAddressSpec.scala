@@ -1,7 +1,7 @@
 package uk.gov.hmrc.acceptance.spec
 
 import org.assertj.core.api.Assertions.assertThat
-import org.mockserver.model.{HttpRequest, HttpResponse}
+import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.pages.{ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
@@ -50,11 +50,47 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate personal bank account details")
 
     val journeyId: String = initializeJourney(InitJourney(address = Some(DEFAULT_ADDRESS)).asJsonString())
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            "&& @.detail.input=='Request to /api/init'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
     go to journeyStartPage(journeyId)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s" && @.detail.input=='Request to /bank-account-verification/start/$journeyId'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
 
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/$journeyId'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
 
     When("a user enters all required information and clicks continue")
 
@@ -82,5 +118,17 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
 
     mockServer.verify(HttpRequest.request().withPath(TRANSUNION_PATH), VerificationTimes.atLeast(1))
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to /api/complete/$journeyId'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
   }
 }

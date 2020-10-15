@@ -3,7 +3,7 @@ package uk.gov.hmrc.acceptance.spec
 import java.util.UUID.randomUUID
 
 import org.assertj.core.api.Assertions.assertThat
-import org.mockserver.model.{HttpRequest, HttpResponse}
+import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.pages.{BusinessAccountEntryPage, ExampleFrontendDonePage, SelectAccountTypePage}
@@ -49,11 +49,47 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a companies bank account details")
 
     val journeyId: String = initializeJourney(InitJourney(address = DEFAULT_BUSINESS_ADDRESS).asJsonString())
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            "&& @.detail.input=='Request to /api/init'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
     go to journeyStartPage(journeyId)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s" && @.detail.input=='Request to /bank-account-verification/start/$journeyId'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
 
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to /bank-account-verification/verify/business/$journeyId'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
 
     When("a company representative enters all required information and clicks continue")
 
@@ -81,5 +117,17 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
 
     mockServer.verify(HttpRequest.request().withPath(CREDITSAFE_PATH), VerificationTimes.atLeast(1))
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to /api/complete/$journeyId'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
   }
 }
