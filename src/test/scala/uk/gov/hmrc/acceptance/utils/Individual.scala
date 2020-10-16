@@ -9,4 +9,8 @@ case class Individual(
   def asString(): String = {
     s"${title.getOrElse("")} ${firstName.getOrElse("")} ${middleNames.getOrElse("")} ${lastName.getOrElse("")}".trim.replaceAll(" +", " ")
   }
+
+  def asEscapedString(): String = {
+    this.asString().replaceAll("\'", "\\\\\'")
+  }
 }

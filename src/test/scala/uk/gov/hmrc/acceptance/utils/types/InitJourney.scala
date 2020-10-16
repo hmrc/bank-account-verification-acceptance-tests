@@ -2,12 +2,14 @@ package uk.gov.hmrc.acceptance.utils.types
 
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.acceptance.config.TestConfig
+import uk.gov.hmrc.acceptance.utils.types.InitJourney.DEFAULT_SERVICE_IDENTIFIER
 
 object InitJourney {
+  val DEFAULT_SERVICE_IDENTIFIER = "bavf-acceptance-test"
   implicit val initJsonFormat: OFormat[InitJourney] = Json.format[InitJourney]
 }
 
-case class InitJourney(serviceIdentifier: String = "bavf-acceptance-test",
+case class InitJourney(serviceIdentifier: String = DEFAULT_SERVICE_IDENTIFIER,
                        continueUrl: String = s"${TestConfig.url("bank-account-verification-frontend-example")}/done",
                        address: Option[Address] = None,
                        messages: Option[Messages] = None,

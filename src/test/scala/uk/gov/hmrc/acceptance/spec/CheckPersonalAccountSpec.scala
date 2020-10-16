@@ -1,16 +1,18 @@
 package uk.gov.hmrc.acceptance.spec
 
 import org.assertj.core.api.Assertions.assertThat
-import org.mockserver.model.{HttpRequest, HttpResponse}
+import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
+import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.pages.{ConfirmDetailsPage, ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.transunion.CallValidateResponseBuilder
 import uk.gov.hmrc.acceptance.tags.Zap
-import uk.gov.hmrc.acceptance.utils.{BaseSpec, MockServer}
+import uk.gov.hmrc.acceptance.utils.types.InitJourney.DEFAULT_SERVICE_IDENTIFIER
+import uk.gov.hmrc.acceptance.utils.{BaseSpec, Individual, MockServer}
 
 class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
-  val DEFAULT_NAME = "Patrick O'Conner-Smith"
+  val DEFAULT_NAME: Individual = Individual(title = Some("Mr"), firstName = Some("Paddy"), lastName = Some("O'Conner-Smith"))
   val DEFAULT_BUILDING_SOCIETY_SORT_CODE = "07-00-93"
   val DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER = "33333334"
   val DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER = "NW/1356"
@@ -41,7 +43,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     When("a customer enters all required information and clicks continue")
 
     PersonalAccountEntryPage()
-      .enterAccountName(DEFAULT_NAME)
+      .enterAccountName(DEFAULT_NAME.asString())
       .enterSortCode(DEFAULT_BUILDING_SOCIETY_SORT_CODE)
       .enterAccountNumber(DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER)
       .enterRollNumber(DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER)
@@ -49,9 +51,26 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Then("the customer is redirected to continue URL")
 
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='personal'" +
+            s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
+            s"&& @.detail.sortCode=='$DEFAULT_BUILDING_SOCIETY_SORT_CODE'" +
+            s"&& @.detail.accountNumber=='$DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER'" +
+            s"&& @.detail.rollNumber=='$DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER'" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/$journeyId")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
-    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME)
+    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BUILDING_SOCIETY_SORT_CODE)
     assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER)
@@ -87,16 +106,33 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     When("a customer enters all required information and clicks continue")
 
     PersonalAccountEntryPage()
-      .enterAccountName(DEFAULT_NAME)
+      .enterAccountName(DEFAULT_NAME.asString())
       .enterSortCode(DEFAULT_BANK_SORT_CODE)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
       .clickContinue()
 
     Then("the customer is redirected to continue URL")
 
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='personal'" +
+            s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
+            s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
+            s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
+            "&& @.detail.rollNumber==''" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/$journeyId")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
-    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME)
+    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_SORT_CODE)
     assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_NUMBER)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
@@ -122,6 +158,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a customers bank account details")
 
+    val companyName = "Account Closed"
     val journeyId: String = initializeJourney()
     go to journeyStartPage(journeyId)
 
@@ -132,12 +169,29 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     When("a customer enters all required information and clicks continue")
 
     PersonalAccountEntryPage()
-      .enterAccountName("Account Closed")
+      .enterAccountName(companyName)
       .enterSortCode(DEFAULT_BANK_SORT_CODE)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
       .clickContinue()
 
     Then("an error message is displayed to the customer telling them that the account is invalid")
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='personal'" +
+            s"&& @.detail.accountName=='$companyName'" +
+            s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
+            s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
+            "&& @.detail.rollNumber==''" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
 
     assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
     assertThatErrorSummaryLinkExists("accountNumber")
@@ -170,6 +224,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a customers bank account details")
 
+    val companyName = "Cannot Match"
     val journeyId: String = initializeJourney()
     go to journeyStartPage(journeyId)
 
@@ -180,12 +235,29 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     When("a customer enters all required information and clicks continue")
 
     PersonalAccountEntryPage()
-      .enterAccountName("Cannot Match")
+      .enterAccountName(companyName)
       .enterSortCode(DEFAULT_BANK_SORT_CODE)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
       .clickContinue()
 
     Then("the customer is redirected to the confirm account screen")
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='personal'" +
+            s"&& @.detail.accountName=='$companyName'" +
+            s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
+            s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
+            "&& @.detail.rollNumber==''" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
 
     assertThat(ConfirmDetailsPage().isOnPage).isTrue
     assertThat(ConfirmDetailsPage().getAccountName).isEqualTo("Cannot Match")

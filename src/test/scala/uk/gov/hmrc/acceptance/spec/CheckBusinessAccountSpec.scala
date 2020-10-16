@@ -3,10 +3,12 @@ package uk.gov.hmrc.acceptance.spec
 import java.util.UUID.randomUUID
 
 import org.assertj.core.api.Assertions.assertThat
-import org.mockserver.model.{HttpRequest, HttpResponse}
+import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
+import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.pages._
 import uk.gov.hmrc.acceptance.tags.Zap
+import uk.gov.hmrc.acceptance.utils.types.InitJourney.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.utils.{BaseSpec, MockServer}
 
 class CheckBusinessAccountSpec extends BaseSpec with MockServer {
@@ -51,6 +53,24 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the company representative is redirected to continue URL")
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='business'" +
+            s"&& @.detail.companyName=='$DEFAULT_COMPANY_NAME'" +
+            s"&& @.detail.companyRegistrationNumber=='$DEFAULT_COMPANY_REGISTRATION_NUMBER'" +
+            s"&& @.detail.sortCode=='$DEFAULT_BUILDING_SOCIETY_SORT_CODE'" +
+            s"&& @.detail.accountNumber=='$DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER'" +
+            s"&& @.detail.rollNumber=='$DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER'" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/$journeyId")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
@@ -98,6 +118,24 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Then("the company representative is redirected to continue URL")
 
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='business'" +
+            s"&& @.detail.companyName=='$DEFAULT_COMPANY_NAME'" +
+            s"&& @.detail.companyRegistrationNumber=='$DEFAULT_COMPANY_REGISTRATION_NUMBER'" +
+            s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
+            s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
+            "&& @.detail.rollNumber==''" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/$journeyId")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
     assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(DEFAULT_COMPANY_NAME)
@@ -126,6 +164,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
+    val companyName = "Account Closed"
     val journeyId: String = initializeJourney()
     go to journeyStartPage(journeyId)
 
@@ -136,13 +175,31 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     When("a company representative enters all required information and clicks continue")
 
     BusinessAccountEntryPage()
-      .enterCompanyName("Account Closed")
+      .enterCompanyName(companyName)
       .enterCompanyRegistrationNumber(DEFAULT_COMPANY_REGISTRATION_NUMBER)
       .enterSortCode(DEFAULT_BANK_SORT_CODE)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
       .clickContinue()
 
     Then("an error message is displayed to the company representative telling them that the account is invalid")
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='business'" +
+            s"&& @.detail.companyName=='$companyName'" +
+            s"&& @.detail.companyRegistrationNumber=='$DEFAULT_COMPANY_REGISTRATION_NUMBER'" +
+            s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
+            s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
+            "&& @.detail.rollNumber==''" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
 
     assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
     assertThatErrorSummaryLinkExists("accountNumber")
@@ -173,6 +230,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
+    val companyName = "Cannot Match"
     val journeyId: String = initializeJourney()
     go to journeyStartPage(journeyId)
 
@@ -183,7 +241,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     When("a company representative enters all required information and clicks continue")
 
     BusinessAccountEntryPage()
-      .enterCompanyName("Cannot Match")
+      .enterCompanyName(companyName)
       .enterCompanyRegistrationNumber(DEFAULT_COMPANY_REGISTRATION_NUMBER)
       .enterSortCode(DEFAULT_BANK_SORT_CODE)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
@@ -200,6 +258,24 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     ConfirmDetailsPage().clickContinue()
 
     Then("the company representative is redirected to the continue URL")
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='business'" +
+            s"&& @.detail.companyName=='$companyName'" +
+            s"&& @.detail.companyRegistrationNumber=='$DEFAULT_COMPANY_REGISTRATION_NUMBER'" +
+            s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
+            s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
+            "&& @.detail.rollNumber==''" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/$journeyId")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
