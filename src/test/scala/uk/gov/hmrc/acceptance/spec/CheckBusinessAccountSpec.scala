@@ -14,7 +14,6 @@ import uk.gov.hmrc.acceptance.utils.{BaseSpec, MockServer}
 class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
   val DEFAULT_COMPANY_NAME = "P@cking & $orting"
-  val DEFAULT_COMPANY_REGISTRATION_NUMBER = "NI7625183"
   val DEFAULT_BUILDING_SOCIETY_SORT_CODE = "07-00-93"
   val DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER = "33333334"
   val DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER = "NW/1356"
@@ -46,7 +45,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     BusinessAccountEntryPage()
       .enterCompanyName(DEFAULT_COMPANY_NAME)
-      .enterCompanyRegistrationNumber(DEFAULT_COMPANY_REGISTRATION_NUMBER)
       .enterSortCode(DEFAULT_BUILDING_SOCIETY_SORT_CODE)
       .enterAccountNumber(DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER)
       .enterRollNumber(DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER)
@@ -62,7 +60,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='business'" +
             s"&& @.detail.companyName=='$DEFAULT_COMPANY_NAME'" +
-            s"&& @.detail.companyRegistrationNumber=='$DEFAULT_COMPANY_REGISTRATION_NUMBER'" +
             s"&& @.detail.sortCode=='$DEFAULT_BUILDING_SOCIETY_SORT_CODE'" +
             s"&& @.detail.accountNumber=='$DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER'" +
             s"&& @.detail.rollNumber=='$DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER'" +
@@ -81,7 +78,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
-    assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("NATIONWIDE BUILDING SOCIETY")
   }
@@ -111,7 +107,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     BusinessAccountEntryPage()
       .enterCompanyName(DEFAULT_COMPANY_NAME)
-      .enterCompanyRegistrationNumber(DEFAULT_COMPANY_REGISTRATION_NUMBER)
       .enterSortCode(DEFAULT_BANK_SORT_CODE)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
       .clickContinue()
@@ -126,7 +121,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='business'" +
             s"&& @.detail.companyName=='$DEFAULT_COMPANY_NAME'" +
-            s"&& @.detail.companyRegistrationNumber=='$DEFAULT_COMPANY_REGISTRATION_NUMBER'" +
             s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
             s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
             "&& @.detail.rollNumber==''" +
@@ -145,7 +139,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
-    assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
   }
@@ -176,7 +169,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     BusinessAccountEntryPage()
       .enterCompanyName(companyName)
-      .enterCompanyRegistrationNumber(DEFAULT_COMPANY_REGISTRATION_NUMBER)
       .enterSortCode(DEFAULT_BANK_SORT_CODE)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
       .clickContinue()
@@ -191,7 +183,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='business'" +
             s"&& @.detail.companyName=='$companyName'" +
-            s"&& @.detail.companyRegistrationNumber=='$DEFAULT_COMPANY_REGISTRATION_NUMBER'" +
             s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
             s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
             "&& @.detail.rollNumber==''" +
@@ -242,7 +233,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     BusinessAccountEntryPage()
       .enterCompanyName(companyName)
-      .enterCompanyRegistrationNumber(DEFAULT_COMPANY_REGISTRATION_NUMBER)
       .enterSortCode(DEFAULT_BANK_SORT_CODE)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
       .clickContinue()
@@ -251,7 +241,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     assertThat(ConfirmDetailsPage().isOnPage).isTrue
     assertThat(ConfirmDetailsPage().getCompanyName).isEqualTo("Cannot Match")
-    assertThat(ConfirmDetailsPage().getCompanyRegistrationNumber).isEqualTo(DEFAULT_COMPANY_REGISTRATION_NUMBER)
     assertThat(ConfirmDetailsPage().getSortCode).isEqualTo(DEFAULT_BANK_SORT_CODE)
     assertThat(ConfirmDetailsPage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_NUMBER)
 
@@ -267,7 +256,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='business'" +
             s"&& @.detail.companyName=='$companyName'" +
-            s"&& @.detail.companyRegistrationNumber=='$DEFAULT_COMPANY_REGISTRATION_NUMBER'" +
             s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
             s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
             "&& @.detail.rollNumber==''" +
@@ -286,7 +274,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
-    assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
   }

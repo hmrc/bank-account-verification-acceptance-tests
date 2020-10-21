@@ -15,7 +15,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
   val DEFAULT_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490")
   val DEFAULT_BUSINESS_ADDRESS: Option[Address] = Some(Address(List("22303 Darwin Turnpike"), postcode = Some("CZ0 8IW")))
-  val DEFAULT_BUSINESS: Business = Business("P@cking & $orting Creditsafe", "NI7625183", DEFAULT_BUSINESS_ADDRESS)
+  val DEFAULT_BUSINESS: Business = Business("P@cking & $orting Creditsafe", DEFAULT_BUSINESS_ADDRESS)
 
   Scenario("Business Bank Account Verification with address is successful") {
     mockServer.when(
@@ -36,8 +36,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
           DEFAULT_ACCOUNT_DETAILS.sortCode,
           DEFAULT_ACCOUNT_DETAILS.accountNumber,
           DEFAULT_BUSINESS.companyName,
-          DEFAULT_BUSINESS.address.get.postcode.get,
-          DEFAULT_BUSINESS.registrationNumber
+          DEFAULT_BUSINESS.address.get.postcode.get
         ).asJsonString())
     ).respond(
       HttpResponse.response()
@@ -95,7 +94,6 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
     BusinessAccountEntryPage()
       .enterCompanyName(DEFAULT_BUSINESS.companyName)
-      .enterCompanyRegistrationNumber(DEFAULT_BUSINESS.registrationNumber)
       .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
       .enterAccountNumber(DEFAULT_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
@@ -112,7 +110,6 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
 

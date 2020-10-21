@@ -5,7 +5,7 @@ import uk.gov.hmrc.acceptance.utils.BasePage
 
 case class ExampleFrontendDonePage() extends BasePage {
 
-  private def getDataForSummaryListEntryCalled(entry: String): Option[Element] ={
+  private def getDataForSummaryListEntryCalled(entry: String): Option[Element] = {
     xpath(s"//dt[normalize-space()='$entry']/following-sibling::dd").findElement
   }
 
@@ -64,11 +64,9 @@ case class ExampleFrontendDonePage() extends BasePage {
   def getCompanyNameMatches: String = {
     getDataForSummaryListEntryCalled("Company name matches").get.text
   }
+
   def getCompanyPostcodeMatches: String = {
     getDataForSummaryListEntryCalled("Company postcode matches").get.text
-  }
-  def getCompanyRegistrationNumberMatches: String = {
-    getDataForSummaryListEntryCalled("Company registration number matches").get.text
   }
 
   def getBankName: String = {

@@ -11,15 +11,13 @@ case class CreditSafePayload(
                               accountNumber: String,
                               businessName: String,
                               postCode: String,
-                              companyRegistrationNumber: String
                             ) {
   def asJsonString(): String = {
     Json.toJson(CreditSafePayload(
       this.sortCode.filterNot((x: Char) => x.isWhitespace),
       this.accountNumber,
       this.businessName,
-      this.postCode,
-      this.companyRegistrationNumber
+      this.postCode
     )).toString()
   }
 }

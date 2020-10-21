@@ -6,7 +6,6 @@ import uk.gov.hmrc.acceptance.utils.BasePage
 case class BusinessAccountEntryPage() extends BasePage {
 
   private lazy val companyNameField: TextField = textField(id("companyName"))
-  private lazy val companyRegistrationNumberField: TextField = textField(id("companyRegistrationNumber"))
   private lazy val sortCodeField: TextField = textField(id("sortCode"))
   private lazy val accountNumberField: TextField = textField(id("accountNumber"))
   private lazy val rollNumberField: TextField = textField(id("rollNumber"))
@@ -14,11 +13,6 @@ case class BusinessAccountEntryPage() extends BasePage {
 
   def enterCompanyName(companyName: String): BusinessAccountEntryPage = {
     companyNameField.value = companyName
-    this
-  }
-
-  def enterCompanyRegistrationNumber(registrationNumber: String): BusinessAccountEntryPage = {
-    companyRegistrationNumberField.value = registrationNumber
     this
   }
 
