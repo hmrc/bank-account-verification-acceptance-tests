@@ -3,6 +3,7 @@ package uk.gov.hmrc.acceptance.spec
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
+import org.scalatest.Ignore
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.pages.{ConfirmDetailsPage, ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.transunion.CallValidateResponseBuilder
@@ -18,6 +19,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
   val DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER = "NW/1356"
   val DEFAULT_BANK_SORT_CODE = "40 47 84"
   val DEFAULT_BANK_ACCOUNT_NUMBER = "70872490"
+  val HMRC_SORT_CODE = "08 32 10"
+  val HMRC_BANK_ACCOUNT_NUMBER ="12001039"
 
   Scenario("Personal Bank Account Verification successful building society check", Zap) {
     mockServer.when(
@@ -39,6 +42,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters all required information and clicks continue")
 
@@ -103,6 +108,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+
     When("a customer enters all required information and clicks continue")
 
     PersonalAccountEntryPage()
@@ -165,6 +172,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters all required information and clicks continue")
 
@@ -232,6 +241,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+
     When("a customer enters all required information and clicks continue")
 
     PersonalAccountEntryPage()
@@ -280,6 +291,73 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
+  }
+
+  ignore("Personal Bank Account Verification trying to use HMRC bank account") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+        .withStatusCode(200)
+    )
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(TRANSUNION_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/xml")
+        .withBody(new CallValidateResponseBuilder()
+          .withError("BV3: Unknown account")
+          .build())
+        .withStatusCode(200)
+    )
+
+    Given("I want to collect and validate a customers bank account details")
+
+    val companyName = "Cannot Match"
+    val journeyId: String = initializeJourney()
+    go to journeyStartPage(journeyId)
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+
+    When("a customer enters HMRC bank account information and clicks continue")
+
+    PersonalAccountEntryPage()
+      .enterAccountName(companyName)
+      .enterSortCode(HMRC_SORT_CODE)
+      .enterAccountNumber(HMRC_BANK_ACCOUNT_NUMBER)
+      .clickContinue()
+
+    Then("an error is displayed")
+
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+    //TODO check errors
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='personal'" +
+            s"&& @.detail.accountName=='$companyName'" +
+            s"&& @.detail.sortCode=='$HMRC_SORT_CODE'" +
+            s"&& @.detail.accountNumber=='$HMRC_BANK_ACCOUNT_NUMBER'" +
+            "&& @.detail.rollNumber==''" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
   }
 
 }

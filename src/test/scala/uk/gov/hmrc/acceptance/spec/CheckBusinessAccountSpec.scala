@@ -19,6 +19,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
   val DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER = "NW/1356"
   val DEFAULT_BANK_SORT_CODE = "40 47 84"
   val DEFAULT_BANK_ACCOUNT_NUMBER = "70872490"
+  val HMRC_SORT_CODE = "08 32 10"
+  val HMRC_BANK_ACCOUNT_NUMBER ="12001039"
 
   Scenario("Business Bank Account Verification successful building society check", Zap) {
     mockServer.when(
@@ -40,6 +42,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
+
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters all required information and clicks continue")
 
@@ -103,6 +107,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
+
     When("a company representative enters all required information and clicks continue")
 
     BusinessAccountEntryPage()
@@ -164,6 +170,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
+
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters all required information and clicks continue")
 
@@ -229,6 +237,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
+
     When("a company representative enters all required information and clicks continue")
 
     BusinessAccountEntryPage()
@@ -276,6 +286,71 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
+  }
+
+  ignore("Business Bank Account Verification trying to use HMRC bank account") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+        .withStatusCode(200)
+    )
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(CREDITSAFE_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "text/plain")
+        .withBody(s"""{"requestId":"${randomUUID().toString}","result":"none","isActive":true,"confidence":{}}""".stripMargin)
+        .withStatusCode(200)
+    )
+
+    Given("I want to collect and validate a companies bank account details")
+
+    val companyName = "Cannot Match"
+    val journeyId: String = initializeJourney()
+    go to journeyStartPage(journeyId)
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    SelectAccountTypePage().selectBusinessAccount().clickContinue()
+
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
+
+    When("a company representative enters HMRC bank account information and clicks continue")
+
+    BusinessAccountEntryPage()
+      .enterCompanyName(companyName)
+      .enterSortCode(HMRC_SORT_CODE)
+      .enterAccountNumber(HMRC_BANK_ACCOUNT_NUMBER)
+      .clickContinue()
+
+    Then("an error message is displayed to the user")
+
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
+    //TODO check errors
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='business'" +
+            s"&& @.detail.companyName=='$companyName'" +
+            s"&& @.detail.sortCode=='$HMRC_SORT_CODE'" +
+            s"&& @.detail.accountNumber=='$HMRC_BANK_ACCOUNT_NUMBER'" +
+            "&& @.detail.rollNumber==''" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
   }
 
 }
