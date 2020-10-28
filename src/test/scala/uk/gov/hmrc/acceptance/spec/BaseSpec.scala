@@ -2,6 +2,7 @@ package uk.gov.hmrc.acceptance.spec
 
 import java.nio.file.Paths
 
+import io.findify.s3mock.S3Mock
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, GivenWhenThen, Outcome}
@@ -9,18 +10,22 @@ import uk.gov.hmrc.acceptance.utils.{BrowserDriver, JourneyBuilder}
 
 trait BaseSpec extends AnyFeatureSpec
   with GivenWhenThen
-  with BrowserDriver
   with BeforeAndAfterAll
   with BeforeAndAfterEach
   with JourneyBuilder
+  with BrowserDriver
   with CommonAssertions
   with Matchers {
+
+  val s3Mock: S3Mock = new S3Mock.Builder().withPort(8001).withFileBackend(getClass.getResource("/sThreeBucket").getPath).build()
 
   override def beforeAll() {
     super.beforeAll()
     sys.addShutdownHook {
       webDriver.quit()
     }
+    initializeEISCDCache()
+    initializeModcheckCache()
   }
 
   override def afterEach: Unit = {

@@ -6,10 +6,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
+import uk.gov.hmrc.acceptance.models.{Account, Address, Business, InitJourney}
 import uk.gov.hmrc.acceptance.pages.{BusinessAccountEntryPage, ExampleFrontendDonePage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.creditsafe.CreditSafePayload
 import uk.gov.hmrc.acceptance.utils._
-import uk.gov.hmrc.acceptance.utils.types.{Account, Address, Business, InitJourney}
 
 class BusinessAddressSpec extends BaseSpec with MockServer {
 
@@ -114,7 +114,6 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
 
     mockServer.verify(HttpRequest.request().withPath(CREDITSAFE_PATH), VerificationTimes.atLeast(1))
-
     mockServer.verify(
       HttpRequest.request()
         .withPath("/write/audit")

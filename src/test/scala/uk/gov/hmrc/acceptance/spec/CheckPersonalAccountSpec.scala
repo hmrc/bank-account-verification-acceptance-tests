@@ -3,14 +3,13 @@ package uk.gov.hmrc.acceptance.spec
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
-import org.scalatest.Ignore
 import uk.gov.hmrc.acceptance.config.TestConfig
+import uk.gov.hmrc.acceptance.models.Individual
+import uk.gov.hmrc.acceptance.models.InitJourney.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.pages.{ConfirmDetailsPage, ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.transunion.CallValidateResponseBuilder
 import uk.gov.hmrc.acceptance.tags.Zap
-import uk.gov.hmrc.acceptance.utils.types.InitJourney.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.utils.MockServer
-import uk.gov.hmrc.acceptance.utils.types.Individual
 
 class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 

@@ -1,4 +1,4 @@
-package uk.gov.hmrc.acceptance.utils.types
+package uk.gov.hmrc.acceptance.models
 
 case class Individual(
                        title: Option[String] = None,

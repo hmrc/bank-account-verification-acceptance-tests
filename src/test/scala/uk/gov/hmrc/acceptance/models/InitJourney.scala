@@ -1,8 +1,8 @@
-package uk.gov.hmrc.acceptance.utils.types
+package uk.gov.hmrc.acceptance.models
 
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.acceptance.config.TestConfig
-import uk.gov.hmrc.acceptance.utils.types.InitJourney.DEFAULT_SERVICE_IDENTIFIER
+import uk.gov.hmrc.acceptance.models.InitJourney.DEFAULT_SERVICE_IDENTIFIER
 
 object InitJourney {
   val DEFAULT_SERVICE_IDENTIFIER = "bavf-acceptance-test"

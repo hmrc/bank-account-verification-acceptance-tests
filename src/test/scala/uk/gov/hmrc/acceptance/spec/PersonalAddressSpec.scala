@@ -4,10 +4,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
+import uk.gov.hmrc.acceptance.models.{Account, Address, Individual, InitJourney}
 import uk.gov.hmrc.acceptance.pages.{ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.transunion.{CallValidateResponseBuilder, IdentityCheckBuilder}
 import uk.gov.hmrc.acceptance.utils._
-import uk.gov.hmrc.acceptance.utils.types.{Account, Address, Individual, InitJourney}
 
 class PersonalAddressSpec extends BaseSpec with MockServer {
 

@@ -6,9 +6,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
+import uk.gov.hmrc.acceptance.models.InitJourney.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.pages._
 import uk.gov.hmrc.acceptance.tags.Zap
-import uk.gov.hmrc.acceptance.utils.types.InitJourney.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.utils.MockServer
 
 class CheckBusinessAccountSpec extends BaseSpec with MockServer {
@@ -20,7 +20,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
   val DEFAULT_BANK_SORT_CODE = "40 47 84"
   val DEFAULT_BANK_ACCOUNT_NUMBER = "70872490"
   val HMRC_SORT_CODE = "08 32 10"
-  val HMRC_BANK_ACCOUNT_NUMBER ="12001039"
+  val HMRC_BANK_ACCOUNT_NUMBER = "12001039"
 
   Scenario("Business Bank Account Verification successful building society check", Zap) {
     mockServer.when(

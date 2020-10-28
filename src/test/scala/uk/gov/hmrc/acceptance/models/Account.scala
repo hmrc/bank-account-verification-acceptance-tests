@@ -1,4 +1,4 @@
-package uk.gov.hmrc.acceptance.utils.types
+package uk.gov.hmrc.acceptance.models
 
 import play.api.libs.json.{Json, OFormat}
 

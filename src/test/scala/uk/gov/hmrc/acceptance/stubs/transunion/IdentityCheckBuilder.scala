@@ -1,6 +1,6 @@
 package uk.gov.hmrc.acceptance.stubs.transunion
 
-import uk.gov.hmrc.acceptance.utils.types.Address
+import uk.gov.hmrc.acceptance.models.Address
 
 class IdentityCheckBuilder {
 
