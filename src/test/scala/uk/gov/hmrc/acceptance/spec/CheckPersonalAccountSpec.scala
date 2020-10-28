@@ -9,7 +9,8 @@ import uk.gov.hmrc.acceptance.pages.{ConfirmDetailsPage, ExampleFrontendDonePage
 import uk.gov.hmrc.acceptance.stubs.transunion.CallValidateResponseBuilder
 import uk.gov.hmrc.acceptance.tags.Zap
 import uk.gov.hmrc.acceptance.utils.types.InitJourney.DEFAULT_SERVICE_IDENTIFIER
-import uk.gov.hmrc.acceptance.utils.{BaseSpec, Individual, MockServer}
+import uk.gov.hmrc.acceptance.utils.MockServer
+import uk.gov.hmrc.acceptance.utils.types.Individual
 
 class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 

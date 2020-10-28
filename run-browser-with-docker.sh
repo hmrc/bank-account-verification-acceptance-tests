@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 DEFAULT_BROWSER=remote-chrome
+ZAP_VERSION="2.9.0"
+ZAP_CONTAINER="artefacts.tax.service.gov.uk/build-zap:${ZAP_VERSION}-latest"
 BROWSER_TYPE=${1:-$DEFAULT_BROWSER}
 
 #######################################
@@ -58,4 +60,6 @@ docker pull ${CONTAINER} &&
     -p 4444:4444 -p 5900:5900 \
     -e PORT_MAPPINGS="$port_mappings" \
     -e TARGET_IP='host.docker.internal' \
-    ${CONTAINER}
+    ${CONTAINER} &&
+  docker run -d --rm --name "zap-${ZAP_VERSION}" \
+  -p 11000:11000 ${ZAP_CONTAINER}

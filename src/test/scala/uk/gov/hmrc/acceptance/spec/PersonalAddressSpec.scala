@@ -7,7 +7,7 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.pages.{ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.transunion.{CallValidateResponseBuilder, IdentityCheckBuilder}
 import uk.gov.hmrc.acceptance.utils._
-import uk.gov.hmrc.acceptance.utils.types.{Account, Address, InitJourney}
+import uk.gov.hmrc.acceptance.utils.types.{Account, Address, Individual, InitJourney}
 
 class PersonalAddressSpec extends BaseSpec with MockServer {
 

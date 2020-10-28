@@ -9,7 +9,7 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.pages._
 import uk.gov.hmrc.acceptance.tags.Zap
 import uk.gov.hmrc.acceptance.utils.types.InitJourney.DEFAULT_SERVICE_IDENTIFIER
-import uk.gov.hmrc.acceptance.utils.{BaseSpec, MockServer}
+import uk.gov.hmrc.acceptance.utils.MockServer
 
 class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 

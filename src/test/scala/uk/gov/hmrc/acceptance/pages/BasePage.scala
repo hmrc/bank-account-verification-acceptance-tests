@@ -1,9 +1,11 @@
-package uk.gov.hmrc.acceptance.utils
+package uk.gov.hmrc.acceptance.pages
 
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated
 import org.openqa.selenium.{By, WebElement}
+import uk.gov.hmrc.acceptance.utils.BrowserDriver
 
-trait BasePage extends BaseSpec {
+trait BasePage extends BrowserDriver {
 
   private lazy val backLink: CssSelectorQuery = cssSelector(".govuk-back-link")
   private lazy val pageHeading: Option[Element] = find(id("pageHeading"))
@@ -24,5 +26,10 @@ trait BasePage extends BaseSpec {
 
   def clickBackLink(): Unit = {
     click on backLink
+  }
+
+  def errorMessageSummaryCount(): Int = {
+    webDriverWillWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".govuk-error-summary__list")))
+    cssSelector(".govuk-error-summary__list > li").findAllElements.length
   }
 }

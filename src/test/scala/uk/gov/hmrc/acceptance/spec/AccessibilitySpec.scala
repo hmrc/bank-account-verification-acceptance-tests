@@ -3,7 +3,6 @@ package uk.gov.hmrc.acceptance.spec
 import org.assertj.core.api.Assertions.assertThat
 import uk.gov.hmrc.acceptance.pages._
 import uk.gov.hmrc.acceptance.tags.Accessibility
-import uk.gov.hmrc.acceptance.utils.BaseSpec
 
 class AccessibilitySpec extends BaseSpec {
 

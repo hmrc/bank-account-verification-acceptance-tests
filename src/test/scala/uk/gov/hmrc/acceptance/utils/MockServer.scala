@@ -5,10 +5,16 @@ import java.util.UUID
 import org.mockserver.integration.ClientAndServer
 import org.mockserver.model.{HttpRequest, HttpResponse}
 import org.scalatest.concurrent.Eventually
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import uk.gov.hmrc.acceptance.config.TestConfig
 
 
-trait MockServer extends BaseSpec with Eventually {
+trait MockServer extends AnyFeatureSpec
+  with Eventually
+  with BeforeAndAfterAll
+  with BeforeAndAfterEach {
+
   private val mockServerPort = TestConfig.mockServerPort()
   lazy val mockServer: ClientAndServer = ClientAndServer.startClientAndServer(mockServerPort)
 

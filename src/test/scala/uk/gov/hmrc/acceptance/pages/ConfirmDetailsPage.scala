@@ -1,7 +1,6 @@
 package uk.gov.hmrc.acceptance.pages
 
 import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
-import uk.gov.hmrc.acceptance.utils.BasePage
 
 case class ConfirmDetailsPage() extends BasePage {
 
