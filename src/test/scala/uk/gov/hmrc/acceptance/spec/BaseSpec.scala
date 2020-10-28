@@ -2,33 +2,22 @@ package uk.gov.hmrc.acceptance.spec
 
 import java.nio.file.Paths
 
-import io.findify.s3mock.S3Mock
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, GivenWhenThen, Outcome}
-import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.utils.{BrowserDriver, JourneyBuilder}
 
 trait BaseSpec extends AnyFeatureSpec
   with GivenWhenThen
   with BrowserDriver
-  with CommonAssertions
   with BeforeAndAfterAll
   with BeforeAndAfterEach
   with JourneyBuilder
+  with CommonAssertions
   with Matchers {
-
-  val SUREPAY_PATH = "/surepay/v1/gateway"
-  val TRANSUNION_PATH = "/callvalidateapi"
-  val CREDITSAFE_PATH = "/Match"
-
-  private val s3Mock = S3Mock(port = TestConfig.s3MockPort(), dir = getClass.getResource("/sThreeBucket").getPath)
 
   override def beforeAll() {
     super.beforeAll()
-    s3Mock.start
-    initializeEISCDCache()
-    initializeModcheckCache()
     sys.addShutdownHook {
       webDriver.quit()
     }
@@ -40,7 +29,6 @@ trait BaseSpec extends AnyFeatureSpec
 
   override def afterAll() {
     webDriver.quit()
-    s3Mock.shutdown
   }
 
   override def withFixture(test: NoArgTest): Outcome = {

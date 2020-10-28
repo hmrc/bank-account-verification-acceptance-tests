@@ -9,11 +9,14 @@ import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import uk.gov.hmrc.acceptance.config.TestConfig
 
-
 trait MockServer extends AnyFeatureSpec
   with Eventually
   with BeforeAndAfterAll
   with BeforeAndAfterEach {
+
+  val SUREPAY_PATH = "/surepay/v1/gateway"
+  val TRANSUNION_PATH = "/callvalidateapi"
+  val CREDITSAFE_PATH = "/Match"
 
   private val mockServerPort = TestConfig.mockServerPort()
   lazy val mockServer: ClientAndServer = ClientAndServer.startClientAndServer(mockServerPort)
