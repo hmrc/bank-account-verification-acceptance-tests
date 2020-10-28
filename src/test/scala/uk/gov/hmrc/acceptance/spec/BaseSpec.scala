@@ -21,7 +21,9 @@ trait BaseSpec extends AnyFeatureSpec
 
   override def beforeAll() {
     super.beforeAll()
+    s3Mock.start
     sys.addShutdownHook {
+      s3Mock.shutdown
       webDriver.quit()
     }
     initializeEISCDCache()
@@ -33,6 +35,7 @@ trait BaseSpec extends AnyFeatureSpec
   }
 
   override def afterAll() {
+    s3Mock.shutdown
     webDriver.quit()
   }
 
