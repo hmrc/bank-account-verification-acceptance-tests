@@ -288,7 +288,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
   }
 
-  ignore("Business Bank Account Verification trying to use HMRC bank account") {
+  Scenario("Business Bank Account Verification trying to use HMRC bank account") {
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
@@ -332,8 +332,9 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Then("an error message is displayed to the user")
 
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
-    //TODO check errors
+    assertThat(BusinessAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    assertThatErrorSummaryLinkExists("sortCode")
+    assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
       HttpRequest.request()

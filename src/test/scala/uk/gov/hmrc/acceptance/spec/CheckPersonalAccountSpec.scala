@@ -293,7 +293,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
   }
 
-  ignore("Personal Bank Account Verification trying to use HMRC bank account") {
+  Scenario("Personal Bank Account Verification trying to use HMRC bank account") {
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
@@ -339,8 +339,9 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Then("an error is displayed")
 
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
-    //TODO check errors
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    assertThatErrorSummaryLinkExists("sortCode")
+    assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
       HttpRequest.request()
