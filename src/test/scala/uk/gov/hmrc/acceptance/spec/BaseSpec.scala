@@ -26,7 +26,7 @@ trait BaseSpec extends AnyFeatureSpec
       webDriver.quit()
     }
     initializeEISCDCache()
-    initializeModcheckCache()
+    initializeModCheckCache()
   }
 
   override def afterEach: Unit = {
@@ -34,8 +34,8 @@ trait BaseSpec extends AnyFeatureSpec
   }
 
   override def afterAll() {
-    s3Mock.shutdown
     webDriver.quit()
+    s3Mock.stop
   }
 
   override def withFixture(test: NoArgTest): Outcome = {

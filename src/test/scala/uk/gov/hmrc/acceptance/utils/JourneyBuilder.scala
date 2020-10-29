@@ -46,7 +46,7 @@ trait JourneyBuilder {
     }
   }
 
-  def initializeModcheckCache(): Unit = {
+  def initializeModCheckCache(): Unit = {
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-reputation")}${BarsEndpoints.REFRESH_MODCHECK_CACHE}")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), ""))
