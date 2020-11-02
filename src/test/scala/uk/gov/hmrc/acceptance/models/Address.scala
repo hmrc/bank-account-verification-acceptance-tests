@@ -6,7 +6,9 @@ object Address {
   implicit val addressJsonFormat: OFormat[Address] = Json.format[Address]
 }
 
-case class Address(lines: List[String], town: Option[String] = None, postcode: Option[String] = None) {
+case class Address(lines: List[String],
+                   town: Option[String] = None,
+                   postcode: Option[String] = None) {
 
   def lineOne(): String = {
     lines.head

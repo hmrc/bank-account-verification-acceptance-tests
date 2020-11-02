@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
-import uk.gov.hmrc.acceptance.models.{Account, Address, Individual, InitJourney}
+import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.pages.{ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.transunion.{CallValidateResponseBuilder, IdentityCheckBuilder}
 import uk.gov.hmrc.acceptance.utils._
@@ -49,7 +49,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyId: String = initializeJourney(InitJourney(address = Some(DEFAULT_ADDRESS)).asJsonString())
+    val initResponse: InitResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -63,7 +63,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    go to journeyStartPage(journeyId)
+    go to journeyStartPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
     mockServer.verify(
@@ -72,7 +72,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            s" && @.detail.input=='Request to /bank-account-verification/start/$journeyId'" +
+            s" && @.detail.input=='Request to ${initResponse.startUrl}'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -86,7 +86,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/$journeyId'" +
+            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${initResponse.journeyId}'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -102,7 +102,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Then("the user is redirected to the continue URL")
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/$journeyId")
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
     assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.sortCode)
@@ -125,7 +125,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to /api/complete/$journeyId'" +
+            s"&& @.detail.input=='Request to ${initResponse.completeUrl}'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)

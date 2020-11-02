@@ -6,7 +6,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
-import uk.gov.hmrc.acceptance.models.InitJourney.DEFAULT_SERVICE_IDENTIFIER
+import uk.gov.hmrc.acceptance.models.InitRequest.DEFAULT_SERVICE_IDENTIFIER
+import uk.gov.hmrc.acceptance.models.InitResponse
 import uk.gov.hmrc.acceptance.pages._
 import uk.gov.hmrc.acceptance.tags.Zap
 import uk.gov.hmrc.acceptance.utils.MockServer
@@ -36,8 +37,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
-    val journeyId: String = initializeJourney()
-    go to journeyStartPage(journeyId)
+    val initResponse: InitResponse = initializeJourney()
+    go to journeyStartPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -73,7 +74,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/$journeyId")
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
     assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(DEFAULT_COMPANY_NAME)
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BUILDING_SOCIETY_SORT_CODE)
@@ -100,8 +101,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
-    val journeyId: String = initializeJourney()
-    go to journeyStartPage(journeyId)
+    val initResponse: InitResponse = initializeJourney()
+    go to journeyStartPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -136,7 +137,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/$journeyId")
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
     assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(DEFAULT_COMPANY_NAME)
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_SORT_CODE)
@@ -164,8 +165,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a companies bank account details")
 
     val companyName = "Account Closed"
-    val journeyId: String = initializeJourney()
-    go to journeyStartPage(journeyId)
+    val initResponse: InitResponse = initializeJourney()
+    go to journeyStartPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -230,8 +231,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a companies bank account details")
 
     val companyName = "Cannot Match"
-    val journeyId: String = initializeJourney()
-    go to journeyStartPage(journeyId)
+    val initResponse: InitResponse = initializeJourney()
+    go to journeyStartPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -275,7 +276,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/$journeyId")
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
     assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo("Cannot Match")
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_SORT_CODE)
@@ -313,8 +314,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a companies bank account details")
 
     val companyName = "Cannot Match"
-    val journeyId: String = initializeJourney()
-    go to journeyStartPage(journeyId)
+    val initResponse: InitResponse = initializeJourney()
+    go to journeyStartPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 

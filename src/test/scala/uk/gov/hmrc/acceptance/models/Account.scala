@@ -6,7 +6,8 @@ object Account {
   implicit val jsonFormat: OFormat[Account] = Json.format[Account]
 }
 
-case class Account(sortCode: String, accountNumber: String) {
+case class Account(sortCode: String,
+                   accountNumber: String) {
   def asJsonString(): String = {
     Json.toJson(this).toString()
   }
