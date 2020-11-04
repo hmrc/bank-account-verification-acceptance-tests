@@ -38,7 +38,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a companies bank account details")
 
     val initResponse: InitResponse = initializeJourney()
-    go to journeyStartPage(initResponse.startUrl)
+    go to journeyPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -102,7 +102,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a companies bank account details")
 
     val initResponse: InitResponse = initializeJourney()
-    go to journeyStartPage(initResponse.startUrl)
+    go to journeyPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -166,7 +166,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     val companyName = "Account Closed"
     val initResponse: InitResponse = initializeJourney()
-    go to journeyStartPage(initResponse.startUrl)
+    go to journeyPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -232,7 +232,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     val companyName = "Cannot Match"
     val initResponse: InitResponse = initializeJourney()
-    go to journeyStartPage(initResponse.startUrl)
+    go to journeyPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -315,7 +315,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     val companyName = "Cannot Match"
     val initResponse: InitResponse = initializeJourney()
-    go to journeyStartPage(initResponse.startUrl)
+    go to journeyPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 

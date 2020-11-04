@@ -1,9 +1,8 @@
-package uk.gov.hmrc.acceptance.spec
+package uk.gov.hmrc.acceptance.utils
 
 import org.assertj.core.api.Assertions.assertThat
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.{By, WebElement}
-import uk.gov.hmrc.acceptance.utils.BrowserDriver
 
 trait CommonAssertions extends BrowserDriver {
 

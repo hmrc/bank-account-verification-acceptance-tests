@@ -7,7 +7,8 @@ object Account {
 }
 
 case class Account(sortCode: String,
-                   accountNumber: String) {
+                   accountNumber: String,
+                   bankName: Option[String] = None) {
   def asJsonString(): String = {
     Json.toJson(this).toString()
   }

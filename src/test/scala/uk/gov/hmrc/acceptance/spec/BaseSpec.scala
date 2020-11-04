@@ -6,7 +6,7 @@ import io.findify.s3mock.S3Mock
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, GivenWhenThen, Outcome}
-import uk.gov.hmrc.acceptance.utils.{BrowserDriver, JourneyBuilder}
+import uk.gov.hmrc.acceptance.utils.{BrowserDriver, CommonAssertions, JourneyBuilder}
 
 trait BaseSpec extends AnyFeatureSpec
   with GivenWhenThen

@@ -4,8 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
-import uk.gov.hmrc.acceptance.models.{Individual, InitResponse}
 import uk.gov.hmrc.acceptance.models.InitRequest.DEFAULT_SERVICE_IDENTIFIER
+import uk.gov.hmrc.acceptance.models.{Individual, InitResponse}
 import uk.gov.hmrc.acceptance.pages.{ConfirmDetailsPage, ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.transunion.CallValidateResponseBuilder
 import uk.gov.hmrc.acceptance.tags.Zap
@@ -20,7 +20,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
   val DEFAULT_BANK_SORT_CODE = "40 47 84"
   val DEFAULT_BANK_ACCOUNT_NUMBER = "70872490"
   val HMRC_SORT_CODE = "08 32 10"
-  val HMRC_BANK_ACCOUNT_NUMBER ="12001039"
+  val HMRC_BANK_ACCOUNT_NUMBER = "12001039"
 
   Scenario("Personal Bank Account Verification successful building society check", Zap) {
     mockServer.when(
@@ -37,7 +37,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a customers bank account details")
 
     val initResponse: InitResponse = initializeJourney()
-    go to journeyStartPage(initResponse.startUrl)
+    go to journeyPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -102,7 +102,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a customers bank account details")
 
     val initResponse: InitResponse = initializeJourney()
-    go to journeyStartPage(initResponse.startUrl)
+    go to journeyPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -167,7 +167,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     val companyName = "Account Closed"
     val initResponse: InitResponse = initializeJourney()
-    go to journeyStartPage(initResponse.startUrl)
+    go to journeyPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -235,7 +235,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     val companyName = "Cannot Match"
     val initResponse: InitResponse = initializeJourney()
-    go to journeyStartPage(initResponse.startUrl)
+    go to journeyPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -321,7 +321,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     val companyName = "Cannot Match"
     val initResponse: InitResponse = initializeJourney()
-    go to journeyStartPage(initResponse.startUrl)
+    go to journeyPage(initResponse.startUrl)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -361,4 +361,55 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     )
   }
 
+  Scenario("Reproduce bank name defect") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": true}""".stripMargin)
+        .withStatusCode(200)
+    )
+
+    Given("I want to collect and validate a customers bank account details")
+
+    val initResponse: InitResponse = initializeJourney()
+    go to journeyPage(initResponse.startUrl)
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+
+    When("a customer enters all required information and clicks continue")
+
+    PersonalAccountEntryPage()
+      .enterAccountName(DEFAULT_NAME.asString())
+      .enterSortCode(DEFAULT_BANK_SORT_CODE)
+      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
+      .clickContinue()
+
+    Then("the customer is redirected to continue URL")
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='personal'" +
+            s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
+            s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
+            s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
+            "&& @.detail.rollNumber==''" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
+  }
 }

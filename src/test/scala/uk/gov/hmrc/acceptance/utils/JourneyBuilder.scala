@@ -32,7 +32,7 @@ trait JourneyBuilder {
     }
   }
 
-  def journeyStartPage(startPath: String): String = {
+  def journeyPage(startPath: String): String = {
     s"${TestConfig.getHost("bank-account-verification")}$startPath"
   }
 
