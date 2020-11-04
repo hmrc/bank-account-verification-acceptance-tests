@@ -4,72 +4,76 @@ import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
 
 case class ExampleFrontendDonePage() extends BasePage {
 
-  private def getDataForSummaryListEntryCalled(entry: String): Option[Element] = {
-    xpath(s"//dt[normalize-space()='$entry']/following-sibling::dd").findElement
+  private def buildLocatorForSummaryListEntryCalled(entry: String): XPathQuery = {
+    xpath(s"//dt[normalize-space()='$entry']/following-sibling::dd")
   }
 
   def getAccountType: String = {
-    getDataForSummaryListEntryCalled("Account type").get.text
+    buildLocatorForSummaryListEntryCalled("Account type").findElement.get.text
   }
 
   def getAccountName: String = {
-    getDataForSummaryListEntryCalled("Name on the account").get.text
+    buildLocatorForSummaryListEntryCalled("Name on the account").findElement.get.text
   }
 
   def getSortCode: String = {
-    getDataForSummaryListEntryCalled("Sort code").get.text
+    buildLocatorForSummaryListEntryCalled("Sort code").findElement.get.text
   }
 
   def getAccountNumber: String = {
-    getDataForSummaryListEntryCalled("Account number").get.text
+    buildLocatorForSummaryListEntryCalled("Account number").findElement.get.text
   }
 
   def getAddress: String = {
-    getDataForSummaryListEntryCalled("Address").get.text
+    buildLocatorForSummaryListEntryCalled("Address").findElement.get.text
   }
 
   def getRollNumber: String = {
-    getDataForSummaryListEntryCalled("Roll number").get.text
+    buildLocatorForSummaryListEntryCalled("Roll number").findElement.get.text
   }
 
   def getValidationResult: String = {
-    getDataForSummaryListEntryCalled("Validation result").get.text
+    buildLocatorForSummaryListEntryCalled("Validation result").findElement.get.text
   }
 
   def getAccountExists: String = {
-    getDataForSummaryListEntryCalled("Account exists").get.text
+    buildLocatorForSummaryListEntryCalled("Account exists").findElement.get.text
   }
 
   def getAccountNameMatched: String = {
-    getDataForSummaryListEntryCalled("Account name matched").get.text
+    buildLocatorForSummaryListEntryCalled("Account name matched").findElement.get.text
   }
 
   def getAccountAddressMatched: String = {
-    getDataForSummaryListEntryCalled("Account address matched").get.text
+    buildLocatorForSummaryListEntryCalled("Account address matched").findElement.get.text
   }
 
   def getAccountNonConsented: String = {
-    getDataForSummaryListEntryCalled("Account non-consented").get.text
+    buildLocatorForSummaryListEntryCalled("Account non-consented").findElement.get.text
   }
 
   def getAccountOwnerDeceased: String = {
-    getDataForSummaryListEntryCalled("Account owner deceased").get.text
+    buildLocatorForSummaryListEntryCalled("Account owner deceased").findElement.get.text
   }
 
   def getCompanyName: String = {
-    getDataForSummaryListEntryCalled("Company name").get.text
+    buildLocatorForSummaryListEntryCalled("Company name").findElement.get.text
   }
 
   def getCompanyNameMatches: String = {
-    getDataForSummaryListEntryCalled("Company name matches").get.text
+    buildLocatorForSummaryListEntryCalled("Company name matches").findElement.get.text
   }
 
   def getCompanyPostcodeMatches: String = {
-    getDataForSummaryListEntryCalled("Company postcode matches").get.text
+    buildLocatorForSummaryListEntryCalled("Company postcode matches").findElement.get.text
   }
 
   def getBankName: String = {
-    getDataForSummaryListEntryCalled("Bank name").get.text
+    buildLocatorForSummaryListEntryCalled("Bank name").findElement.get.text
+  }
+
+  def checkEntryDoesNotExistFor(entryName: String): Boolean = {
+    buildLocatorForSummaryListEntryCalled(entryName).findAllElements.isEmpty
   }
 
   override def isOnPage: Boolean = {
