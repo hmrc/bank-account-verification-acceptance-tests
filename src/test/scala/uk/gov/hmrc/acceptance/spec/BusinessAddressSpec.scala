@@ -1,5 +1,6 @@
 package uk.gov.hmrc.acceptance.spec
 
+import java.util.UUID
 import java.util.UUID.randomUUID
 
 import org.assertj.core.api.Assertions.assertThat
@@ -13,9 +14,10 @@ import uk.gov.hmrc.acceptance.utils._
 
 class BusinessAddressSpec extends BaseSpec with MockServer {
 
-  val DEFAULT_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", Some("Lloyds"))
+  val DEFAULT_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
   val DEFAULT_BUSINESS_ADDRESS: Option[Address] = Some(Address(List("22303 Darwin Turnpike"), postcode = Some("CZ0 8IW")))
-  val DEFAULT_BUSINESS: Business = Business("P@cking & $orting Creditsafe", DEFAULT_BUSINESS_ADDRESS)
+  val BUSINESS_NAME: String = UUID.randomUUID().toString
+  val DEFAULT_BUSINESS: Business = Business(BUSINESS_NAME, DEFAULT_BUSINESS_ADDRESS)
 
   Scenario("Business Bank Account Verification with address is successful") {
     mockServer.when(

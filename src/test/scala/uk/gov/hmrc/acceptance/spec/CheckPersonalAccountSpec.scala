@@ -5,7 +5,7 @@ import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.InitRequest.DEFAULT_SERVICE_IDENTIFIER
-import uk.gov.hmrc.acceptance.models.{Individual, InitResponse}
+import uk.gov.hmrc.acceptance.models.{Account, Individual, InitResponse}
 import uk.gov.hmrc.acceptance.pages.{ConfirmDetailsPage, ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.transunion.CallValidateResponseBuilder
 import uk.gov.hmrc.acceptance.tags.Zap
@@ -14,13 +14,9 @@ import uk.gov.hmrc.acceptance.utils.MockServer
 class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
   val DEFAULT_NAME: Individual = Individual(title = Some("Mr"), firstName = Some("Paddy"), lastName = Some("O'Conner-Smith"))
-  val DEFAULT_BUILDING_SOCIETY_SORT_CODE = "07-00-93"
-  val DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER = "33333334"
-  val DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER = "NW/1356"
-  val DEFAULT_BANK_SORT_CODE = "40 47 84"
-  val DEFAULT_BANK_ACCOUNT_NUMBER = "70872490"
-  val HMRC_SORT_CODE = "08 32 10"
-  val HMRC_BANK_ACCOUNT_NUMBER = "12001039"
+  val DEFAULT_BUILDING_SOCIETY_DETAILS: Account = Account("07-00-93", "33333334", Some("NW/1356"), Some("Lloyds"))
+  val DEFAULT_BANK_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
+  val HMRC_ACCOUNT_DETAILS: Account = Account("08 32 10", "12001039")
 
   Scenario("Personal Bank Account Verification successful building society check", Zap) {
     mockServer.when(
@@ -49,9 +45,9 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
-      .enterSortCode(DEFAULT_BUILDING_SOCIETY_SORT_CODE)
-      .enterAccountNumber(DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER)
-      .enterRollNumber(DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER)
+      .enterSortCode(DEFAULT_BUILDING_SOCIETY_DETAILS.sortCode)
+      .enterAccountNumber(DEFAULT_BUILDING_SOCIETY_DETAILS.accountNumber)
+      .enterRollNumber(DEFAULT_BUILDING_SOCIETY_DETAILS.rollNumber.get)
       .clickContinue()
 
     Then("the customer is redirected to continue URL")
@@ -64,9 +60,9 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='personal'" +
             s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
-            s"&& @.detail.sortCode=='$DEFAULT_BUILDING_SOCIETY_SORT_CODE'" +
-            s"&& @.detail.accountNumber=='$DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER'" +
-            s"&& @.detail.rollNumber=='$DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER'" +
+            s"&& @.detail.sortCode=='${DEFAULT_BUILDING_SOCIETY_DETAILS.sortCode}'" +
+            s"&& @.detail.accountNumber=='${DEFAULT_BUILDING_SOCIETY_DETAILS.accountNumber}'" +
+            s"&& @.detail.rollNumber=='${DEFAULT_BUILDING_SOCIETY_DETAILS.rollNumber.get}'" +
             s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
             ")]")
         ),
@@ -76,9 +72,9 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
     assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BUILDING_SOCIETY_SORT_CODE)
-    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_ACCOUNT_NUMBER)
-    assertThat(ExampleFrontendDonePage().getRollNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_ROLL_NUMBER)
+    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.sortCode)
+    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.accountNumber)
+    assertThat(ExampleFrontendDonePage().getRollNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.rollNumber.get)
     assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountNameMatched).isEqualTo("yes")
@@ -114,8 +110,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
-      .enterSortCode(DEFAULT_BANK_SORT_CODE)
-      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
+      .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
+      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
 
     Then("the customer is redirected to continue URL")
@@ -128,8 +124,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='personal'" +
             s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
-            s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
-            s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
+            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
             "&& @.detail.rollNumber==''" +
             s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
             ")]")
@@ -140,8 +136,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
     assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_SORT_CODE)
-    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_NUMBER)
+    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
+    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
     assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
@@ -179,8 +175,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     PersonalAccountEntryPage()
       .enterAccountName(companyName)
-      .enterSortCode(DEFAULT_BANK_SORT_CODE)
-      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
+      .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
+      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
 
     Then("an error message is displayed to the customer telling them that the account is invalid")
@@ -193,8 +189,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='personal'" +
             s"&& @.detail.accountName=='$companyName'" +
-            s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
-            s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
+            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
             "&& @.detail.rollNumber==''" +
             s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
             ")]")
@@ -247,8 +243,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     PersonalAccountEntryPage()
       .enterAccountName(companyName)
-      .enterSortCode(DEFAULT_BANK_SORT_CODE)
-      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
+      .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
+      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
 
     Then("the customer is redirected to the confirm account screen")
@@ -261,8 +257,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='personal'" +
             s"&& @.detail.accountName=='$companyName'" +
-            s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
-            s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
+            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
             "&& @.detail.rollNumber==''" +
             s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
             ")]")
@@ -271,9 +267,10 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     )
 
     assertThat(ConfirmDetailsPage().isOnPage).isTrue
+    assertThat(ConfirmDetailsPage().getAccountType).isEqualTo("Personal bank account")
     assertThat(ConfirmDetailsPage().getAccountName).isEqualTo("Cannot Match")
-    assertThat(ConfirmDetailsPage().getSortCode).isEqualTo(DEFAULT_BANK_SORT_CODE)
-    assertThat(ConfirmDetailsPage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_NUMBER)
+    assertThat(ConfirmDetailsPage().getSortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
+    assertThat(ConfirmDetailsPage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
 
     ConfirmDetailsPage().clickContinue()
 
@@ -282,8 +279,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
     assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo("Cannot Match")
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_SORT_CODE)
-    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_NUMBER)
+    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
+    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
     assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("indeterminate")
@@ -333,8 +330,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     PersonalAccountEntryPage()
       .enterAccountName(companyName)
-      .enterSortCode(HMRC_SORT_CODE)
-      .enterAccountNumber(HMRC_BANK_ACCOUNT_NUMBER)
+      .enterSortCode(HMRC_ACCOUNT_DETAILS.sortCode)
+      .enterAccountNumber(HMRC_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
 
     Then("an error is displayed")
@@ -351,8 +348,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='personal'" +
             s"&& @.detail.accountName=='$companyName'" +
-            s"&& @.detail.sortCode=='$HMRC_SORT_CODE'" +
-            s"&& @.detail.accountNumber=='$HMRC_BANK_ACCOUNT_NUMBER'" +
+            s"&& @.detail.sortCode=='${HMRC_ACCOUNT_DETAILS.sortCode}'" +
+            s"&& @.detail.accountNumber=='${HMRC_ACCOUNT_DETAILS.accountNumber}'" +
             "&& @.detail.rollNumber==''" +
             s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
             ")]")
@@ -388,8 +385,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
-      .enterSortCode(DEFAULT_BANK_SORT_CODE)
-      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_NUMBER)
+      .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
+      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
 
     Then("the customer is redirected to continue URL")
@@ -402,8 +399,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='personal'" +
             s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
-            s"&& @.detail.sortCode=='$DEFAULT_BANK_SORT_CODE'" +
-            s"&& @.detail.accountNumber=='$DEFAULT_BANK_ACCOUNT_NUMBER'" +
+            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
             "&& @.detail.rollNumber==''" +
             s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
             ")]")

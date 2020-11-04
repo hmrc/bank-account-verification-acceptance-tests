@@ -23,7 +23,7 @@ case class ConfirmDetailsPage() extends BasePage {
   }
 
   def getCompanyName: String = {
-    getConfirmationDataForEntryCalled("Company name").get.text
+    getConfirmationDataForEntryCalled("Name on the account").get.text
   }
 
   def changeCompanyName(): Unit = {
@@ -36,6 +36,10 @@ case class ConfirmDetailsPage() extends BasePage {
 
   def changeCompanyRegistrationNumber(): Unit = {
     click on getChangeLinkDataForEntryCalled("Company registration number")
+  }
+
+  def getAccountType: String = {
+    getConfirmationDataForEntryCalled("Account type").get.text
   }
 
   def getSortCode: String = {

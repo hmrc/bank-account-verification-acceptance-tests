@@ -1,5 +1,7 @@
 package uk.gov.hmrc.acceptance.spec
 
+import java.util.UUID
+
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
@@ -11,9 +13,10 @@ import uk.gov.hmrc.acceptance.utils._
 
 class PersonalAddressSpec extends BaseSpec with MockServer {
 
-  val DEFAULT_NAME: Individual = Individual(title = Some("Mr"), firstName = Some("Patrick"), lastName = Some("O'Conner-Smith"))
-  val DEFAULT_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", Some("Lloyds"))
-  val ALTERNATE_ACCOUNT_DETAILS: Account = Account("207102", "80044660", Some("BARCLAYS BANK PLC"))
+  val FIRST_NAME: String = UUID.randomUUID().toString
+  val DEFAULT_NAME: Individual = Individual(title = Some("Mr"), firstName = Some(FIRST_NAME), lastName = Some("O'Conner-Smith"))
+  val DEFAULT_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
+  val ALTERNATE_ACCOUNT_DETAILS: Account = Account("207102", "80044660", bankName = Some("BARCLAYS BANK PLC"))
   val DEFAULT_ADDRESS: Address = Address(List("2664 Little Darwin"), postcode = Some("CZ0 9AV"))
 
   Scenario("Personal Bank Account Verification with address is successful") {
@@ -119,7 +122,6 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
 
     mockServer.verify(HttpRequest.request().withPath(TRANSUNION_PATH), VerificationTimes.atLeast(1))
-
     mockServer.verify(
       HttpRequest.request()
         .withPath("/write/audit")
