@@ -900,6 +900,106 @@
                     <NCBCountryCode/>
                 </BankOffices>
             </Bank>
+            <Bank BankCode="0002">
+                <SupervisoryBody>A</SupervisoryBody>
+                <AbbreviatedBankName>BARCLAYS BANK PLC</AbbreviatedBankName>
+                <BankName>BARCLAYS BANK PLC</BankName>
+                <BankOffices SortCode="207102" BicBank="" BicBranch="" Suffix="00">
+                    <BankOfficeTitle>SOUTHERN INTL OPS PAYMENTS</BankOfficeTitle>
+                    <BankOfficeType>M</BankOfficeType>
+                    <DateLastChanged>2018-02-28</DateLastChanged>
+                    <PrintIndicator>0</PrintIndicator>
+                    <Address>
+                        <AddresseeName>P.O. Box 44</AddresseeName>
+                        <PostalName>Napier Court</PostalName>
+                        <AddressLine1>Napier Rd</AddressLine1>
+                        <AddressLine2>Kings Meadow</AddressLine2>
+                        <CityOrTown>Reading</CityOrTown>
+                        <AreaOrCounty/>
+                        <Country>UNITED KINGDOM</Country>
+                        <PostCodeOutcode>RG1</PostCodeOutcode>
+                        <PostCodeIncode>8BW</PostCodeIncode>
+                        <ZipCode/>
+                    </Address>
+                    <CHAPSEuroClosed>
+                        <Status>N</Status>
+                        <DateLastChanged/>
+                        <DateClosed>2008-09-23</DateClosed>
+                        <RoutingBICBank/>
+                        <RoutingBICBranch/>
+                        <CHAPSEuroID/>
+                        <ReturnIndicator/>
+                        <RTGSIndicatorTargetStatus/>
+                    </CHAPSEuroClosed>
+                    <CHAPSSterling>
+                        <Status>I</Status>
+                        <ReturnIndicator/>
+                        <DateLastChanged>2001-07-09</DateLastChanged>
+                        <DateClosed/>
+                        <CHAPSSterlingID>003</CHAPSSterlingID>
+                        <RoutingBICBank>BARCGB22</RoutingBICBank>
+                        <RoutingBICBranch>XXX</RoutingBICBranch>
+                    </CHAPSSterling>
+                    <CnCCC>
+                        <Status>M</Status>
+                        <ReturnIndicator/>
+                        <DateLastChanged>2017-07-18</DateLastChanged>
+                        <DateClosed/>
+                        <SettlementBank>0002</SettlementBank>
+                        <DebitAgencySortCode>000002</DebitAgencySortCode>
+                        <GBNIIndicator>GB</GBNIIndicator>
+                    </CnCCC>
+                    <BACSServiceOffice>
+                        <Stream HandlingBank="0002" HandlingBankStream="01"/>
+                        <Status>M</Status>
+                        <AccountNumbersFlag>Y</AccountNumbersFlag>
+                        <DDIVoucherFlag>N</DDIVoucherFlag>
+                        <DisallowedTransactions>
+                            <TransactionGroupCode>CR</TransactionGroupCode>
+                        </DisallowedTransactions>
+                        <DateLastChanged>2011-09-01</DateLastChanged>
+                        <DateClosed/>
+                        <RedirectionFromFlag/>
+                        <RedirectionToSortCode/>
+                        <SettlementBank>0002</SettlementBank>
+                        <SettlementSection>01</SettlementSection>
+                        <SettlementSubSection>26</SettlementSubSection>
+                        <ToDDaSO4/>
+                    </BACSServiceOffice>
+                    <FPServiceOfficeClosed>
+                        <Status>N</Status>
+                        <AccountNumbersFlag/>
+                        <DateLastChanged/>
+                        <DateClosed>2008-03-17</DateClosed>
+                        <RedirectionFromFlag/>
+                        <RedirectionToSortCode/>
+                        <SettlementBankCode/>
+                        <SettlementBankConnection/>
+                        <HandlingBankCode/>
+                        <HandlingBankConnection/>
+                        <AgencyType/>
+                    </FPServiceOfficeClosed>
+                    <Telephone>
+                        <InternationalPrefix/>
+                        <Std>01734</Std>
+                        <Number>802000</Number>
+                    </Telephone>
+                    <SecondTelephoneNumber>
+                        <InternationalPrefix/>
+                        <Std/>
+                        <Number/>
+                    </SecondTelephoneNumber>
+                    <MainBankOfficeSortCode/>
+                    <MajorLocation>READING</MajorLocation>
+                    <MinorLocation/>
+                    <OfficeOrPlaceName>Southern Intl Ops Payments</OfficeOrPlaceName>
+                    <OfficeOrPlaceNameSecond>Southern Intl Ops Payments</OfficeOrPlaceNameSecond>
+                    <SecondEntryIndicator>2</SecondEntryIndicator>
+                    <OfficeTitle>Southern International Operations Payments</OfficeTitle>
+                    <DeletedDate/>
+                    <NCBCountryCode/>
+                </BankOffices>
+            </Bank>
         </ISCDDocument>
     </Data>
 </BACSDocument>
