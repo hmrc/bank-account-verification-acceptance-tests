@@ -10,4 +10,5 @@ RUN wget -P plugin/ https://raw.githubusercontent.com/h3xstream/burp-retire-js/g
 RUN sed -i 's/SET\ FILES\ CACHE\ SIZE\ 10000/SET\ FILES\ CACHE\ SIZE\ 100000/g' /zap/db/zapdb.script
 
 USER zap
+
 ENV ZAP_PORT 11000
