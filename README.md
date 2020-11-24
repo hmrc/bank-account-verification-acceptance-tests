@@ -10,9 +10,12 @@ Prior to executing the tests ensure you have:
  - Appropriate [drivers installed](#installing-local-driver-binaries) - to run tests against locally installed Browser
  - Installed/configured [service manager](https://github.com/hmrc/service-manager).  
 
-Run the following commands to start services locally:
+You will need a mongodb instance running locally for the services to connect to.  If you do not have mongodb installed locally you can run it in docker 
 
     docker run -d --rm --name mongodb -p 27017-27019:27017-27019 mongo:4
+
+To start services locally, run the following:
+    
     sm --start BANK_ACCOUNT_VERIFICATION -r --appendArgs '{
       "BANK_ACCOUNT_REPUTATION": [
         "-J-Dmicroservice.services.creditsafe.endpoint=http://localhost:9000/Match",
