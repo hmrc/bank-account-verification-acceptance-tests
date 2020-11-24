@@ -36,9 +36,9 @@ if [ -z "$BROWSER_TYPE" ]; then
 fi
 
 if [ "${BROWSER_TYPE}" = "remote-firefox" ]; then
-  BROWSER="artefacts.tax.service.gov.uk/firefox-with-rinetd:76.0.1-latest"
+  BROWSER="artefacts.tax.service.gov.uk/firefox-with-rinetd:latest"
 elif [ "${BROWSER_TYPE:=$DEFAULT_BROWSER}" = "remote-chrome" ]; then
-  BROWSER="artefacts.tax.service.gov.uk/chrome-with-rinetd:83.0.4103.61-latest"
+  BROWSER="artefacts.tax.service.gov.uk/chrome-with-rinetd:latest"
 else
   echo "${BROWSER_TYPE} is unknown, exiting..."
   exit 1
