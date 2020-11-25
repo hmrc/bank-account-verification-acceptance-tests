@@ -59,13 +59,24 @@ fi
 # When using on a Linux OS, add "--net=host" to the docker run command.
 #######################################
 
-docker pull ${BROWSER} \
-  && docker run \
-  -d \
-  --rm \
-  --name "${BROWSER_TYPE:=$DEFAULT_BROWSER}" \
-  -p 4444:4444 \
-  -p 5900:5900 \
-  -e PORT_MAPPINGS="$port_mappings" \
-  -e TARGET_IP='host.docker.internal' \
-  ${BROWSER}
+docker pull ${BROWSER}
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  docker run \
+    -d \
+    --rm \
+    --name "${BROWSER_TYPE:=$DEFAULT_BROWSER}" \
+    --net=host \
+    -e PORT_MAPPINGS="$port_mappings" \
+    -e TARGET_IP='host.docker.internal' \
+    ${BROWSER}
+else
+  docker run \
+    -d \
+    --rm \
+    --name "${BROWSER_TYPE:=$DEFAULT_BROWSER}" \
+    -p 4444:4444 \
+    -p 5900:5900 \
+    -e PORT_MAPPINGS="$port_mappings" \
+    -e TARGET_IP='host.docker.internal' \
+    ${BROWSER}
+fi
