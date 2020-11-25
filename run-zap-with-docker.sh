@@ -15,6 +15,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     --rm \
     --name "zap" \
     --net=host \
+    -p 11000:11000 \
     -u zap \
     -e PORT_MAPPINGS="$port_mappings" \
     -e TARGET_IP="host.docker.internal" \
