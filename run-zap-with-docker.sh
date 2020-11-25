@@ -9,18 +9,36 @@ ZAP_CONTAINER=zap-with-rinetd:2.9.0-0.1.0
 #######################################
 port_mappings=$(sm -s | grep PASS | awk '{ print $12"->"$12 }' | paste -sd "," -)
 
-docker run \
-  -d \
-  --rm \
-  --name "zap" \
-  -u zap \
-  -p 11000:11000 \
-  -e PORT_MAPPINGS="$port_mappings" \
-  -e TARGET_IP="host.docker.internal" \
-  ${ZAP_CONTAINER} \
-  -daemon \
-  -host 0.0.0.0 \
-  -port 11000 \
-  -config "api.addrs.addr.name=.*" \
-  -config "api.addrs.addr.regex=true" \
-  -config "api.disablekey=true"
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  docker run \
+    -d \
+    --rm \
+    --name "zap" \
+    --net=host \
+    -u zap \
+    -e PORT_MAPPINGS="$port_mappings" \
+    -e TARGET_IP="host.docker.internal" \
+    ${ZAP_CONTAINER} \
+    -daemon \
+    -host 0.0.0.0 \
+    -port 11000 \
+    -config "api.addrs.addr.name=.*" \
+    -config "api.addrs.addr.regex=true" \
+    -config "api.disablekey=true"
+else
+  docker run \
+    -d \
+    --rm \
+    --name "zap" \
+    -u zap \
+    -p 11000:11000 \
+    -e PORT_MAPPINGS="$port_mappings" \
+    -e TARGET_IP="host.docker.internal" \
+    ${ZAP_CONTAINER} \
+    -daemon \
+    -host 0.0.0.0 \
+    -port 11000 \
+    -config "api.addrs.addr.name=.*" \
+    -config "api.addrs.addr.regex=true" \
+    -config "api.disablekey=true"
+fi
