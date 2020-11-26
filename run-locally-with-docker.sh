@@ -27,6 +27,10 @@ START_BROWSER=false
 # Work out what actions this script needs to take based on user input
 #######################################
 
+if [ $# -eq 0 ]; then
+  DisplayHelp
+fi
+
 while [ -n "$1" ]; do
   case "$1" in
   -zap)
@@ -61,10 +65,6 @@ while [ -n "$1" ]; do
   esac
   shift
 done
-
-if [[ "$START_ZAP" == false ]] && [[ "$START_BROWSER" == false ]]; then
-  DisplayHelp
-fi
 
 #######################################
 # Requires services under test running via Service Manager
