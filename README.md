@@ -77,7 +77,7 @@ To run against a containerised Chrome browser:
 Before you can use the `./run-locally-with-docker.sh` script to start up a zap container, you will need to build it locally using:
 
 ```bash
-build-zap-container.sh
+./build-zap-container.sh
 ```
 
 Once the container has been successfully built, run the following commands.
