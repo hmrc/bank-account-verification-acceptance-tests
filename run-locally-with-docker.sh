@@ -62,6 +62,10 @@ while [ -n "$1" ]; do
   shift
 done
 
+if [[ "$START_ZAP" == false ]] && [[ "$START_BROWSER" == false ]]; then
+  DisplayHelp
+fi
+
 #######################################
 # Requires services under test running via Service Manager
 # Initializes port_mappings with all running application ports using the Service Manager status command.
