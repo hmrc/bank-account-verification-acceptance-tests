@@ -9,7 +9,6 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.models.{Account, InitResponse}
 import uk.gov.hmrc.acceptance.pages._
-import uk.gov.hmrc.acceptance.tags.Zap
 import uk.gov.hmrc.acceptance.utils.MockServer
 
 class CheckBusinessAccountSpec extends BaseSpec with MockServer {
@@ -19,7 +18,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
   val DEFAULT_BANK_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
   val HMRC_ACCOUNT_DETAILS: Account = Account("08 32 10", "12001039")
 
-  Scenario("Business Bank Account Verification successful building society check", Zap) {
+  Scenario("Business Bank Account Verification successful building society check") {
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
