@@ -1,12 +1,12 @@
 Bank Account Verification Acceptance Tests
 ================================
 
-Browser based acceptance tests for the Bank AccountVerification service. 
+Browser based acceptance tests for the Bank Account Verification service. 
 
-# Running the specs
+# Running the acceptance tests
 
 Prior to executing the tests ensure you have: 
- - Appropriate webdriver binaries installed to run tests against locally installed Browser (If you don't have these you can use docker versions)
+ - Appropriate webdriver binaries installed to run tests against your locally installed Browser(s) - If you don't have these you can use [docker containers instead](#running-specs-using-a-containerised-browser---on-a-developer-machine).
  - MongoDB installed and running (If you don't have this you can use a docker version)
  - Installed/configured [service manager](https://github.com/hmrc/service-manager).  
 
