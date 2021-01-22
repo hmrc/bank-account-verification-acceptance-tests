@@ -13,4 +13,8 @@ case class Account(sortCode: String,
   def asJsonString(): String = {
     Json.toJson(this).toString()
   }
+
+  def storedSortCode(): String = {
+    this.sortCode.replaceAll("\\s|-", "")
+  }
 }

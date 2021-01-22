@@ -1,7 +1,5 @@
 package uk.gov.hmrc.acceptance.spec
 
-import java.util.UUID
-
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
@@ -10,6 +8,8 @@ import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.pages.{ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.transunion.{CallValidateResponseBuilder, IdentityCheckBuilder}
 import uk.gov.hmrc.acceptance.utils._
+
+import java.util.UUID
 
 class PersonalAddressSpec extends BaseSpec with MockServer {
 
@@ -54,7 +54,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val initResponse: InitResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -68,7 +68,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    go to journeyPage(initResponse.startUrl)
+    val session = startJourney(journeyBuilderData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
     mockServer.verify(
@@ -77,7 +77,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            s" && @.detail.input=='Request to ${initResponse.startUrl}'" +
+            s" && @.detail.input=='Request to ${session.startUrl}'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -91,7 +91,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${initResponse.journeyId}'" +
+            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -107,10 +107,10 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Then("the user is redirected to the continue URL")
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
     assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.sortCode)
+    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
     assertThat(ExampleFrontendDonePage().getAddress).isEqualTo(DEFAULT_ADDRESS.asStringWithCR())
@@ -129,7 +129,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to ${initResponse.completeUrl}'" +
+            s"&& @.detail.input=='Request to ${session.completeUrl}'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -170,7 +170,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val initResponse: InitResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -184,19 +184,9 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    go to journeyPage(initResponse.detailsUrl.get)
+    val session = startJourney(journeyBuilderData)
 
-    mockServer.verify(
-      HttpRequest.request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${initResponse.journeyId}'" +
-            ")]")
-        ),
-      VerificationTimes.atLeast(1)
-    )
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     When("a user enters all required information and clicks continue")
 
@@ -208,10 +198,10 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Then("the user is redirected to the continue URL")
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
     assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.sortCode)
+    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
     assertThat(ExampleFrontendDonePage().getAddress).isEqualTo(DEFAULT_ADDRESS.asStringWithCR())
@@ -229,7 +219,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to ${initResponse.completeUrl}'" +
+            s"&& @.detail.input=='Request to ${session.completeUrl}'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -237,7 +227,19 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     When("the user goes back to the details page and changes the bank account details")
 
-    go to journeyPage(initResponse.detailsUrl.get)
+    continueJourney(journeyBuilderData)
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
 
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
@@ -247,7 +249,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Then("the updated details have been saved")
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
     assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(ALTERNATE_ACCOUNT_DETAILS.sortCode)
@@ -297,7 +299,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val initResponse: InitResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -311,19 +313,9 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    go to journeyPage(initResponse.detailsUrl.get)
+    val session = startJourney(journeyBuilderData)
 
-    mockServer.verify(
-      HttpRequest.request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${initResponse.journeyId}'" +
-            ")]")
-        ),
-      VerificationTimes.atLeast(1)
-    )
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     When("a user enters all required information and clicks continue")
 
@@ -335,10 +327,10 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Then("the user is redirected to the continue URL")
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
     assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.sortCode)
+    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
     assertThat(ExampleFrontendDonePage().getAddress).isEqualTo(DEFAULT_ADDRESS.asStringWithCR())
@@ -356,7 +348,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to ${initResponse.completeUrl}'" +
+            s"&& @.detail.input=='Request to ${session.completeUrl}'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -364,7 +356,19 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     When("the user goes back to the details page and changes the bank account details to an unknown bank")
 
-    go to journeyPage(initResponse.detailsUrl.get)
+    continueJourney(journeyBuilderData)
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
 
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
@@ -374,7 +378,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Then("the updated details have been saved")
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${initResponse.journeyId}")
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
     assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(UNKNOWN_ACCOUNT_DETAILS.sortCode)

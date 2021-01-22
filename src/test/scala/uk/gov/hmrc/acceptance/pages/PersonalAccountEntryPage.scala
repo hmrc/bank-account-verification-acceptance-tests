@@ -35,6 +35,6 @@ case class PersonalAccountEntryPage() extends BasePage {
   }
 
   override def isOnPage: Boolean = {
-    webDriverWillWait.until(titleIs("Personal Account Details - GOV.UK"))
+    webDriverWillWait.until(titleIs("Bank or building society account details - GOV.UK"))
   }
 }

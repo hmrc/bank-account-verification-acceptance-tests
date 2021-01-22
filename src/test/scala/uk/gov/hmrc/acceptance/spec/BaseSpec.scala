@@ -1,12 +1,12 @@
 package uk.gov.hmrc.acceptance.spec
 
-import java.nio.file.Paths
-
 import io.findify.s3mock.S3Mock
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, GivenWhenThen, Outcome}
-import uk.gov.hmrc.acceptance.utils.{BrowserDriver, CommonAssertions, JourneyBuilder}
+import uk.gov.hmrc.acceptance.utils.{BrowserDriver, CommonActions, CommonAssertions, JourneyBuilder}
+
+import java.nio.file.Paths
 
 trait BaseSpec extends AnyFeatureSpec
   with GivenWhenThen
@@ -15,6 +15,7 @@ trait BaseSpec extends AnyFeatureSpec
   with JourneyBuilder
   with BrowserDriver
   with CommonAssertions
+  with CommonActions
   with Matchers {
 
   val s3Mock: S3Mock = new S3Mock.Builder().withPort(8001).withFileBackend(getClass.getResource("/sThreeBucket").getPath).build()

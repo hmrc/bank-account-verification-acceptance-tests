@@ -23,6 +23,6 @@ case class SelectAccountTypePage() extends BasePage {
   }
 
   override def isOnPage: Boolean = {
-    webDriverWillWait.until(titleIs("Account Type - GOV.UK"))
+    webDriverWillWait.until(titleIs("What type of account details are you providing? - GOV.UK"))
   }
 }

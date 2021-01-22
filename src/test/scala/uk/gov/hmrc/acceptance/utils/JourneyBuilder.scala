@@ -1,11 +1,12 @@
 package uk.gov.hmrc.acceptance.utils
 
-import java.util.concurrent.TimeUnit.SECONDS
-
 import okhttp3._
 import play.api.libs.json._
 import uk.gov.hmrc.acceptance.config.TestConfig
-import uk.gov.hmrc.acceptance.models.{InitRequest, InitResponse}
+import uk.gov.hmrc.acceptance.models._
+
+import java.util.UUID.randomUUID
+import java.util.concurrent.TimeUnit.SECONDS
 
 trait JourneyBuilder {
 
@@ -20,20 +21,27 @@ trait JourneyBuilder {
     .build()
 
   //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
-  def initializeJourney(configuration: String = InitRequest.apply().asJsonString()): InitResponse = {
+  def initializeJourney(configuration: String = InitRequest.apply().asJsonString()): JourneyBuilderResponse = {
+    val credId = randomUUID().toString
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/init")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
+      .addHeader("Authorization", generateBearerToken(credId))
     val response = okHttpClient.newCall(request.build()).execute()
     if (response.isSuccessful) {
-      Json.parse(response.body.string()).as[InitResponse]
+      JourneyBuilderResponse(Json.parse(response.body.string()).as[InitResponse], credId)
     } else {
       throw new IllegalStateException("Unable to initialize a new journey!")
     }
   }
 
-  def journeyPage(startPath: String): String = {
-    s"${TestConfig.getHost("bank-account-verification")}$startPath"
+  def generateBearerToken(credId: String): String = {
+    val content: String = GGAuth(CredId(credId), AffinityGroup.Individual, Some(ConfidenceLevel.L0), CredentialStrength.None, Some(CredentialRole.User), List(Enrolment("IR-SA", List(EnrolmentIdentifier("UTR", "1234567890")), "Activated"))).asJsonString()
+    val request = new Request.Builder()
+      .url(s"${TestConfig.apiUrl("auth-login-api")}/government-gateway/session/login")
+      .method("POST", RequestBody.create(MediaType.parse("application/json"), content))
+    val response = okHttpClient.newCall(request.build()).execute()
+    response.header("Authorization")
   }
 
   def initializeEISCDCache(): Unit = {
