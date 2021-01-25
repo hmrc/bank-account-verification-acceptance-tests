@@ -22,7 +22,8 @@ trait JourneyBuilder {
 
   //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
   def initializeJourney(configuration: String = InitRequest.apply().asJsonString()): JourneyBuilderResponse = {
-    val credId = randomUUID().toString
+    // **NOTE** credId can only be a maximum of 30 characters, anything longer will result in a mismatch and no journey will be found
+    val credId = randomUUID().toString.slice(0,29)
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/init")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
@@ -36,7 +37,7 @@ trait JourneyBuilder {
   }
 
   def generateBearerToken(credId: String): String = {
-    val content: String = GGAuth(CredId(credId), AffinityGroup.Individual, Some(ConfidenceLevel.L0), CredentialStrength.None, Some(CredentialRole.User), List(Enrolment("IR-SA", List(EnrolmentIdentifier("UTR", "1234567890")), "Activated"))).asJsonString()
+    val content: String = GGAuth(CredId(credId), AffinityGroup.Individual, Some(ConfidenceLevel.L50), CredentialStrength.Weak, Some(CredentialRole.User), List.empty[Enrolment]).asJsonString()
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("auth-login-api")}/government-gateway/session/login")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), content))
