@@ -9,7 +9,7 @@ class AccessibilitySpec extends BaseSpec {
   Scenario("Accessibility - Personal Bank Account Verification errors", Accessibility) {
     Given("I want to collect and validate a customers bank account details")
 
-    startJourney(initializeJourney())
+    startGGJourney(initializeJourney())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -39,7 +39,7 @@ class AccessibilitySpec extends BaseSpec {
   Scenario("Accessibility - Company Bank Account Verification errors", Accessibility) {
     Given("I want to collect and validate a companies bank account details")
 
-    startJourney(initializeJourney())
+    startGGJourney(initializeJourney())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 

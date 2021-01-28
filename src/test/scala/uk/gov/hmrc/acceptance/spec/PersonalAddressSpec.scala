@@ -68,7 +68,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    val session = startJourney(journeyBuilderData)
+    val session = startGGJourney(journeyBuilderData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
     mockServer.verify(
@@ -184,7 +184,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    val session = startJourney(journeyBuilderData)
+    val session = startGGJourney(journeyBuilderData)
 
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
@@ -227,7 +227,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     When("the user goes back to the details page and changes the bank account details")
 
-    continueJourney(journeyBuilderData)
+    continueGGJourney(journeyBuilderData)
 
     mockServer.verify(
       HttpRequest.request()
@@ -313,7 +313,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    val session = startJourney(journeyBuilderData)
+    val session = startGGJourney(journeyBuilderData)
 
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
@@ -356,7 +356,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     When("the user goes back to the details page and changes the bank account details to an unknown bank")
 
-    continueJourney(journeyBuilderData)
+    continueGGJourney(journeyBuilderData)
 
     mockServer.verify(
       HttpRequest.request()

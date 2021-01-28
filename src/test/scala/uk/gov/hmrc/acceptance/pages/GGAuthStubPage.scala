@@ -2,18 +2,18 @@ package uk.gov.hmrc.acceptance.pages
 
 import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
 
-case class AuthStubPage() extends BasePage {
+case class GGAuthStubPage() extends BasePage {
 
   private lazy val credentialsIdentifierField: TextField = textField(id("authorityId"))
   private lazy val RedirectUrlField: TextField = textField(id("redirectionUrl"))
   private lazy val submitField = xpath("//input[@type='submit']")
 
-  def enterCredID(credId: String): AuthStubPage = {
+  def enterCredID(credId: String): GGAuthStubPage = {
     credentialsIdentifierField.value = credId
     this
   }
 
-  def enterRedirectUrl(redirectUrl: String): AuthStubPage = {
+  def enterRedirectUrl(redirectUrl: String): GGAuthStubPage = {
     RedirectUrlField.value = redirectUrl
     this
   }

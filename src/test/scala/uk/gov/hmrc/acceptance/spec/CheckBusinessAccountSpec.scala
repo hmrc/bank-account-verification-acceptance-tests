@@ -1,15 +1,15 @@
 package uk.gov.hmrc.acceptance.spec
 
-import java.util.UUID.randomUUID
-
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
+import uk.gov.hmrc.acceptance.models.Account
 import uk.gov.hmrc.acceptance.models.InitRequest.DEFAULT_SERVICE_IDENTIFIER
-import uk.gov.hmrc.acceptance.models.{Account, InitResponse}
 import uk.gov.hmrc.acceptance.pages._
 import uk.gov.hmrc.acceptance.utils.MockServer
+
+import java.util.UUID.randomUUID
 
 class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
@@ -32,7 +32,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
-    val session = startJourney(initializeJourney())
+    val session = startGGJourney(initializeJourney())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -95,7 +95,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
-    val session = startJourney(initializeJourney())
+    val session = startGGJourney(initializeJourney())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -158,7 +158,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a companies bank account details")
 
     val companyName = "Account Closed"
-    startJourney(initializeJourney())
+    startGGJourney(initializeJourney())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -223,7 +223,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a companies bank account details")
 
     val companyName = "Cannot Match"
-    val session = startJourney(initializeJourney())
+    val session = startGGJourney(initializeJourney())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -306,7 +306,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a companies bank account details")
 
     val companyName = "Cannot Match"
-    startJourney(initializeJourney())
+    startGGJourney(initializeJourney())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 

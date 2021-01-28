@@ -63,7 +63,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    val session = startJourney(journeyBuilderData)
+    val session = startGGJourney(journeyBuilderData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
     mockServer.verify(
