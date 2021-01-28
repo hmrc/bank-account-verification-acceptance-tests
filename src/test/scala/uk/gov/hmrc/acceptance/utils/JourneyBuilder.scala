@@ -4,6 +4,7 @@ import okhttp3._
 import play.api.libs.json._
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
+import uk.gov.hmrc.acceptance.models.auth.{AffinityGroup, ConfidenceLevel, CredId, CredentialRole, CredentialStrength, Enrolment}
 
 import java.util.UUID.randomUUID
 import java.util.concurrent.TimeUnit.SECONDS
