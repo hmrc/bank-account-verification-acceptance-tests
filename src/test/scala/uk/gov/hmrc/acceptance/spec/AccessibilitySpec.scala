@@ -17,7 +17,7 @@ class AccessibilitySpec extends BaseSpec {
 
     assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
     assertThatErrorSummaryLinkExists("accountType")
-    assertThatRadioButtonErrorMessageIsDisplayed("account-type")
+    assertThatRadioButtonErrorMessageIsDisplayed("accountType")
 
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
@@ -47,7 +47,7 @@ class AccessibilitySpec extends BaseSpec {
 
     assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
     assertThatErrorSummaryLinkExists("accountType")
-    assertThatRadioButtonErrorMessageIsDisplayed("account-type")
+    assertThatRadioButtonErrorMessageIsDisplayed("accountType")
 
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
 
