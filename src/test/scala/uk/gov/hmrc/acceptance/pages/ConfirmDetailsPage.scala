@@ -1,6 +1,7 @@
 package uk.gov.hmrc.acceptance.pages
 
 import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
+import uk.gov.hmrc.acceptance.models.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 
 case class ConfirmDetailsPage() extends BasePage {
 
@@ -71,7 +72,7 @@ case class ConfirmDetailsPage() extends BasePage {
   }
 
   override def isOnPage: Boolean = {
-    webDriverWillWait.until(titleIs("Check the account details - GOV.UK"))
+    webDriverWillWait.until(titleIs(s"Check the account details - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK"))
   }
 
 }
