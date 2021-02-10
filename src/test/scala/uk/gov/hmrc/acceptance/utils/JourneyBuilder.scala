@@ -4,7 +4,8 @@ import okhttp3._
 import play.api.libs.json._
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
-import uk.gov.hmrc.acceptance.models.auth.{AffinityGroup, ConfidenceLevel, CredId, CredentialRole, CredentialStrength, Enrolment}
+import uk.gov.hmrc.acceptance.models.auth._
+import uk.gov.hmrc.acceptance.models.init.InitRequest
 
 import java.util.UUID.randomUUID
 import java.util.concurrent.TimeUnit.SECONDS
@@ -24,7 +25,7 @@ trait JourneyBuilder {
   //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
   def initializeJourney(configuration: String = InitRequest.apply().asJsonString()): JourneyBuilderResponse = {
     // **NOTE** credId can only be a maximum of 30 characters, anything longer will result in a mismatch and no journey will be found
-    val credId = randomUUID().toString.slice(0,29)
+    val credId = randomUUID().toString.slice(0, 29)
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/init")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))

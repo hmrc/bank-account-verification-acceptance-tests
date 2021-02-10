@@ -5,6 +5,7 @@ import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
+import uk.gov.hmrc.acceptance.models.init.InitRequest
 import uk.gov.hmrc.acceptance.pages.{BusinessAccountEntryPage, ExampleFrontendDonePage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.creditsafe.CreditSafePayload
 import uk.gov.hmrc.acceptance.utils._

@@ -1,4 +1,4 @@
-package uk.gov.hmrc.acceptance.models
+package uk.gov.hmrc.acceptance.models.init
 
 import play.api.libs.json.{Json, OFormat}
 
@@ -11,6 +11,7 @@ case class PrepopulatedData(accountType: String,
                             sortCode: Option[String] = None,
                             accountNumber: Option[String] = None,
                             rollNumber: Option[String] = None) {
+
   def asJsonString(): String = {
     Json.toJson(this).toString()
   }

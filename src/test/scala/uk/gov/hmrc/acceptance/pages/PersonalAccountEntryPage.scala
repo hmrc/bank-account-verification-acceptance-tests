@@ -1,7 +1,7 @@
 package uk.gov.hmrc.acceptance.pages
 
 import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
-import uk.gov.hmrc.acceptance.models.InitRequest.DEFAULT_SERVICE_IDENTIFIER
+import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 
 case class PersonalAccountEntryPage() extends BasePage {
 
