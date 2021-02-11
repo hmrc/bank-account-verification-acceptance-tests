@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.JourneyBuilderResponse
 import uk.gov.hmrc.acceptance.models.init.{InitRequest, InitRequestTimeoutConfig}
-import uk.gov.hmrc.acceptance.pages.{ErrorPage, SelectAccountTypePage, TimeoutDialoguePartial}
+import uk.gov.hmrc.acceptance.pages.{ErrorPage, ExampleFrontendHomePage, SelectAccountTypePage, TimeoutDialoguePartial}
 
 import java.net.URLEncoder
 
@@ -53,5 +53,28 @@ case class TimeoutSpec() extends BaseSpec {
     TimeoutDialoguePartial().clickSignOut()
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification")}/destroySession?journeyId=${session.journeyId}&timeoutUrl=${URLEncoder.encode(timeoutURL, "UTF-8")}")
     assertThat(ErrorPage().isOnPage).isTrue
+  }
+
+  Scenario("Timeout Dialogue links to an absolute URL on allow list") {
+    Given("I am on a Bank Account Verification Frontend page")
+
+    val timeoutURL = TestConfig.url("bank-account-verification-frontend-example")
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourney(
+      InitRequest(
+        timeoutConfig = Some(InitRequestTimeoutConfig(timeoutURL, 120))
+      ).asJsonString())
+
+    val session = startGGJourney(journeyBuilderData)
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    When("a timeout dialogue appears after a period of inactivity")
+
+    assertThat(TimeoutDialoguePartial().isVisible).isTrue
+
+    Then("I click on sign out and I'm sent to a relative URL correctly")
+
+    TimeoutDialoguePartial().clickSignOut()
+    assertThat(webDriver.getCurrentUrl).isEqualTo(timeoutURL)
+    assertThat(ExampleFrontendHomePage().isOnPage).isTrue
   }
 }

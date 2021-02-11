@@ -45,6 +45,7 @@ To start services locally, run the following:
       ],
       "BANK_ACCOUNT_VERIFICATION_FRONTEND": [
         "-J-Dbankaccountreputation.validateBankDetails.url=http://localhost:9871/v2/validateBankDetails",
+        "-J-Dmicroservice.hosts.allowList.1=localhost",
         "-J-Dauditing.consumer.baseUri.port=9000",
         "-J-Dauditing.consumer.baseUri.host=localhost",
         "-J-Dauditing.enabled=true"
