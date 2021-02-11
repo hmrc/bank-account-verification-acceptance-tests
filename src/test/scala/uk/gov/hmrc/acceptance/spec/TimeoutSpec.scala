@@ -71,7 +71,7 @@ case class TimeoutSpec() extends BaseSpec {
 
     assertThat(TimeoutDialoguePartial().isVisible).isTrue
 
-    Then("I click on sign out and I'm sent to a relative URL correctly")
+    Then("I click on sign out and I'm sent to the absolute URL that is on the allow list correctly")
 
     TimeoutDialoguePartial().clickSignOut()
     assertThat(webDriver.getCurrentUrl).isEqualTo(timeoutURL)
