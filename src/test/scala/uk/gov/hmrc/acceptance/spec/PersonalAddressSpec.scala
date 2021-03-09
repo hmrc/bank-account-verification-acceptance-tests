@@ -5,6 +5,7 @@ import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
+import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.models.init.{InitRequest, PrepopulatedData}
 import uk.gov.hmrc.acceptance.pages.{ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.transunion.{CallValidateResponseBuilder, IdentityCheckBuilder}
@@ -266,7 +267,9 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(ALTERNATE_ACCOUNT_DETAILS.bankName.get)
   }
 
-  Scenario("Personal Bank Account change to unknown bank is successful") {
+  Scenario("Personal Bank Account cannot be changed to an unknown bank") {
+    val accountName: Individual = Individual(title = Some("Mr"), firstName = Some(FIRST_NAME), lastName = Some("Jones"))
+
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
@@ -286,10 +289,10 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withHeader("Content-Type", "application/xml")
         .withBody(
           new CallValidateResponseBuilder()
-            .setInputIndividualData(DEFAULT_NAME)
+            .setInputIndividualData(accountName)
             .setInputAddress(DEFAULT_ADDRESS)
             .identityCheck(new IdentityCheckBuilder()
-              .nameMatched(DEFAULT_NAME.asString())
+              .nameMatched(accountName.asString())
               .currentAddressMatched(DEFAULT_ADDRESS)
               .build()
             )
@@ -321,7 +324,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     When("a user enters all required information and clicks continue")
 
     PersonalAccountEntryPage()
-      .enterAccountName(DEFAULT_NAME.asString())
+      .enterAccountName(accountName.asString())
       .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
       .enterAccountNumber(DEFAULT_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
@@ -330,7 +333,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
-    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
+    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(accountName.asString())
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
@@ -372,26 +375,32 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     )
 
     PersonalAccountEntryPage()
-      .enterAccountName(DEFAULT_NAME.asString())
+      .enterAccountName(accountName.asString())
       .enterSortCode(UNKNOWN_ACCOUNT_DETAILS.sortCode)
       .enterAccountNumber(UNKNOWN_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
 
-    Then("the updated details have been saved")
+    Then("an error is displayed")
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
-    assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
-    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(UNKNOWN_ACCOUNT_DETAILS.sortCode)
-    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(UNKNOWN_ACCOUNT_DETAILS.accountNumber)
-    assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
-    assertThat(ExampleFrontendDonePage().getAddress).isEqualTo(DEFAULT_ADDRESS.asStringWithCR())
-    assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountNameMatched).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountAddressMatched).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("no")
-    assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().checkEntryDoesNotExistFor("Bank name")).isTrue
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='personal' " +
+            s"&& @.detail.accountName=='${accountName.asString()}' " +
+            s"&& @.detail.sortCode=='${UNKNOWN_ACCOUNT_DETAILS.sortCode}' " +
+            s"&& @.detail.accountNumber=='${UNKNOWN_ACCOUNT_DETAILS.accountNumber}' " +
+            "&& @.detail.rollNumber=='' " +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER' " +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    assertThatErrorSummaryLinkExists("sortCode")
+    assertThatInputFieldErrorMessageExists("sortCode")
   }
 }

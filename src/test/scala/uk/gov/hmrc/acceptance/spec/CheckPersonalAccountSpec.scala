@@ -158,7 +158,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a customers bank account details")
 
-    val companyName = "Account Closed"
+    val customerName = "Account Closed"
     startGGJourney(initializeJourney())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
@@ -170,7 +170,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     When("a customer enters all required information and clicks continue")
 
     PersonalAccountEntryPage()
-      .enterAccountName(companyName)
+      .enterAccountName(customerName)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
@@ -184,7 +184,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='$companyName'" +
+            s"&& @.detail.accountName=='$customerName'" +
             s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
             s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
             "&& @.detail.rollNumber==''" +
