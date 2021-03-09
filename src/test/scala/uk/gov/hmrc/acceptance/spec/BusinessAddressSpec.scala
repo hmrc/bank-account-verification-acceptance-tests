@@ -177,7 +177,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
         .withStatusCode(200)
     )
 
-    Given("I want to collect and validate personal bank account details")
+    Given("I want to collect and validate business bank account details")
 
     val journeyBuilderData: JourneyBuilderResponse = initializeJourney(InitRequest(address = DEFAULT_BUSINESS_ADDRESS, prepopulatedData = Some(PrepopulatedData(accountType = "business"))).asJsonString())
 
@@ -245,7 +245,6 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
 
-    mockServer.verify(HttpRequest.request().withPath(CREDITSAFE_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(
       HttpRequest.request()
         .withPath("/write/audit")
@@ -324,7 +323,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
           .withStatusCode(200)
       )
 
-      Given("I want to collect and validate personal bank account details")
+      Given("I want to collect and validate business bank account details")
 
       val journeyBuilderData: JourneyBuilderResponse = initializeJourney(InitRequest(address = DEFAULT_BUSINESS_ADDRESS, prepopulatedData = Some(PrepopulatedData(accountType = "business"))).asJsonString())
 
@@ -392,7 +391,6 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
       assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
       assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
 
-      mockServer.verify(HttpRequest.request().withPath(CREDITSAFE_PATH), VerificationTimes.atLeast(1))
       mockServer.verify(
         HttpRequest.request()
           .withPath("/write/audit")
