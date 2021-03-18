@@ -18,6 +18,7 @@ case class InitRequest(serviceIdentifier: String = DEFAULT_SERVICE_IDENTIFIER,
                        address: Option[Address] = None,
                        messages: Option[Messages] = Some(DEFAULT_MESSAGES),
                        customisationsUrl: Option[String] = None,
+                       bacsRequirements: Option[InitBACSRequirements] = Some(InitBACSRequirements(directDebitRequired = false, directCreditRequired = false)),
                        timeoutConfig: Option[InitRequestTimeoutConfig] = None) {
 
   def asJsonString(): String = {

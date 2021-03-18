@@ -64,7 +64,7 @@ case class TimeoutSpec() extends BaseSpec {
         timeoutConfig = Some(InitRequestTimeoutConfig(timeoutURL, 120))
       ).asJsonString())
 
-    val session = startGGJourney(journeyBuilderData)
+    startGGJourney(journeyBuilderData)
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
     When("a timeout dialogue appears after a period of inactivity")
