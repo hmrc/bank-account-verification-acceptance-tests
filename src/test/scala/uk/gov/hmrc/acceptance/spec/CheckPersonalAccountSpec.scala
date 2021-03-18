@@ -5,6 +5,7 @@ import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
+import uk.gov.hmrc.acceptance.models.init.{InitBACSRequirements, InitRequest}
 import uk.gov.hmrc.acceptance.models.{Account, Individual}
 import uk.gov.hmrc.acceptance.pages.{ConfirmDetailsPage, ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.stubs.transunion.CallValidateResponseBuilder
@@ -401,5 +402,143 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
+  }
+
+  Scenario("Personal Bank Account Verification accounts that don't support Direct Credit are Blocked") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+        .withStatusCode(200)
+    )
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(TRANSUNION_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/xml")
+        .withBody(new CallValidateResponseBuilder()
+          .withError("BV3: Unknown account")
+          .build())
+        .withStatusCode(200)
+    )
+
+    Given("I want to collect and validate a customers bank account details")
+
+    val companyName = "Cannot Match"
+    startGGJourney(initializeJourney(InitRequest(
+      bacsRequirements = Some(InitBACSRequirements(directDebitRequired = false, directCreditRequired = true))).asJsonString()
+    ))
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+
+    When("a customer enters HMRC bank account information and clicks continue")
+
+    PersonalAccountEntryPage()
+      .enterAccountName(companyName)
+      .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
+      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
+      .clickContinue()
+
+    Then("an error is displayed")
+
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    assertThatErrorSummaryLinkExists("sortCode")
+    assertThatInputFieldErrorMessageExists("sortCode")
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='personal'" +
+            s"&& @.detail.accountName=='$companyName'" +
+            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
+            "&& @.detail.rollNumber==''" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+  }
+
+  Scenario("Personal Bank Account Verification accounts that don't support Direct Debit are Blocked") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+        .withStatusCode(200)
+    )
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(TRANSUNION_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/xml")
+        .withBody(new CallValidateResponseBuilder()
+          .withError("BV3: Unknown account")
+          .build())
+        .withStatusCode(200)
+    )
+
+    Given("I want to collect and validate a customers bank account details")
+
+    val companyName = "Cannot Match"
+    startGGJourney(initializeJourney(InitRequest(
+      bacsRequirements = Some(InitBACSRequirements(directDebitRequired = true, directCreditRequired = false))).asJsonString()
+    ))
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+
+    When("a customer enters HMRC bank account information and clicks continue")
+
+    PersonalAccountEntryPage()
+      .enterAccountName(companyName)
+      .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
+      .enterAccountNumber(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
+      .clickContinue()
+
+    Then("an error is displayed")
+
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    assertThatErrorSummaryLinkExists("sortCode")
+    assertThatInputFieldErrorMessageExists("sortCode")
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='AccountDetailsEntered' " +
+            "&& @.detail.accountType=='personal'" +
+            s"&& @.detail.accountName=='$companyName'" +
+            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
+            "&& @.detail.rollNumber==''" +
+            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
   }
 }
