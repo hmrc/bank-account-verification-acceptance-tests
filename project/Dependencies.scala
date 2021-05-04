@@ -5,7 +5,7 @@ object Dependencies {
   val test = Seq(
     "org.scalatest"           %% "scalatest"          % "3.2.2"     %   Test,
     "org.scalatestplus"       %% "selenium-3-141"     % "3.2.2.0"   %   Test,
-    "com.google.guava"        %   "guava"             % "30.0-jre"  %   Test,
+    "com.google.guava"        %  "guava"              % "30.0-jre"  %   Test,
     "com.vladsch.flexmark"    % "flexmark-all"        % "0.35.10"   %   Test,
     "com.github.nscala-time"  %% "nscala-time"        % "2.24.0"    %   Test,
     "uk.gov.hmrc"             %% "webdriver-factory"  % "0.+"       %   Test,

@@ -12,9 +12,5 @@ lazy val testSuite = (project in file("."))
       Tests.Argument(TestFrameworks.ScalaTest, "-u", "target/test-reports"),
       Tests.Argument(TestFrameworks.ScalaTest, "-h", "target/test-reports/html-report"),
       Tests.Argument("-oD")
-    ),
-    resolvers ++= Seq(
-      Resolver.bintrayRepo("hmrc", "releases"),
-      Resolver.typesafeRepo("releases")
     )
   )
