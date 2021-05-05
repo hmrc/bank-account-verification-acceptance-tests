@@ -6,6 +6,13 @@
       "url": "http:\/\/localhost:9949\/auth-login-stub\/application-login.*",
       "ruleId": 10202,
       "urlIsRegex": "true"
+    },
+    {
+      "reason": "Caused by auth-login-stub",
+      "contextId": 1,
+      "url": "http:\/\/localhost:9949\/auth-login-stub\/gg-sign-in.*",
+      "ruleId": 10202,
+      "urlIsRegex": "true"
     }
   ]
 }
