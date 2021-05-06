@@ -11,7 +11,7 @@
       "reason": "Caused by auth-login-stub",
       "contextId": 1,
       "url": "http:\/\/localhost:9949\/auth-login-stub\/gg-sign-in.*",
-      "ruleId": 10202,
+      "ruleId": 10017,
       "urlIsRegex": "true"
     }
   ]
