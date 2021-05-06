@@ -8,9 +8,16 @@
       "urlIsRegex": "true"
     },
     {
-      "reason": "Caused by auth-login-stub",
+      "reason": "Caused by auth-login-stub using a CDN",
       "contextId": 1,
       "url": "http:\/\/localhost:9949\/auth-login-stub\/gg-sign-in.*",
+      "ruleId": 10017,
+      "urlIsRegex": "true"
+    },
+    {
+      "reason": "Caused by auth-login-stub using a CDN",
+      "contextId": 1,
+      "url": "http:\/\/localhost:9949\/auth-login-stub\/application-login.*",
       "ruleId": 10017,
       "urlIsRegex": "true"
     }
