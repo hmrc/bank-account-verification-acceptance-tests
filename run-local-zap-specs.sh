@@ -12,4 +12,4 @@ if [ -z "$BROWSER_TYPE" ]; then
     echo ""
 fi
 
-sbt -Dbrowser=${BROWSER_TYPE:=$DEFAULT_BROWSER} "testOnly -- -l \"uk.gov.hmrc.acceptance.tags.Accessibility uk.gov.hmrc.acceptance.tags.Excluded\""
+sbt -Dbrowser="${BROWSER_TYPE:=$DEFAULT_BROWSER}" -Denv=local -Dzap.proxy=true "testOnly -- -l \"uk.gov.hmrc.integration.tags.Accessibility uk.gov.hmrc.integration.tags.Excluded\""
