@@ -9,4 +9,4 @@ if [ -z "$BROWSER_TYPE" ]; then
     echo ""
 fi
 
-sbt -Dbrowser=${BROWSER_TYPE:=$DEFAULT_BROWSER} -Denv=${ENV:=local} "testOnly -- -l \"uk.gov.hmrc.acceptance.tags.Accessibility uk.gov.hmrc.acceptance.tags.Excluded\""
+sbt -mem 8192 -Dbrowser=${BROWSER_TYPE:=$DEFAULT_BROWSER} -Denv=${ENV:=local} "testOnly -- -l \"uk.gov.hmrc.acceptance.tags.Accessibility uk.gov.hmrc.acceptance.tags.Excluded\""
