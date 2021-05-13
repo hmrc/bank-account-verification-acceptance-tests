@@ -26,6 +26,7 @@ function start_zap() {
     echo -e "Changing to checkout directory... \n"
     cd ${CHECKOUT_DIRECTORY}
     git clone "git@github.com:hmrc/${DAST_PROJECT_NAME}.git"
+    cd ${DAST_CONFIG_MANAGER_DIRECTORY}
   else
     cd ${DAST_CONFIG_MANAGER_DIRECTORY}
     echo -e "\nMaking sure we have the latest code... \n"
