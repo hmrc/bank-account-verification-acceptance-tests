@@ -84,13 +84,13 @@ DisplayHelp() {
   echo
   echo "This script will download and start/stop a zap container."
   echo
-  echo "Syntax: ./$(basename "$0") [-start | -stop | -h]"
+  echo "Syntax: ./$(basename "$0") [-0start | -0stop | -h]"
   echo
   echo "options:"
   echo
-  echo "-start          Start a ZAProxy container"
-  echo "-stop           Stop a ZAProxy container"
-  echo "-h              Print this help text."
+  echo "--start          Start a ZAProxy container"
+  echo "--stop           Stop a ZAProxy container"
+  echo "-h               Print this help text."
   echo
   exit 1
 }
@@ -101,10 +101,10 @@ fi
 
 while [ -n "$1" ]; do
   case "$1" in
-  -start)
+  --start)
     start_zap
     ;;
-  -stop)
+  --stop)
     stop_zap
     ;;
   -h)

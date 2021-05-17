@@ -59,14 +59,14 @@ DisplayHelp() {
   echo
   echo "This script will download and start/stop browser containers."
   echo
-  echo "Syntax: ./$(basename "$0") [-remote-chrome | -remote-firefox | -stop | -h]"
+  echo "Syntax: ./$(basename "$0") [--remote-chrome | --remote-firefox | --stop | -h]"
   echo
   echo "options:"
   echo
-  echo "-remote-chrome   Start a chrome container"
-  echo "-remote-firefox  Start a firefox container"
-  echo "-stop            Stop any running browser containers"
-  echo "-h               Print this help text."
+  echo "--remote-chrome   Start a chrome container"
+  echo "--remote-firefox  Start a firefox container"
+  echo "--stop            Stop any running browser containers"
+  echo "-h                Print this help text."
   echo
   exit 1
 }
@@ -88,17 +88,17 @@ port_mappings="$port_mappings,11000->11000"
 
 while [ -n "$1" ]; do
   case "$1" in
-  -remote-chrome)
+  --remote-chrome)
     BROWSER_CONTAINER="${CHROME_CONTAINER}"
     BROWSER_TYPE="remote-chrome"
     start_browser
     ;;
-  -remote-firefox)
+  --remote-firefox)
     BROWSER_CONTAINER="${FIREFOX_CONTAINER}"
     BROWSER_TYPE="remote-firefox"
     start_browser
     ;;
-  -stop)
+  --stop)
     kill_containers
     ;;
   -h)

@@ -72,7 +72,7 @@ Read more about the script's functionality [here](run-local-browser-container.sh
 To run against a containerised Chrome browser:
 
 ```bash
-./run-local-browser-container.sh -remote-chrome
+./run-local-browser-container.sh --remote-chrome
 ./run-specs.sh remote-chrome
 ```
 
@@ -85,12 +85,12 @@ This will clone a copy of the dast-config-manager repository in this projects pa
 https://github.com/hmrc/dast-config-manager/#running-zap-locally has more information about how the zap container is built.
 
 ```bash
-./run-local-zap-container.sh -start
-./run-local-browser-container.sh -remote-chrome
+./run-local-zap-container.sh --start
+./run-local-browser-container.sh --remote-chrome
 ./run-local-zap-specs.sh
-./run-local-zap-container.sh -stop
+./run-local-zap-container.sh --stop
 ``` 
-***Note:** Results of your ZAP run will not be placed in your target directory until you have run `./run-local-zap-container.sh -stop`*
+***Note:** Results of your ZAP run will not be placed in your target directory until you have run `./run-local-zap-container.sh --stop`*
 
 ***Note:** `./run-local-zap-container.sh` should **NOT** be used when running in a CI environment!*
 
