@@ -36,6 +36,7 @@ function start_browser() {
       -d \
       --rm \
       --name "${BROWSER_TYPE}" \
+      --net=host \
       -p 4444:4444 \
       -p 5900:5900 \
       -e PORT_MAPPINGS="$port_mappings" \
