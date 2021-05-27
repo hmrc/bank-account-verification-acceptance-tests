@@ -20,6 +20,13 @@
       "url": "http:\/\/localhost:9949\/auth-login-stub\/application-login.*",
       "ruleId": 10017,
       "urlIsRegex": "true"
+    },
+    {
+      "reason": "Expected, this is the way metrics work on the platform",
+      "contextId": 1,
+      "url": "http:\/\/localhost:9028\/admin\/metrics.*",
+      "ruleId": 2,
+      "urlIsRegex": "true"
     }
   ]
 }
