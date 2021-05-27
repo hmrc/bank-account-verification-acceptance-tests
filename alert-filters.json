@@ -24,7 +24,7 @@
     {
       "reason": "Expected, this is the way metrics work on the platform",
       "contextId": 1,
-      "url": "http:\/\/localhost:9028\/admin\/metrics.*",
+      "url": "http:\/\/localhost:9903\/admin\/metrics.*",
       "ruleId": 2,
       "urlIsRegex": "true"
     }
