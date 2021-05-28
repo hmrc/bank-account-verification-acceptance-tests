@@ -21,7 +21,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
 case class StrideAuthStubPage() extends BasePage {
 
   private lazy val credentialsIdentifierField: TextField = textField(name("clientId"))
-  private lazy val submitField = xpath("//input[@type='submit']")
+  private lazy val submitField = id("submit")
 
   def enterClientID(credId: String): StrideAuthStubPage = {
     credentialsIdentifierField.value = credId
