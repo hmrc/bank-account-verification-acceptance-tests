@@ -17,7 +17,7 @@
 package uk.gov.hmrc.acceptance.spec
 
 import org.assertj.core.api.Assertions.assertThat
-import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
+import org.mockserver.model.{HttpError, HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
@@ -463,5 +463,213 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(BusinessAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
     assertThatErrorSummaryLinkExists("sortCode")
     assertThatInputFieldErrorMessageExists("sortCode")
+  }
+
+  Scenario("Business Bank Account Verification when the supplied name is a close match") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "Real company name"}""".stripMargin)
+        .withStatusCode(200)
+    )
+
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(CREDITSAFE_PATH)
+    ).error(
+      HttpError.error()
+        .withDropConnection(true)
+    )
+
+    Given("I want to collect and validate a companies bank account details")
+
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourney(InitRequest(address = DEFAULT_BUSINESS_ADDRESS).asJsonString())
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            "&& @.detail.input=='Request to /api/init'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
+    val session = startGGJourney(journeyBuilderData)
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s" && @.detail.input=='Request to ${session.startUrl}'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
+    SelectAccountTypePage().selectBusinessAccount().clickContinue()
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to /bank-account-verification/verify/business/${session.journeyId}'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
+    When("a company representative enters all required information and clicks continue")
+
+    BusinessAccountEntryPage()
+      .enterCompanyName(DEFAULT_BUSINESS.companyName)
+      .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
+      .enterAccountNumber(DEFAULT_ACCOUNT_DETAILS.accountNumber)
+      .clickContinue()
+
+    Then("the company representative is redirected to continue URL")
+
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
+    assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
+    assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(DEFAULT_BUSINESS.companyName)
+    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
+    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
+    assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
+    assertThat(ExampleFrontendDonePage().getAddress).isEqualTo(DEFAULT_BUSINESS_ADDRESS.get.asStringWithCR())
+    assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("inapplicable")
+    assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
+
+    mockServer.verify(HttpRequest.request().withPath(SUREPAY_PATH), VerificationTimes.atLeast(1))
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to ${session.completeUrl}'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+  }
+
+  Scenario("Business Bank Account Verification when the supplied account is a personal account that is a match") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": false, "ReasonCode": "PANM"}""".stripMargin)
+        .withStatusCode(200)
+    )
+
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(CREDITSAFE_PATH)
+    ).error(
+      HttpError.error()
+        .withDropConnection(true)
+    )
+
+    Given("I want to collect and validate a companies bank account details")
+
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourney(InitRequest(address = DEFAULT_BUSINESS_ADDRESS).asJsonString())
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            "&& @.detail.input=='Request to /api/init'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
+    val session = startGGJourney(journeyBuilderData)
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s" && @.detail.input=='Request to ${session.startUrl}'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
+    SelectAccountTypePage().selectBusinessAccount().clickContinue()
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to /bank-account-verification/verify/business/${session.journeyId}'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
+    When("a company representative enters all required information and clicks continue")
+
+    BusinessAccountEntryPage()
+      .enterCompanyName(DEFAULT_BUSINESS.companyName)
+      .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
+      .enterAccountNumber(DEFAULT_ACCOUNT_DETAILS.accountNumber)
+      .clickContinue()
+
+    Then("the company representative is redirected to continue URL")
+
+    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
+    assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
+    assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(DEFAULT_BUSINESS.companyName)
+    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
+    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
+    assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
+    assertThat(ExampleFrontendDonePage().getAddress).isEqualTo(DEFAULT_BUSINESS_ADDRESS.get.asStringWithCR())
+    assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("inapplicable")
+    assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
+
+    mockServer.verify(HttpRequest.request().withPath(SUREPAY_PATH), VerificationTimes.atLeast(1))
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to ${session.completeUrl}'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
   }
 }

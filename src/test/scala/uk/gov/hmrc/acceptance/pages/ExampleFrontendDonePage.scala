@@ -84,6 +84,10 @@ case class ExampleFrontendDonePage() extends BasePage {
     buildLocatorForSummaryListEntryCalled("Company postcode matches").findElement.get.text
   }
 
+  def getCompanyRegistrationNumberMatches: String = {
+    buildLocatorForSummaryListEntryCalled("Company registration number matches").findElement.get.text
+  }
+
   def getBankName: String = {
     buildLocatorForSummaryListEntryCalled("Bank name").findElement.get.text
   }
