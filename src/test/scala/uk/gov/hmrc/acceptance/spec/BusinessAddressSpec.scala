@@ -32,6 +32,9 @@ import java.util.UUID.randomUUID
 
 class BusinessAddressSpec extends BaseSpec with MockServer {
 
+  // **NOTE TO FUTURE TESTERS** Remember caching is based on a combination of name/sort code/account number.
+  // When adding new scenarios make sure you generate a unique name, if you use BUSINESS_NAME you will probably get a cached response!
+
   val DEFAULT_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
   val ALTERNATE_ACCOUNT_DETAILS: Account = Account("207102", "80044660", bankName = Some("BARCLAYS BANK PLC"))
   val UNKNOWN_ACCOUNT_DETAILS: Account = Account("207106", "80044666")
@@ -466,6 +469,8 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Business Bank Account Verification when the supplied name is a close match") {
+    val businessDetails: Business = Business(UUID.randomUUID().toString, DEFAULT_BUSINESS_ADDRESS)
+
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
@@ -534,7 +539,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     When("a company representative enters all required information and clicks continue")
 
     BusinessAccountEntryPage()
-      .enterCompanyName(DEFAULT_BUSINESS.companyName)
+      .enterCompanyName(businessDetails.companyName)
       .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
       .enterAccountNumber(DEFAULT_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
@@ -543,7 +548,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
-    assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(DEFAULT_BUSINESS.companyName)
+    assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(businessDetails.companyName)
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
@@ -570,6 +575,8 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Business Bank Account Verification when the supplied account is a personal account that is a match") {
+    val businessDetails: Business = Business(UUID.randomUUID().toString, DEFAULT_BUSINESS_ADDRESS)
+
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
@@ -638,7 +645,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     When("a company representative enters all required information and clicks continue")
 
     BusinessAccountEntryPage()
-      .enterCompanyName(DEFAULT_BUSINESS.companyName)
+      .enterCompanyName(businessDetails.companyName)
       .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
       .enterAccountNumber(DEFAULT_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
@@ -647,7 +654,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
-    assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(DEFAULT_BUSINESS.companyName)
+    assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(businessDetails.companyName)
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()

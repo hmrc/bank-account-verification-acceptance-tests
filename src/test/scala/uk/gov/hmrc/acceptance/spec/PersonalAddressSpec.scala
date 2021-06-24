@@ -31,6 +31,9 @@ import java.util.UUID
 
 class PersonalAddressSpec extends BaseSpec with MockServer {
 
+  // **NOTE TO FUTURE TESTERS** Remember caching is based on a combination of name/sort code/account number.
+  // When adding new scenarios make sure you generate a unique name, if you use FIRST_NAME you will probably get a cached response!
+
   val FIRST_NAME: String = UUID.randomUUID().toString
   val DEFAULT_NAME: Individual = Individual(title = Some("Mr"), firstName = Some(FIRST_NAME), lastName = Some("O'Conner-Smith"))
   val DEFAULT_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
@@ -421,6 +424,8 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Personal Bank Account Verification when the supplied name is a close match") {
+    val accountName: Individual = Individual(title = Some("Mr"), firstName = Some(UUID.randomUUID().toString), lastName = Some("O'Conner-Smith"))
+
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
@@ -489,7 +494,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     When("a user enters all required information and clicks continue")
 
     PersonalAccountEntryPage()
-      .enterAccountName(DEFAULT_NAME.asString())
+      .enterAccountName(accountName.asString())
       .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
       .enterAccountNumber(DEFAULT_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
@@ -498,7 +503,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
-    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
+    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(accountName.asString())
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
@@ -506,8 +511,8 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountNameMatched).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountAddressMatched).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getAccountAddressMatched).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
 
@@ -526,6 +531,8 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Personal Bank Account Verification when the supplied account is a business account that is a match") {
+    val accountName: Individual = Individual(title = Some("Mr"), firstName = Some(UUID.randomUUID().toString), lastName = Some("O'Conner-Smith"))
+
     mockServer.when(
       HttpRequest.request()
         .withMethod("POST")
@@ -594,7 +601,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     When("a user enters all required information and clicks continue")
 
     PersonalAccountEntryPage()
-      .enterAccountName(DEFAULT_NAME.asString())
+      .enterAccountName(accountName.asString())
       .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
       .enterAccountNumber(DEFAULT_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
@@ -603,7 +610,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
-    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
+    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(accountName.asString())
     assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
@@ -611,8 +618,8 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountNameMatched).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountAddressMatched).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getAccountAddressMatched).isEqualTo("indeterminate")
+    assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
 
