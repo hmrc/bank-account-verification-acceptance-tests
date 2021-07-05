@@ -21,11 +21,12 @@ import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.Account
-import uk.gov.hmrc.acceptance.models.init.{InitBACSRequirements, InitRequest}
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
+import uk.gov.hmrc.acceptance.models.init.{InitBACSRequirements, InitRequest}
 import uk.gov.hmrc.acceptance.pages._
 import uk.gov.hmrc.acceptance.utils.MockServer
 
+import java.util.UUID
 import java.util.UUID.randomUUID
 
 class CheckBusinessAccountSpec extends BaseSpec with MockServer {
@@ -96,6 +97,57 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("NATIONWIDE BUILDING SOCIETY")
+  }
+
+  Scenario("Check that correct user agent and true calling client is passed through to BARS") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": true}""".stripMargin)
+        .withStatusCode(200)
+    )
+
+    Given("I want to audit where a request came from")
+
+    val session = startGGJourney(initializeJourney())
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    SelectAccountTypePage().selectBusinessAccount().clickContinue()
+
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
+
+    When("a company representative enters all required information and clicks continue")
+
+    BusinessAccountEntryPage()
+      .enterCompanyName(DEFAULT_COMPANY_NAME + UUID.randomUUID().toString)
+      .enterSortCode(DEFAULT_BUILDING_SOCIETY_DETAILS.sortCode)
+      .enterAccountNumber(DEFAULT_BUILDING_SOCIETY_DETAILS.accountNumber)
+      .enterRollNumber(DEFAULT_BUILDING_SOCIETY_DETAILS.rollNumber.get)
+      .clickContinue()
+
+    Then("the user agent and true calling client is sent over to BARS and correctly audited")
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='businessBankAccountCheck' " +
+            "&& @.detail.length()==5" +
+            "&& @.detail.userAgent=='bank-account-verification-frontend'" +
+            s"&& @.detail.callingClient=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            "&& @.detail.context=='surepay_business_succeeded'" +
+            "&& @.detail.request.length()==2" +
+            "&& @.detail.response.length()==10" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
   }
 
   Scenario("Business Bank Account Verification successful bank check") {
@@ -389,7 +441,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     val companyName = "Cannot Match"
     startGGJourney(initializeJourney(InitRequest(
-        bacsRequirements = Some(InitBACSRequirements(directDebitRequired = false, directCreditRequired = true))).asJsonString()
+      bacsRequirements = Some(InitBACSRequirements(directDebitRequired = false, directCreditRequired = true))).asJsonString()
     ))
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue

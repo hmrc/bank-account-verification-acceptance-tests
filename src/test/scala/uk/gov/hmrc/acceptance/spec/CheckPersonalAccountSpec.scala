@@ -27,6 +27,8 @@ import uk.gov.hmrc.acceptance.pages.{ConfirmDetailsPage, ExampleFrontendDonePage
 import uk.gov.hmrc.acceptance.stubs.transunion.CallValidateResponseBuilder
 import uk.gov.hmrc.acceptance.utils.MockServer
 
+import java.util.UUID
+
 class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
   val DEFAULT_NAME: Individual = Individual(title = Some("Mr"), firstName = Some("Paddy"), lastName = Some("O'Conner-Smith"))
@@ -96,6 +98,54 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("NATIONWIDE BUILDING SOCIETY")
+  }
+
+  Scenario("Check that correct user agent and true calling client is passed through to BARS") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": true}""".stripMargin)
+        .withStatusCode(200)
+    )
+
+    Given("I want to audit where a request came from")
+
+    val session = startGGJourney(initializeJourney())
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+
+    When("a customer enters all required information and clicks continue")
+
+    PersonalAccountEntryPage()
+      .enterAccountName(DEFAULT_NAME.asString() + UUID.randomUUID().toString)
+      .enterSortCode(DEFAULT_BUILDING_SOCIETY_DETAILS.sortCode)
+      .enterAccountNumber(DEFAULT_BUILDING_SOCIETY_DETAILS.accountNumber)
+      .enterRollNumber(DEFAULT_BUILDING_SOCIETY_DETAILS.rollNumber.get)
+      .clickContinue()
+
+    Then("the user agent and true calling client is sent over to BARS and correctly audited")
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='TxSucceeded' " +
+            "&& @.detail.length()==19" +
+            "&& @.detail.userAgent=='bank-account-verification-frontend'" +
+            s"&& @.detail.callingClient=='$DEFAULT_SERVICE_IDENTIFIER'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
   }
 
   Scenario("Personal Bank Account Verification successful bank check") {
