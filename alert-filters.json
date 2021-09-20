@@ -27,6 +27,13 @@
       "url": "http:\/\/localhost:9903\/admin\/metrics.*",
       "ruleId": 2,
       "urlIsRegex": "true"
+    },
+    {
+      "reason": "Suppress false positive PII errors on metrics endpoint",
+      "contextId": 1,
+      "url": "http:\/\/localhost:9903\/admin\/metrics.*",
+      "ruleId": 10062,
+      "urlIsRegex": "true"
     }
   ]
 }
