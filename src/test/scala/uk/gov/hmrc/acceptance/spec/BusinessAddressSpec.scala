@@ -137,6 +137,8 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
 
     mockServer.verify(HttpRequest.request().withPath(CREDITSAFE_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(
@@ -263,6 +265,8 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
 
     mockServer.verify(
       HttpRequest.request()
@@ -312,6 +316,8 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(ALTERNATE_ACCOUNT_DETAILS.bankName.get)
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
   }
 
   Scenario("Business Bank Account cannot be changed to an unknown bank") {
@@ -409,6 +415,8 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
 
     mockServer.verify(
       HttpRequest.request()
@@ -559,6 +567,8 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
 
     mockServer.verify(HttpRequest.request().withPath(SUREPAY_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(
@@ -665,6 +675,8 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyRegistrationNumberMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
 
     mockServer.verify(HttpRequest.request().withPath(SUREPAY_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(

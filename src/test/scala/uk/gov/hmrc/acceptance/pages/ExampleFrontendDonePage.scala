@@ -92,6 +92,14 @@ case class ExampleFrontendDonePage() extends BasePage {
     buildLocatorForSummaryListEntryCalled("Bank name").findElement.get.text
   }
 
+  def getDirectDebitSupported: String = {
+    buildLocatorForSummaryListEntryCalled("Direct debit supported").findElement.get.text
+  }
+
+  def getDirectCreditSupported: String = {
+    buildLocatorForSummaryListEntryCalled("Direct credit supported").findElement.get.text
+  }
+
   def checkEntryDoesNotExistFor(entryName: String): Boolean = {
     buildLocatorForSummaryListEntryCalled(entryName).findAllElements.isEmpty
   }

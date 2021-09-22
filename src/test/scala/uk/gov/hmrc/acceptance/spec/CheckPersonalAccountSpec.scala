@@ -98,6 +98,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("NATIONWIDE BUILDING SOCIETY")
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("yes")
   }
 
   Scenario("Check that correct user agent and true calling client is passed through to BARS") {
@@ -209,6 +211,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
   }
 
   Scenario("Personal Bank Account Verification closed bank account") {
@@ -350,6 +354,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
   }
 
   Scenario("Personal Bank Account Verification trying to use HMRC bank account") {

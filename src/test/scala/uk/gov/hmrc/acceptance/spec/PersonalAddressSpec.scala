@@ -142,6 +142,8 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("no")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
 
     mockServer.verify(HttpRequest.request().withPath(TRANSUNION_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(
@@ -233,6 +235,8 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("no")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
 
     mockServer.verify(
       HttpRequest.request()
@@ -284,6 +288,8 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("no")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(ALTERNATE_ACCOUNT_DETAILS.bankName.get)
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("yes")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
   }
 
   Scenario("Personal Bank Account cannot be changed to an unknown bank") {
@@ -364,6 +370,8 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("no")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
 
     mockServer.verify(
       HttpRequest.request()
@@ -515,6 +523,8 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
 
     mockServer.verify(HttpRequest.request().withPath(SUREPAY_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(
@@ -622,6 +632,8 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
 
     mockServer.verify(HttpRequest.request().withPath(SUREPAY_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(

@@ -97,6 +97,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("NATIONWIDE BUILDING SOCIETY")
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("yes")
   }
 
   Scenario("Check that correct user agent and true calling client is passed through to BARS") {
@@ -210,6 +212,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
   }
 
   Scenario("Business Bank Account Verification closed bank account") {
@@ -348,6 +352,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("indeterminate")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
   }
 
   Scenario("Business Bank Account Verification trying to use HMRC bank account") {

@@ -92,5 +92,7 @@ class StrideCheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
     assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
     assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
+    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
+    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
   }
 }
