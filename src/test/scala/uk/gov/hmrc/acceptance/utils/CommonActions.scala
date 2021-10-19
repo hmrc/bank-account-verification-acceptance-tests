@@ -18,7 +18,7 @@ package uk.gov.hmrc.acceptance.utils
 
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.{InitResponse, JourneyBuilderResponse}
-import uk.gov.hmrc.acceptance.pages.{GGAuthStubPage, StrideAuthStubPage}
+import uk.gov.hmrc.acceptance.pages.auth.{GGAuthStubPage, StrideAuthStubPage}
 
 trait CommonActions extends BrowserDriver {
 

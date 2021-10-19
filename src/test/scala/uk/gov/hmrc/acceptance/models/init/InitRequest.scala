@@ -29,7 +29,7 @@ object InitRequest {
 }
 
 case class InitRequest(serviceIdentifier: String = DEFAULT_SERVICE_IDENTIFIER,
-                       continueUrl: String = s"${TestConfig.url("bank-account-verification-frontend-example")}/done",
+                       continueUrl: String = s"${TestConfig.url("bank-account-verification-frontend-example")}/moreDetails",
                        prepopulatedData: Option[PrepopulatedData] = None,
                        address: Option[Address] = None,
                        messages: Option[Messages] = Some(DEFAULT_MESSAGES),

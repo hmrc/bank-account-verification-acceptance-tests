@@ -23,7 +23,8 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.models.init.{InitRequest, PrepopulatedData}
-import uk.gov.hmrc.acceptance.pages.{BusinessAccountEntryPage, ExampleFrontendDonePage, SelectAccountTypePage}
+import uk.gov.hmrc.acceptance.pages.bavfe.{BusinessAccountEntryPage, SelectAccountTypePage}
+import uk.gov.hmrc.acceptance.pages.bavfefe.{CheckYourAnswersPage, ExampleFrontendDonePage, ExtraInformationPage}
 import uk.gov.hmrc.acceptance.stubs.creditsafe.CreditSafePayload
 import uk.gov.hmrc.acceptance.utils._
 
@@ -124,6 +125,12 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the company representative is redirected to continue URL")
+
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
@@ -253,6 +260,12 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
     Then("the company representative is redirected to continue URL")
 
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
+
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
     assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(DEFAULT_BUSINESS.companyName)
@@ -303,6 +316,12 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the updated details have been saved")
+
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
@@ -402,6 +421,12 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the company representative is redirected to continue URL")
+
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
@@ -554,6 +579,12 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
     Then("the company representative is redirected to continue URL")
 
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
+
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
     assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(businessDetails.companyName)
@@ -661,6 +692,12 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the company representative is redirected to continue URL")
+
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")

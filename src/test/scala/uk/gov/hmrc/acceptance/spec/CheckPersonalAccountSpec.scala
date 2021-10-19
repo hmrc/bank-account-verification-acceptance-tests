@@ -23,7 +23,8 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.models.init.{InitBACSRequirements, InitRequest}
 import uk.gov.hmrc.acceptance.models.{Account, Individual}
-import uk.gov.hmrc.acceptance.pages.{ConfirmDetailsPage, ExampleFrontendDonePage, PersonalAccountEntryPage, SelectAccountTypePage}
+import uk.gov.hmrc.acceptance.pages.bavfe.{ConfirmDetailsPage, PersonalAccountEntryPage, SelectAccountTypePage}
+import uk.gov.hmrc.acceptance.pages.bavfefe.{CheckYourAnswersPage, ExampleFrontendDonePage, ExtraInformationPage}
 import uk.gov.hmrc.acceptance.stubs.transunion.CallValidateResponseBuilder
 import uk.gov.hmrc.acceptance.utils.MockServer
 
@@ -86,6 +87,12 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
+
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
     assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
@@ -116,7 +123,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to audit where a request came from")
 
-    val session = startGGJourney(initializeJourney())
+    startGGJourney(initializeJourney())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -198,6 +205,12 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
+
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
@@ -341,6 +354,12 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     ConfirmDetailsPage().clickContinue()
 
     Then("the customer is redirected to continue URL")
+
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")

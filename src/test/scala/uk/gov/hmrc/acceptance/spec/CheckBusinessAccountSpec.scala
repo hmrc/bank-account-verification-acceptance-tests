@@ -23,7 +23,8 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.Account
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.models.init.{InitBACSRequirements, InitRequest}
-import uk.gov.hmrc.acceptance.pages._
+import uk.gov.hmrc.acceptance.pages.bavfe.{BusinessAccountEntryPage, ConfirmDetailsPage, PersonalAccountEntryPage, SelectAccountTypePage}
+import uk.gov.hmrc.acceptance.pages.bavfefe.{CheckYourAnswersPage, ExampleFrontendDonePage, ExtraInformationPage}
 import uk.gov.hmrc.acceptance.utils.MockServer
 
 import java.util.UUID
@@ -85,6 +86,12 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
+
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
@@ -200,6 +207,12 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
+
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
@@ -340,6 +353,12 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
+
+    ExtraInformationPage()
+      .clickContinue()
+
+    CheckYourAnswersPage()
+      .clickSubmit()
 
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
     assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")

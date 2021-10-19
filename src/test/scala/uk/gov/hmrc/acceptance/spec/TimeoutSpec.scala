@@ -20,7 +20,8 @@ import org.assertj.core.api.Assertions.assertThat
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.JourneyBuilderResponse
 import uk.gov.hmrc.acceptance.models.init.{InitRequest, InitRequestTimeoutConfig}
-import uk.gov.hmrc.acceptance.pages.{ExampleFrontendHomePage, SelectAccountTypePage, TechnicalErrorPage, TimeoutDialoguePartial}
+import uk.gov.hmrc.acceptance.pages.bavfe.{SelectAccountTypePage, TechnicalErrorPage, TimeoutDialoguePartial}
+import uk.gov.hmrc.acceptance.pages.bavfefe.ExampleFrontendHomePage
 
 import java.net.URLEncoder
 

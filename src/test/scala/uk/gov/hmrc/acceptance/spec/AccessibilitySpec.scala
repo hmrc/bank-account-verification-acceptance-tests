@@ -17,7 +17,7 @@
 package uk.gov.hmrc.acceptance.spec
 
 import org.assertj.core.api.Assertions.assertThat
-import uk.gov.hmrc.acceptance.pages._
+import uk.gov.hmrc.acceptance.pages.bavfe.{PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.tags.Accessibility
 
 class AccessibilitySpec extends BaseSpec {
