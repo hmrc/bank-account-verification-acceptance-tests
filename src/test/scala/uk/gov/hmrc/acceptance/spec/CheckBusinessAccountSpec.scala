@@ -19,12 +19,12 @@ package uk.gov.hmrc.acceptance.spec
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
-import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.Account
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.models.init.{InitBACSRequirements, InitRequest}
+import uk.gov.hmrc.acceptance.models.response.CompleteResponse
 import uk.gov.hmrc.acceptance.pages.bavfe.{BusinessAccountEntryPage, ConfirmDetailsPage, PersonalAccountEntryPage, SelectAccountTypePage}
-import uk.gov.hmrc.acceptance.pages.bavfefe.{CheckYourAnswersPage, ExampleFrontendDonePage, ExtraInformationPage}
+import uk.gov.hmrc.acceptance.pages.stubbed.JourneyCompletePage
 import uk.gov.hmrc.acceptance.utils.MockServer
 
 import java.util.UUID
@@ -33,7 +33,7 @@ import java.util.UUID.randomUUID
 class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
   val DEFAULT_COMPANY_NAME = "P@cking & $orting"
-  val DEFAULT_BUILDING_SOCIETY_DETAILS: Account = Account("07-00-93", "33333334", Some("NW/1356"), Some("Lloyds"))
+  val DEFAULT_BUILDING_SOCIETY_DETAILS: Account = Account("07-00-93", "33333334", Some("NW/1356"), Some("NATIONWIDE BUILDING SOCIETY"))
   val DEFAULT_BANK_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
   val HMRC_ACCOUNT_DETAILS: Account = Account("08 32 10", "12001039")
 
@@ -51,7 +51,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
-    val session = startGGJourney(initializeJourney())
+    val journeyData = initializeJourney()
+    val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -87,25 +88,24 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    ExtraInformationPage()
-      .clickContinue()
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    CheckYourAnswersPage()
-      .clickSubmit()
+    val actual: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
-    assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
-    assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(DEFAULT_COMPANY_NAME)
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.storedSortCode())
-    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.accountNumber)
-    assertThat(ExampleFrontendDonePage().getRollNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.rollNumber.get)
-    assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
-    assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("NATIONWIDE BUILDING SOCIETY")
-    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
-    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("yes")
+    assertThat(actual.accountType).isEqualTo("business")
+    assertThat(actual.business.get.companyName).isEqualTo(DEFAULT_COMPANY_NAME)
+    assertThat(actual.business.get.sortCode).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.storedSortCode())
+    assertThat(actual.business.get.accountNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.accountNumber)
+    assertThat(actual.business.get.rollNumber.get).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.rollNumber.get)
+    assertThat(actual.business.get.address).isEqualTo(None)
+    assertThat(actual.business.get.accountNumberWithSortCodeIsValid).isEqualTo("indeterminate")
+    assertThat(actual.business.get.companyNameMatches.get).isEqualTo("yes")
+    assertThat(actual.business.get.companyPostCodeMatches.get).isEqualTo("inapplicable")
+    assertThat(actual.business.get.accountExists.get).isEqualTo("yes")
+    assertThat(actual.business.get.sortCodeBankName.get).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.bankName.get)
+    assertThat(actual.business.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
+    assertThat(actual.business.get.sortCodeSupportsDirectCredit.get).isEqualTo("yes")
   }
 
   Scenario("Check that correct user agent and true calling client is passed through to BARS") {
@@ -122,7 +122,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to audit where a request came from")
 
-    val session = startGGJourney(initializeJourney())
+    startGGJourney(initializeJourney())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -173,7 +173,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
-    val session = startGGJourney(initializeJourney())
+    val journeyData = initializeJourney()
+    val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -208,25 +209,24 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    ExtraInformationPage()
-      .clickContinue()
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    CheckYourAnswersPage()
-      .clickSubmit()
+    val actual: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
-    assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
-    assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo(DEFAULT_COMPANY_NAME)
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
-    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
-    assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
-    assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
-    assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
-    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
-    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
+    assertThat(actual.accountType).isEqualTo("business")
+    assertThat(actual.business.get.companyName).isEqualTo(DEFAULT_COMPANY_NAME)
+    assertThat(actual.business.get.sortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
+    assertThat(actual.business.get.accountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
+    assertThat(actual.business.get.rollNumber).isEqualTo(None)
+    assertThat(actual.business.get.address).isEqualTo(None)
+    assertThat(actual.business.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
+    assertThat(actual.business.get.companyNameMatches.get).isEqualTo("yes")
+    assertThat(actual.business.get.companyPostCodeMatches.get).isEqualTo("inapplicable")
+    assertThat(actual.business.get.accountExists.get).isEqualTo("yes")
+    assertThat(actual.business.get.sortCodeBankName.get).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.bankName.get)
+    assertThat(actual.business.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
+    assertThat(actual.business.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
   }
 
   Scenario("Business Bank Account Verification closed bank account") {
@@ -309,7 +309,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a companies bank account details")
 
     val companyName = "Cannot Match"
-    val session = startGGJourney(initializeJourney())
+    val journeyData = initializeJourney()
+    val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -354,25 +355,24 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    ExtraInformationPage()
-      .clickContinue()
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    CheckYourAnswersPage()
-      .clickSubmit()
+    val actual: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
-    assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("business")
-    assertThat(ExampleFrontendDonePage().getCompanyName).isEqualTo("Cannot Match")
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
-    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
-    assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
-    assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getCompanyNameMatches).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getCompanyPostcodeMatches).isEqualTo("inapplicable")
-    assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
-    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
-    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
+    assertThat(actual.accountType).isEqualTo("business")
+    assertThat(actual.business.get.companyName).isEqualTo("Cannot Match")
+    assertThat(actual.business.get.sortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
+    assertThat(actual.business.get.accountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
+    assertThat(actual.business.get.rollNumber).isEqualTo(None)
+    assertThat(actual.business.get.address).isEqualTo(None)
+    assertThat(actual.business.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
+    assertThat(actual.business.get.companyNameMatches.get).isEqualTo("indeterminate")
+    assertThat(actual.business.get.companyPostCodeMatches.get).isEqualTo("inapplicable")
+    assertThat(actual.business.get.accountExists.get).isEqualTo("indeterminate")
+    assertThat(actual.business.get.sortCodeBankName.get).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.bankName.get)
+    assertThat(actual.business.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
+    assertThat(actual.business.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
   }
 
   Scenario("Business Bank Account Verification trying to use HMRC bank account") {
@@ -573,5 +573,4 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
   }
-
 }

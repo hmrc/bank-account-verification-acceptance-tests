@@ -17,15 +17,17 @@
 package uk.gov.hmrc.acceptance.spec
 
 import org.assertj.core.api.Assertions.assertThat
+import org.mockserver.model.{HttpRequest, HttpResponse}
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.JourneyBuilderResponse
 import uk.gov.hmrc.acceptance.models.init.{InitRequest, InitRequestTimeoutConfig}
 import uk.gov.hmrc.acceptance.pages.bavfe.{SelectAccountTypePage, TechnicalErrorPage, TimeoutDialoguePartial}
-import uk.gov.hmrc.acceptance.pages.bavfefe.ExampleFrontendHomePage
+import uk.gov.hmrc.acceptance.pages.stubbed.JourneyTimeOutPage
+import uk.gov.hmrc.acceptance.utils.MockServer
 
 import java.net.URLEncoder
 
-case class TimeoutSpec() extends BaseSpec {
+case class TimeoutSpec() extends BaseSpec with MockServer {
 
   Scenario("Timeout Dialogue links to relative link") {
     Given("I am on a Bank Account Verification Frontend page")
@@ -73,15 +75,38 @@ case class TimeoutSpec() extends BaseSpec {
   }
 
   Scenario("Timeout Dialogue links to an absolute URL on allow list") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("GET")
+        .withPath("/timed/out")
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "text/html")
+        .withBody(
+          s"""
+             |<!DOCTYPE html>
+             |<html lang="en">
+             |<head>
+             |	<meta charset="utf-8">
+             |	<title>Timeout</title>
+             |</head>
+             |<body>
+             |	<h1>A Timeout Has Occurred</h1>
+             |</body>
+             |</html>
+             |""".stripMargin)
+        .withStatusCode(200)
+    )
+
     Given("I am on a Bank Account Verification Frontend page")
 
-    val timeoutURL = TestConfig.url("bank-account-verification-frontend-example")
-    val journeyBuilderData: JourneyBuilderResponse = initializeJourney(
+    val timeoutURL = s"${TestConfig.environmentHost}:${TestConfig.mockServerPort()}/timed/out"
+    val journeyData: JourneyBuilderResponse = initializeJourney(
       InitRequest(
         timeoutConfig = Some(InitRequestTimeoutConfig(timeoutURL, 120))
       ).asJsonString())
 
-    startGGJourney(journeyBuilderData)
+    val session = startGGJourney(journeyData)
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
     When("a timeout dialogue appears after a period of inactivity")
@@ -91,7 +116,7 @@ case class TimeoutSpec() extends BaseSpec {
     Then("I click on sign out and I'm sent to the absolute URL that is on the allow list correctly")
 
     TimeoutDialoguePartial().clickSignOut()
-    assertThat(webDriver.getCurrentUrl).isEqualTo(timeoutURL)
-    assertThat(ExampleFrontendHomePage().isOnPage).isTrue
+
+    assertThat(JourneyTimeOutPage().isOnPage).isTrue
   }
 }

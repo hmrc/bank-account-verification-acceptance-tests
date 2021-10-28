@@ -22,6 +22,7 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.models.auth._
 import uk.gov.hmrc.acceptance.models.init.InitRequest
+import uk.gov.hmrc.acceptance.models.response.CompleteResponse
 
 import java.util.UUID.randomUUID
 import java.util.concurrent.TimeUnit.SECONDS
@@ -51,6 +52,19 @@ trait JourneyBuilder {
       JourneyBuilderResponse(Json.parse(response.body.string()).as[InitResponse], credId)
     } else {
       throw new IllegalStateException("Unable to initialize a new journey!")
+    }
+  }
+
+  def getDataCollectedByBAVFE(journeyId: String, credId: String): CompleteResponse = {
+    val request = new Request.Builder()
+      .url(s"${TestConfig.apiUrl("bank-account-verification")}/complete/$journeyId")
+      .method("GET", null)
+      .addHeader("Authorization", generateBearerToken(credId))
+    val response = okHttpClient.newCall(request.build()).execute()
+    if (response.isSuccessful) {
+      Json.parse(response.body.string()).as[CompleteResponse]
+    } else {
+      throw new IllegalStateException("Unable to complete journey!")
     }
   }
 

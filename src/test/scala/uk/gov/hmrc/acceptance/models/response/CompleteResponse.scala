@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.acceptance.pages.bavfe
+package uk.gov.hmrc.acceptance.models.response
 
-import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
-import uk.gov.hmrc.acceptance.pages.BasePage
+import play.api.libs.json.{Json, OWrites, Reads}
 
-case class TechnicalErrorPage() extends BasePage {
+case class CompleteResponse(accountType: String, personal: Option[PersonalComplete],
+                            business: Option[BusinessComplete])
 
-  override def isOnPage: Boolean = {
-    webDriverWillWait.until(titleIs("Error - GOV.UK"))
-  }
+object CompleteResponse {
+  implicit val writes: OWrites[CompleteResponse] = Json.writes[CompleteResponse]
+  implicit val reads: Reads[CompleteResponse] = Json.reads[CompleteResponse]
 }

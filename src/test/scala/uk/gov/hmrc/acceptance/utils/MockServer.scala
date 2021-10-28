@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.acceptance.utils
 
-import java.util.UUID
-
 import org.mockserver.integration.ClientAndServer
 import org.mockserver.model.{HttpRequest, HttpResponse}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import uk.gov.hmrc.acceptance.config.TestConfig
+
+import java.util.UUID
 
 trait MockServer extends AnyFeatureSpec
   with Eventually
@@ -66,6 +66,37 @@ trait MockServer extends AnyFeatureSpec
       HttpResponse.response()
         .withHeader("Content-Type", "application/json")
         .withBody(s"""{"access_token" : "${UUID.randomUUID().toString}", "expires_in" : "3599", "token_type" : "BearerToken" }""".stripMargin)
+        .withStatusCode(200)
+    )
+    //Continue URL
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("GET")
+        .withPath("/complete/.*")
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "text/html")
+        .withBody(
+          s"""
+             |<!DOCTYPE html>
+             |<html lang="en">
+             |<head>
+             |	<meta charset="utf-8">
+             |	<title>Journey complete</title>
+             |</head>
+             |<body>
+             |	<h1>Journey Complete</h1>
+             |  <p>Journey has been completed for
+             |    <span id="journeyId">
+             |      <script type="text/javascript">
+             |      let journeyId = this.window.location.pathname.split('/').slice(-1)[0];
+             |      document.write(journeyId);
+             |      </script>
+             |    </span>
+             |  </p>
+             |</body>
+             |</html>
+             |""".stripMargin)
         .withStatusCode(200)
     )
   }

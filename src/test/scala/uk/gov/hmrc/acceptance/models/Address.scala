@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.acceptance.models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, OFormat, OWrites, Reads}
 
 object Address {
   implicit val addressJsonFormat: OFormat[Address] = Json.format[Address]
+  implicit val writes: OWrites[Address] = Json.writes[Address]
+  implicit val reads: Reads[Address] = Json.reads[Address]
 }
 
 case class Address(lines: List[String],

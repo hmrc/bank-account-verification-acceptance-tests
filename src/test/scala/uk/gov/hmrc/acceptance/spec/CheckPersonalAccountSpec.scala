@@ -19,12 +19,12 @@ package uk.gov.hmrc.acceptance.spec
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
-import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.models.init.{InitBACSRequirements, InitRequest}
+import uk.gov.hmrc.acceptance.models.response.CompleteResponse
 import uk.gov.hmrc.acceptance.models.{Account, Individual}
 import uk.gov.hmrc.acceptance.pages.bavfe.{ConfirmDetailsPage, PersonalAccountEntryPage, SelectAccountTypePage}
-import uk.gov.hmrc.acceptance.pages.bavfefe.{CheckYourAnswersPage, ExampleFrontendDonePage, ExtraInformationPage}
+import uk.gov.hmrc.acceptance.pages.stubbed.JourneyCompletePage
 import uk.gov.hmrc.acceptance.stubs.transunion.CallValidateResponseBuilder
 import uk.gov.hmrc.acceptance.utils.MockServer
 
@@ -33,7 +33,7 @@ import java.util.UUID
 class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
   val DEFAULT_NAME: Individual = Individual(title = Some("Mr"), firstName = Some("Paddy"), lastName = Some("O'Conner-Smith"))
-  val DEFAULT_BUILDING_SOCIETY_DETAILS: Account = Account("07-00-93", "33333334", Some("NW/1356"), Some("Lloyds"))
+  val DEFAULT_BUILDING_SOCIETY_DETAILS: Account = Account("07-00-93", "33333334", Some("NW/1356"), Some("NATIONWIDE BUILDING SOCIETY"))
   val DEFAULT_BANK_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
   val HMRC_ACCOUNT_DETAILS: Account = Account("08 32 10", "12001039")
 
@@ -51,7 +51,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a customers bank account details")
 
-    val session = startGGJourney(initializeJourney())
+    val journeyData = initializeJourney()
+    val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -87,26 +88,25 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    ExtraInformationPage()
-      .clickContinue()
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    CheckYourAnswersPage()
-      .clickSubmit()
+    val actual: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
-    assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
-    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.storedSortCode())
-    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.accountNumber)
-    assertThat(ExampleFrontendDonePage().getRollNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.rollNumber.get)
-    assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountNameMatched).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("NATIONWIDE BUILDING SOCIETY")
-    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
-    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("yes")
+    assertThat(actual.accountType).isEqualTo("personal")
+    assertThat(actual.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
+    assertThat(actual.personal.get.sortCode).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.storedSortCode())
+    assertThat(actual.personal.get.accountNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.accountNumber)
+    assertThat(actual.personal.get.rollNumber).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.rollNumber)
+    assertThat(actual.personal.get.address).isEqualTo(None)
+    assertThat(actual.personal.get.accountNumberWithSortCodeIsValid).isEqualTo("indeterminate")
+    assertThat(actual.personal.get.accountExists.get).isEqualTo("yes")
+    assertThat(actual.personal.get.nameMatches.get).isEqualTo("yes")
+    assertThat(actual.personal.get.nonConsented.get).isEqualTo("indeterminate")
+    assertThat(actual.personal.get.subjectHasDeceased.get).isEqualTo("indeterminate")
+    assertThat(actual.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.bankName.get)
+    assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
+    assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("yes")
   }
 
   Scenario("Check that correct user agent and true calling client is passed through to BARS") {
@@ -171,7 +171,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a customers bank account details")
 
-    val session = startGGJourney(initializeJourney())
+    val journeyData = initializeJourney()
+    val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -206,26 +207,25 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       VerificationTimes.atLeast(1)
     )
 
-    ExtraInformationPage()
-      .clickContinue()
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    CheckYourAnswersPage()
-      .clickSubmit()
+    val actual: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
-    assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
-    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo(DEFAULT_NAME.asString())
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
-    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
-    assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
-    assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountNameMatched).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
-    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
-    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
+    assertThat(actual.accountType).isEqualTo("personal")
+    assertThat(actual.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
+    assertThat(actual.personal.get.sortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
+    assertThat(actual.personal.get.accountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
+    assertThat(actual.personal.get.rollNumber).isEqualTo(None)
+    assertThat(actual.personal.get.address).isEqualTo(None)
+    assertThat(actual.personal.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
+    assertThat(actual.personal.get.accountExists.get).isEqualTo("yes")
+    assertThat(actual.personal.get.nameMatches.get).isEqualTo("yes")
+    assertThat(actual.personal.get.nonConsented.get).isEqualTo("indeterminate")
+    assertThat(actual.personal.get.subjectHasDeceased.get).isEqualTo("indeterminate")
+    assertThat(actual.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.bankName.get)
+    assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
+    assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
   }
 
   Scenario("Personal Bank Account Verification closed bank account") {
@@ -310,7 +310,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a customers bank account details")
 
     val companyName = "Cannot Match"
-    val session = startGGJourney(initializeJourney())
+    val journeyData = initializeJourney()
+    val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -355,26 +356,25 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Then("the customer is redirected to continue URL")
 
-    ExtraInformationPage()
-      .clickContinue()
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    CheckYourAnswersPage()
-      .clickSubmit()
+    val actual: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
 
-    assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification-frontend-example")}/done/${session.journeyId}")
-    assertThat(ExampleFrontendDonePage().getAccountType).isEqualTo("personal")
-    assertThat(ExampleFrontendDonePage().getAccountName).isEqualTo("Cannot Match")
-    assertThat(ExampleFrontendDonePage().getSortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
-    assertThat(ExampleFrontendDonePage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
-    assertThat(ExampleFrontendDonePage().getRollNumber).isEmpty()
-    assertThat(ExampleFrontendDonePage().getValidationResult).isEqualTo("yes")
-    assertThat(ExampleFrontendDonePage().getAccountExists).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getAccountNameMatched).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getAccountNonConsented).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getAccountOwnerDeceased).isEqualTo("indeterminate")
-    assertThat(ExampleFrontendDonePage().getBankName).isEqualTo("Lloyds")
-    assertThat(ExampleFrontendDonePage().getDirectDebitSupported).isEqualTo("no")
-    assertThat(ExampleFrontendDonePage().getDirectCreditSupported).isEqualTo("no")
+    assertThat(actual.accountType).isEqualTo("personal")
+    assertThat(actual.personal.get.accountName).isEqualTo("Cannot Match")
+    assertThat(actual.personal.get.sortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
+    assertThat(actual.personal.get.accountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
+    assertThat(actual.personal.get.rollNumber).isEqualTo(None)
+    assertThat(actual.personal.get.address).isEqualTo(None)
+    assertThat(actual.personal.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
+    assertThat(actual.personal.get.accountExists.get).isEqualTo("indeterminate")
+    assertThat(actual.personal.get.nameMatches.get).isEqualTo("indeterminate")
+    assertThat(actual.personal.get.nonConsented.get).isEqualTo("indeterminate")
+    assertThat(actual.personal.get.subjectHasDeceased.get).isEqualTo("indeterminate")
+    assertThat(actual.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.bankName.get)
+    assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
+    assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
   }
 
   Scenario("Personal Bank Account Verification trying to use HMRC bank account") {

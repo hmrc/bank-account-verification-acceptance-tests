@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.acceptance.pages.bavfe
+package uk.gov.hmrc.acceptance.pages.stubbed
 
 import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
 import uk.gov.hmrc.acceptance.pages.BasePage
 
-case class TechnicalErrorPage() extends BasePage {
+case class JourneyCompletePage() extends BasePage {
+
+  private lazy val journeyId = id("journeyId")
+
+  def getJourneyId(): String = {
+    journeyId.findElement.get.text
+  }
 
   override def isOnPage: Boolean = {
-    webDriverWillWait.until(titleIs("Error - GOV.UK"))
+    webDriverWillWait.until(titleIs("Journey complete"))
   }
 }
