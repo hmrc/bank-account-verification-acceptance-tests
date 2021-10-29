@@ -106,7 +106,7 @@ case class TimeoutSpec() extends BaseSpec with MockServer {
         timeoutConfig = Some(InitRequestTimeoutConfig(timeoutURL, 120))
       ).asJsonString())
 
-    val session = startGGJourney(journeyData)
+    startGGJourney(journeyData)
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
     When("a timeout dialogue appears after a period of inactivity")

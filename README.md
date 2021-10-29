@@ -23,11 +23,11 @@ To start services locally, run the following:
 
     sm --start BANK_ACCOUNT_VERIFICATION -r --appendArgs '{
       "BANK_ACCOUNT_REPUTATION": [
-        "-J-Dmicroservice.services.creditsafe.endpoint=http://localhost:9000/Match",
-        "-J-Dmicroservice.services.callvalidate.endpoint=http://localhost:9000/callvalidateapi",
-        "-J-Dmicroservice.services.surepay.hostname=http://localhost:9000/surepay/",
+        "-J-Dmicroservice.services.creditsafe.endpoint=http://localhost:6001/Match",
+        "-J-Dmicroservice.services.callvalidate.endpoint=http://localhost:6001/callvalidateapi",
+        "-J-Dmicroservice.services.surepay.hostname=http://localhost:6001/surepay/",
         "-J-Dmicroservice.services.surepay.enabled=true",
-        "-J-Dauditing.consumer.baseUri.port=9000",
+        "-J-Dauditing.consumer.baseUri.port=6001",
         "-J-Dauditing.consumer.baseUri.host=localhost",
         "-J-Dauditing.enabled=true",
         "-J-Dproxy.proxyRequiredForThisEnvironment=false",
@@ -47,9 +47,8 @@ To start services locally, run the following:
         "-J-Dcontrollers.confidenceLevel.uk.gov.hmrc.bankaccountreputationthirdpartycache.controllers.CacheController.needsLogging=true"
       ],
       "BANK_ACCOUNT_VERIFICATION_FRONTEND": [
-        "-J-Dbankaccountreputation.validateBankDetails.url=http://localhost:9871/v2/validateBankDetails",
         "-J-Dmicroservice.hosts.allowList.1=localhost",
-        "-J-Dauditing.consumer.baseUri.port=9000",
+        "-J-Dauditing.consumer.baseUri.port=6001",
         "-J-Dauditing.consumer.baseUri.host=localhost",
         "-J-Dauditing.enabled=true"
       ]
