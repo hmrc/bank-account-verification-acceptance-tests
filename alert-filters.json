@@ -41,6 +41,20 @@
       "url": "http:\/\/localhost:9903\/admin\/metrics.*",
       "ruleId": 10062,
       "urlIsRegex": "true"
+    },
+    {
+      "reason": "Suppress errors for mocked endpoint",
+      "contextId": 1,
+      "url": "http:\/\/localhost:6001\/.*",
+      "ruleId": 10020,
+      "urlIsRegex": "true"
+    },
+    {
+      "reason": "Suppress errors for mocked endpoint",
+      "contextId": 1,
+      "url": "http:\/\/localhost:6001\/.*",
+      "ruleId": 10021,
+      "urlIsRegex": "true"
     }
   ]
 }
