@@ -96,7 +96,7 @@ class StrideCheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(actual.business.get.address).isEqualTo(None)
     assertThat(actual.business.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
     assertThat(actual.business.get.companyNameMatches.get).isEqualTo("yes")
-    assertThat(actual.business.get.companyPostCodeMatches.get).isEqualTo("inapplicable")
+    assertThat(actual.business.get.companyPostCodeMatches.get).isEqualTo("indeterminate")
     assertThat(actual.business.get.accountExists.get).isEqualTo("yes")
     assertThat(actual.business.get.sortCodeBankName.get).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.business.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")

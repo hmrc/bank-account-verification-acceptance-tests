@@ -148,7 +148,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='TxSucceeded' " +
-            "&& @.detail.length()==19" +
+            "&& @.detail.length()==16" +
             "&& @.detail.userAgent=='bank-account-verification-frontend'" +
             s"&& @.detail.callingClient=='$DEFAULT_SERVICE_IDENTIFIER'" +
             ")]")

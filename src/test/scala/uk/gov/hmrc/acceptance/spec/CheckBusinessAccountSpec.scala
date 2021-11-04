@@ -101,7 +101,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(actual.business.get.address).isEqualTo(None)
     assertThat(actual.business.get.accountNumberWithSortCodeIsValid).isEqualTo("indeterminate")
     assertThat(actual.business.get.companyNameMatches.get).isEqualTo("yes")
-    assertThat(actual.business.get.companyPostCodeMatches.get).isEqualTo("inapplicable")
+    assertThat(actual.business.get.companyPostCodeMatches.get).isEqualTo("indeterminate")
     assertThat(actual.business.get.accountExists.get).isEqualTo("yes")
     assertThat(actual.business.get.sortCodeBankName.get).isEqualTo(DEFAULT_BUILDING_SOCIETY_DETAILS.bankName.get)
     assertThat(actual.business.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
@@ -152,7 +152,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
             s"&& @.detail.callingClient=='$DEFAULT_SERVICE_IDENTIFIER'" +
             "&& @.detail.context=='surepay_business_succeeded'" +
             "&& @.detail.request.length()==2" +
-            "&& @.detail.response.length()==10" +
+            "&& @.detail.response.length()==8" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -222,7 +222,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(actual.business.get.address).isEqualTo(None)
     assertThat(actual.business.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
     assertThat(actual.business.get.companyNameMatches.get).isEqualTo("yes")
-    assertThat(actual.business.get.companyPostCodeMatches.get).isEqualTo("inapplicable")
+    assertThat(actual.business.get.companyPostCodeMatches.get).isEqualTo("indeterminate")
     assertThat(actual.business.get.accountExists.get).isEqualTo("yes")
     assertThat(actual.business.get.sortCodeBankName.get).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.business.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
@@ -368,7 +368,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     assertThat(actual.business.get.address).isEqualTo(None)
     assertThat(actual.business.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
     assertThat(actual.business.get.companyNameMatches.get).isEqualTo("indeterminate")
-    assertThat(actual.business.get.companyPostCodeMatches.get).isEqualTo("inapplicable")
+    assertThat(actual.business.get.companyPostCodeMatches.get).isEqualTo("indeterminate")
     assertThat(actual.business.get.accountExists.get).isEqualTo("indeterminate")
     assertThat(actual.business.get.sortCodeBankName.get).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.business.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
