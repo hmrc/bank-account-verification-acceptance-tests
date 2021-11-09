@@ -55,6 +55,20 @@
       "url": "http:\/\/localhost:6001\/.*",
       "ruleId": 10021,
       "urlIsRegex": "true"
+    },
+    {
+      "reason": "Suppress false positive PII errors on metrics endpoint",
+      "contextId": 10062,
+      "url": "http:\/\/localhost:9903\/bank-account-verification\/verify\/business\/.*",
+      "ruleId": 10021,
+      "urlIsRegex": "true"
+    },
+    {
+      "reason": "Suppress false positive PII errors on metrics endpoint",
+      "contextId": 10062,
+      "url": "http:\/\/localhost:9903\/bank-account-verification\/verify\/personal\/.*",
+      "ruleId": 10021,
+      "urlIsRegex": "true"
     }
   ]
 }
