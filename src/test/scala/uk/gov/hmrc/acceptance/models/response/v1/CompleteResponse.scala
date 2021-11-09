@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.acceptance.models.response
+package uk.gov.hmrc.acceptance.models.response.v1
 
 import play.api.libs.json.{Json, OWrites, Reads}
 

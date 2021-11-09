@@ -33,7 +33,7 @@ case class TimeoutSpec() extends BaseSpec with MockServer {
     Given("I am on a Bank Account Verification Frontend page")
 
     val timeoutRelativePath = "/admin/metrics"
-    val journeyBuilderData: JourneyBuilderResponse = initializeJourney(
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourneyV1(
       InitRequest(
         timeoutConfig = Some(InitRequestTimeoutConfig(timeoutRelativePath, 120))
       ).asJsonString())
@@ -55,7 +55,7 @@ case class TimeoutSpec() extends BaseSpec with MockServer {
     Given("I am on a Bank Account Verification Frontend page")
 
     val timeoutURL = "http://www.google.co.uk"
-    val journeyBuilderData: JourneyBuilderResponse = initializeJourney(
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourneyV1(
       InitRequest(
         timeoutConfig = Some(InitRequestTimeoutConfig(timeoutURL, 120))
       ).asJsonString())
@@ -101,7 +101,7 @@ case class TimeoutSpec() extends BaseSpec with MockServer {
     Given("I am on a Bank Account Verification Frontend page")
 
     val timeoutURL = s"${TestConfig.environmentHost}:${TestConfig.mockServerPort()}/timed/out"
-    val journeyData: JourneyBuilderResponse = initializeJourney(
+    val journeyData: JourneyBuilderResponse = initializeJourneyV1(
       InitRequest(
         timeoutConfig = Some(InitRequestTimeoutConfig(timeoutURL, 120))
       ).asJsonString())

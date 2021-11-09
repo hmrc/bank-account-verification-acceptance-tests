@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.acceptance.spec
+package uk.gov.hmrc.acceptance.spec.v2
 
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpError, HttpRequest, HttpResponse, JsonPathBody}
@@ -22,9 +22,10 @@ import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.models.init.{InitRequest, PrepopulatedData}
-import uk.gov.hmrc.acceptance.models.response.CompleteResponse
+import uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse
 import uk.gov.hmrc.acceptance.pages.bavfe.{PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.pages.stubbed.JourneyCompletePage
+import uk.gov.hmrc.acceptance.spec.BaseSpec
 import uk.gov.hmrc.acceptance.stubs.transunion.{CallValidateResponseBuilder, IdentityCheckBuilder}
 import uk.gov.hmrc.acceptance.utils._
 
@@ -76,7 +77,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -84,7 +85,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/init'" +
+            "&& @.detail.input=='Request to /api/v2/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -132,20 +133,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
     assertThat(actual.personal.get.sortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(actual.personal.get.accountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(actual.personal.get.rollNumber).isEqualTo(None)
-    assertThat(actual.personal.get.address.get).isEqualTo(DEFAULT_ADDRESS)
-    assertThat(actual.personal.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
+    assertThat(actual.personal.get.accountNumberIsWellFormatted).isEqualTo("yes")
     assertThat(actual.personal.get.accountExists.get).isEqualTo("yes")
     assertThat(actual.personal.get.nameMatches.get).isEqualTo("yes")
-    assertThat(actual.personal.get.addressMatches.get).isEqualTo("indeterminate")
-    assertThat(actual.personal.get.nonConsented.get).isEqualTo("indeterminate")
-    assertThat(actual.personal.get.subjectHasDeceased.get).isEqualTo("indeterminate")
     assertThat(actual.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
@@ -198,7 +195,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -206,7 +203,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/init'" +
+            "&& @.detail.input=='Request to /api/v2/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -229,20 +226,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val initial: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
+    val initial: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
 
     assertThat(initial.accountType).isEqualTo("personal")
     assertThat(initial.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
     assertThat(initial.personal.get.sortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(initial.personal.get.accountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(initial.personal.get.rollNumber).isEqualTo(None)
-    assertThat(initial.personal.get.address.get).isEqualTo(DEFAULT_ADDRESS)
-    assertThat(initial.personal.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
+    assertThat(initial.personal.get.accountNumberIsWellFormatted).isEqualTo("yes")
     assertThat(initial.personal.get.accountExists.get).isEqualTo("yes")
     assertThat(initial.personal.get.nameMatches.get).isEqualTo("yes")
-    assertThat(initial.personal.get.addressMatches.get).isEqualTo("indeterminate")
-    assertThat(initial.personal.get.nonConsented.get).isEqualTo("indeterminate")
-    assertThat(initial.personal.get.subjectHasDeceased.get).isEqualTo("indeterminate")
     assertThat(initial.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
     assertThat(initial.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(initial.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
@@ -286,20 +279,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val updated: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
+    val updated: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
 
     assertThat(updated.accountType).isEqualTo("personal")
     assertThat(updated.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
     assertThat(updated.personal.get.sortCode).isEqualTo(ALTERNATE_ACCOUNT_DETAILS.storedSortCode())
     assertThat(updated.personal.get.accountNumber).isEqualTo(ALTERNATE_ACCOUNT_DETAILS.accountNumber)
     assertThat(updated.personal.get.rollNumber).isEqualTo(None)
-    assertThat(updated.personal.get.address.get).isEqualTo(DEFAULT_ADDRESS)
-    assertThat(updated.personal.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
+    assertThat(updated.personal.get.accountNumberIsWellFormatted).isEqualTo("yes")
     assertThat(updated.personal.get.accountExists.get).isEqualTo("yes")
     assertThat(updated.personal.get.nameMatches.get).isEqualTo("yes")
-    assertThat(updated.personal.get.addressMatches.get).isEqualTo("indeterminate")
-    assertThat(updated.personal.get.nonConsented.get).isEqualTo("indeterminate")
-    assertThat(updated.personal.get.subjectHasDeceased.get).isEqualTo("indeterminate")
     assertThat(updated.personal.get.sortCodeBankName.get).isEqualTo(ALTERNATE_ACCOUNT_DETAILS.bankName.get)
     assertThat(updated.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("yes")
     assertThat(updated.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
@@ -341,7 +330,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -349,7 +338,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/init'" +
+            "&& @.detail.input=='Request to /api/v2/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -372,20 +361,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo(accountName.asString())
     assertThat(actual.personal.get.sortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(actual.personal.get.accountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(actual.personal.get.rollNumber).isEqualTo(None)
-    assertThat(actual.personal.get.address.get).isEqualTo(DEFAULT_ADDRESS)
-    assertThat(actual.personal.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
+    assertThat(actual.personal.get.accountNumberIsWellFormatted).isEqualTo("yes")
     assertThat(actual.personal.get.accountExists.get).isEqualTo("yes")
     assertThat(actual.personal.get.nameMatches.get).isEqualTo("yes")
-    assertThat(actual.personal.get.addressMatches.get).isEqualTo("indeterminate")
-    assertThat(actual.personal.get.nonConsented.get).isEqualTo("indeterminate")
-    assertThat(actual.personal.get.subjectHasDeceased.get).isEqualTo("indeterminate")
     assertThat(actual.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
@@ -473,7 +458,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -481,7 +466,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/init'" +
+            "&& @.detail.input=='Request to /api/v2/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -529,20 +514,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo(accountName.asString())
     assertThat(actual.personal.get.sortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(actual.personal.get.accountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(actual.personal.get.rollNumber).isEqualTo(None)
-    assertThat(actual.personal.get.address.get).isEqualTo(DEFAULT_ADDRESS)
-    assertThat(actual.personal.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
+    assertThat(actual.personal.get.accountNumberIsWellFormatted).isEqualTo("yes")
     assertThat(actual.personal.get.accountExists.get).isEqualTo("yes")
     assertThat(actual.personal.get.nameMatches.get).isEqualTo("yes")
-    assertThat(actual.personal.get.addressMatches.get).isEqualTo("indeterminate")
-    assertThat(actual.personal.get.nonConsented.get).isEqualTo("indeterminate")
-    assertThat(actual.personal.get.subjectHasDeceased.get).isEqualTo("indeterminate")
     assertThat(actual.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
@@ -586,7 +567,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourney(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -594,7 +575,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/init'" +
+            "&& @.detail.input=='Request to /api/v2/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -642,20 +623,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo(accountName.asString())
     assertThat(actual.personal.get.sortCode).isEqualTo(DEFAULT_ACCOUNT_DETAILS.storedSortCode())
     assertThat(actual.personal.get.accountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(actual.personal.get.rollNumber).isEqualTo(None)
-    assertThat(actual.personal.get.address.get).isEqualTo(DEFAULT_ADDRESS)
-    assertThat(actual.personal.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
+    assertThat(actual.personal.get.accountNumberIsWellFormatted).isEqualTo("yes")
     assertThat(actual.personal.get.accountExists.get).isEqualTo("yes")
     assertThat(actual.personal.get.nameMatches.get).isEqualTo("yes")
-    assertThat(actual.personal.get.addressMatches.get).isEqualTo("indeterminate")
-    assertThat(actual.personal.get.nonConsented.get).isEqualTo("indeterminate")
-    assertThat(actual.personal.get.subjectHasDeceased.get).isEqualTo("indeterminate")
     assertThat(actual.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")

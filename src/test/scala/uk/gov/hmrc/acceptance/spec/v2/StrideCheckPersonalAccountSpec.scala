@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.acceptance.spec
+package uk.gov.hmrc.acceptance.spec.v2
 
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
-import uk.gov.hmrc.acceptance.models.response.CompleteResponse
+import uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse
 import uk.gov.hmrc.acceptance.models.{Account, Individual}
 import uk.gov.hmrc.acceptance.pages.bavfe.{BusinessAccountEntryPage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.pages.stubbed.JourneyCompletePage
+import uk.gov.hmrc.acceptance.spec.BaseSpec
 import uk.gov.hmrc.acceptance.utils.MockServer
 
 class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
@@ -45,7 +46,7 @@ class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a customers bank account details")
 
-    val journeyData = initializeJourney()
+    val journeyData = initializeJourneyV2()
     val session = startStrideJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
@@ -84,19 +85,16 @@ class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFE(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
     assertThat(actual.personal.get.sortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
     assertThat(actual.personal.get.accountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
     assertThat(actual.personal.get.rollNumber).isEqualTo(None)
-    assertThat(actual.personal.get.address).isEqualTo(None)
-    assertThat(actual.personal.get.accountNumberWithSortCodeIsValid).isEqualTo("yes")
+    assertThat(actual.personal.get.accountNumberIsWellFormatted).isEqualTo("yes")
     assertThat(actual.personal.get.accountExists.get).isEqualTo("yes")
     assertThat(actual.personal.get.nameMatches.get).isEqualTo("yes")
-    assertThat(actual.personal.get.nonConsented.get).isEqualTo("indeterminate")
-    assertThat(actual.personal.get.subjectHasDeceased.get).isEqualTo("indeterminate")
     assertThat(actual.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")

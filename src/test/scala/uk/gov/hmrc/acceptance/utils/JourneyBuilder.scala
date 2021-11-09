@@ -22,7 +22,6 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.models.auth._
 import uk.gov.hmrc.acceptance.models.init.InitRequest
-import uk.gov.hmrc.acceptance.models.response.CompleteResponse
 
 import java.util.UUID.randomUUID
 import java.util.concurrent.TimeUnit.SECONDS
@@ -40,7 +39,7 @@ trait JourneyBuilder {
     .build()
 
   //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
-  def initializeJourney(configuration: String = InitRequest.apply().asJsonString()): JourneyBuilderResponse = {
+  def initializeJourneyV1(configuration: String = InitRequest.apply().asJsonString()): JourneyBuilderResponse = {
     // **NOTE** credId can only be a maximum of 30 characters, anything longer will result in a mismatch and no journey will be found
     val credId = randomUUID().toString.slice(0, 29)
     val request = new Request.Builder()
@@ -55,14 +54,43 @@ trait JourneyBuilder {
     }
   }
 
-  def getDataCollectedByBAVFE(journeyId: String, credId: String): CompleteResponse = {
+  //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
+  def initializeJourneyV2(configuration: String = InitRequest.apply().asJsonString()): JourneyBuilderResponse = {
+    // **NOTE** credId can only be a maximum of 30 characters, anything longer will result in a mismatch and no journey will be found
+    val credId = randomUUID().toString.slice(0, 29)
+    val request = new Request.Builder()
+      .url(s"${TestConfig.apiUrl("bank-account-verification")}/v2/init")
+      .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
+      .addHeader("Authorization", generateBearerToken(credId))
+    val response = okHttpClient.newCall(request.build()).execute()
+    if (response.isSuccessful) {
+      JourneyBuilderResponse(Json.parse(response.body.string()).as[InitResponse], credId)
+    } else {
+      throw new IllegalStateException("Unable to initialize a new journey!")
+    }
+  }
+
+  def getDataCollectedByBAVFEV1(journeyId: String, credId: String): uk.gov.hmrc.acceptance.models.response.v1.CompleteResponse = {
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/complete/$journeyId")
       .method("GET", null)
       .addHeader("Authorization", generateBearerToken(credId))
     val response = okHttpClient.newCall(request.build()).execute()
     if (response.isSuccessful) {
-      Json.parse(response.body.string()).as[CompleteResponse]
+      Json.parse(response.body.string()).as[uk.gov.hmrc.acceptance.models.response.v1.CompleteResponse]
+    } else {
+      throw new IllegalStateException("Unable to complete journey!")
+    }
+  }
+
+  def getDataCollectedByBAVFEV2(journeyId: String, credId: String): uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse = {
+    val request = new Request.Builder()
+      .url(s"${TestConfig.apiUrl("bank-account-verification")}/v2/complete/$journeyId")
+      .method("GET", null)
+      .addHeader("Authorization", generateBearerToken(credId))
+    val response = okHttpClient.newCall(request.build()).execute()
+    if (response.isSuccessful) {
+      Json.parse(response.body.string()).as[uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse]
     } else {
       throw new IllegalStateException("Unable to complete journey!")
     }

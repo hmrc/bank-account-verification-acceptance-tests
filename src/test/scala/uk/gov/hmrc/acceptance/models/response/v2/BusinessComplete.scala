@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.acceptance.models.response
+package uk.gov.hmrc.acceptance.models.response.v2
 
 import play.api.libs.json.{Json, OWrites, Reads}
-import uk.gov.hmrc.acceptance.models.Address
 
-case class PersonalComplete(address: Option[Address],
-                            accountName: String,
+case class BusinessComplete(companyName: String,
                             sortCode: String,
                             accountNumber: String,
-                            accountNumberWithSortCodeIsValid: String,
                             rollNumber: Option[String] = None,
+                            accountNumberIsWellFormatted: String,
                             accountExists: Option[String] = None,
-                            nameMatches: Option[String] = None,
-                            addressMatches: Option[String] = None,
-                            nonConsented: Option[String] = None,
-                            subjectHasDeceased: Option[String] = None,
+                            nameMatches: Option[String],
                             nonStandardAccountDetailsRequiredForBacs: Option[String] = None,
                             sortCodeBankName: Option[String] = None,
                             sortCodeSupportsDirectDebit: Option[String] = None,
                             sortCodeSupportsDirectCredit: Option[String] = None)
 
-object PersonalComplete {
-  implicit val writes: OWrites[PersonalComplete] = Json.writes[PersonalComplete]
-  implicit val reads: Reads[PersonalComplete] = Json.reads[PersonalComplete]
+object BusinessComplete {
+  implicit val writes: OWrites[BusinessComplete] = Json.writes[BusinessComplete]
+  implicit val reads: Reads[BusinessComplete] = Json.reads[BusinessComplete]
 }
