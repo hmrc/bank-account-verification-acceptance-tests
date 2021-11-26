@@ -41,7 +41,9 @@ To start services locally, run the following:
         "-J-Dmicroservice.services.modcheck.aws.secretkey=EXAMPLEKEY",
         "-J-Dauditing.enabled=true",
         "-J-Dmicroservice.services.thirdPartyCache.endpoint=http://localhost:9899/cache",
-        "-J-Dmicroservice.services.surepay.cache.enabled=true"
+        "-J-Dmicroservice.services.surepay.cache.enabled=true",
+        "-J-Dmicroservice.services.access-control.enabled=true",
+        "-J-Dmicroservice.services.access-control.allow-list.0=bank-account-verification-frontend"
       ],
       "BANK_ACCOUNT_REPUTATION_THIRD_PARTY_CACHE": [
         "-J-Dcontrollers.confidenceLevel.uk.gov.hmrc.bankaccountreputationthirdpartycache.controllers.CacheController.needsLogging=true"
@@ -50,7 +52,9 @@ To start services locally, run the following:
         "-J-Dmicroservice.hosts.allowList.1=localhost",
         "-J-Dauditing.consumer.baseUri.port=6001",
         "-J-Dauditing.consumer.baseUri.host=localhost",
-        "-J-Dauditing.enabled=true"
+        "-J-Dauditing.enabled=true",
+        "-J-Dmicroservice.services.access-control.enabled=true",
+        "-J-Dmicroservice.services.access-control.allow-list.0=bavfe-acceptance-tests"
       ]
     }'
 

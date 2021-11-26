@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit.SECONDS
 
 trait JourneyBuilder {
 
+  val defaultUserAgent = "bavfe-acceptance-tests"
+
   object BarsEndpoints {
     val REFRESH_EISCD_CACHE = "/refresh/cache/eiscd"
     val REFRESH_MODCHECK_CACHE = "/refresh/cache/modcheck"
@@ -39,13 +41,14 @@ trait JourneyBuilder {
     .build()
 
   //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
-  def initializeJourneyV1(configuration: String = InitRequest.apply().asJsonString()): JourneyBuilderResponse = {
+  def initializeJourneyV1(configuration: String = InitRequest.apply().asJsonString(), userAgent: String = defaultUserAgent): JourneyBuilderResponse = {
     // **NOTE** credId can only be a maximum of 30 characters, anything longer will result in a mismatch and no journey will be found
     val credId = randomUUID().toString.slice(0, 29)
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/init")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
       .addHeader("Authorization", generateBearerToken(credId))
+      .addHeader("User-Agent", userAgent)
     val response = okHttpClient.newCall(request.build()).execute()
     if (response.isSuccessful) {
       JourneyBuilderResponse(Json.parse(response.body.string()).as[InitResponse], credId)
@@ -55,13 +58,14 @@ trait JourneyBuilder {
   }
 
   //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
-  def initializeJourneyV2(configuration: String = InitRequest.apply().asJsonString()): JourneyBuilderResponse = {
+  def initializeJourneyV2(configuration: String = InitRequest.apply().asJsonString(), userAgent: String = defaultUserAgent): JourneyBuilderResponse = {
     // **NOTE** credId can only be a maximum of 30 characters, anything longer will result in a mismatch and no journey will be found
     val credId = randomUUID().toString.slice(0, 29)
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/v2/init")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
       .addHeader("Authorization", generateBearerToken(credId))
+      .addHeader("User-Agent", userAgent)
     val response = okHttpClient.newCall(request.build()).execute()
     if (response.isSuccessful) {
       JourneyBuilderResponse(Json.parse(response.body.string()).as[InitResponse], credId)
@@ -70,11 +74,12 @@ trait JourneyBuilder {
     }
   }
 
-  def getDataCollectedByBAVFEV1(journeyId: String, credId: String): uk.gov.hmrc.acceptance.models.response.v1.CompleteResponse = {
+  def getDataCollectedByBAVFEV1(journeyId: String, credId: String, userAgent: String = defaultUserAgent): uk.gov.hmrc.acceptance.models.response.v1.CompleteResponse = {
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/complete/$journeyId")
       .method("GET", null)
       .addHeader("Authorization", generateBearerToken(credId))
+      .addHeader("User-Agent", userAgent)
     val response = okHttpClient.newCall(request.build()).execute()
     if (response.isSuccessful) {
       Json.parse(response.body.string()).as[uk.gov.hmrc.acceptance.models.response.v1.CompleteResponse]
@@ -83,11 +88,12 @@ trait JourneyBuilder {
     }
   }
 
-  def getDataCollectedByBAVFEV2(journeyId: String, credId: String): uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse = {
+  def getDataCollectedByBAVFEV2(journeyId: String, credId: String, userAgent: String = defaultUserAgent): uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse = {
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/v2/complete/$journeyId")
       .method("GET", null)
       .addHeader("Authorization", generateBearerToken(credId))
+      .addHeader("User-Agent", userAgent)
     val response = okHttpClient.newCall(request.build()).execute()
     if (response.isSuccessful) {
       Json.parse(response.body.string()).as[uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse]
