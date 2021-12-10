@@ -23,8 +23,10 @@ import uk.gov.hmrc.acceptance.utils.BrowserDriver
 
 trait BasePage extends BrowserDriver {
 
-  private lazy val backLink: CssSelectorQuery = cssSelector(".govuk-back-link")
   private lazy val pageHeading: Option[Element] = find(id("pageHeading"))
+  private lazy val backLink: IdQuery = id("back")
+  private lazy val selectEnglish: CssSelectorQuery = cssSelector("a[hreflang=en]")
+  private lazy val selectWelsh: CssSelectorQuery = cssSelector("a[hreflang=cy]")
 
   def isOnPage: Boolean = false
 
@@ -41,7 +43,16 @@ trait BasePage extends BrowserDriver {
   }
 
   def clickBackLink(): Unit = {
+    webDriverWillWait.until(ExpectedConditions.elementToBeClickable(backLink.by))
     click on backLink
+  }
+
+  def switchToWelsh(): Unit = {
+    click on selectWelsh
+  }
+
+  def switchToEnglish(): Unit = {
+    click on selectEnglish
   }
 
   def errorMessageSummaryCount(): Int = {

@@ -22,10 +22,18 @@ import uk.gov.hmrc.acceptance.pages.BasePage
 
 case class PersonalAccountEntryPage() extends BasePage {
 
+  private lazy val pageHeading = cssSelector("h1")
+  private lazy val accountNameLabel = cssSelector("label[for=accountName]")
   private lazy val accountNameField: TextField = textField(id("accountName"))
-  private lazy val sortCodeField: TextField = textField(id("sortCode"))
-  private lazy val accountNumberField: TextField = textField(id("accountNumber"))
-  private lazy val rollNumberField: TextField = textField(id("rollNumber"))
+  private lazy val sortCodeLabel = cssSelector("label[for=sortCode]")
+  private lazy val sortCodeHint = id("sortCode-hint")
+  private lazy val sortCodeField = textField(id("sortCode"))
+  private lazy val accountNumberLabel = cssSelector("label[for=accountNumber]")
+  private lazy val accountNumberHint = id("accountNumber-hint")
+  private lazy val accountNumberField = textField(id("accountNumber"))
+  private lazy val rollNumberLabel = cssSelector("label[for=rollNumber]")
+  private lazy val rollNumberHint = id("rollNumber-hint")
+  private lazy val rollNumberField = textField(id("rollNumber"))
   private lazy val continueButton: IdQuery = id("continue")
 
   def enterAccountName(accountName: String): PersonalAccountEntryPage = {
@@ -46,6 +54,38 @@ case class PersonalAccountEntryPage() extends BasePage {
   def enterRollNumber(rollNumber: String): PersonalAccountEntryPage = {
     rollNumberField.value = rollNumber
     this
+  }
+
+  def getHeading: String = {
+    pageHeading.webElement.getText
+  }
+
+  def getAccountNameLabel: String = {
+    accountNameLabel.webElement.getText
+  }
+
+  def getSortCodeLabel: String = {
+    sortCodeLabel.webElement.getText
+  }
+
+  def getSortCodeHint: String = {
+    sortCodeHint.webElement.getText
+  }
+
+  def getAccountNumberLabel: String = {
+    accountNumberLabel.webElement.getText
+  }
+
+  def getAccountNumberHint: String = {
+    accountNumberHint.webElement.getText
+  }
+
+  def getRollNumberLabel: String = {
+    rollNumberLabel.webElement.getText
+  }
+
+  def getRollNumberHint: String = {
+    rollNumberHint.webElement.getText
   }
 
   def clickContinue(): Unit = {
