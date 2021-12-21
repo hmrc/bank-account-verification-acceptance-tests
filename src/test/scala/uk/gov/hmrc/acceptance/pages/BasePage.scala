@@ -25,6 +25,7 @@ trait BasePage extends BrowserDriver {
 
   private lazy val pageHeading: Option[Element] = find(id("pageHeading"))
   private lazy val backLink: IdQuery = id("back")
+  private lazy val signOutLink: CssSelectorQuery = cssSelector(".hmrc-sign-out-nav__link")
   private lazy val selectEnglish: CssSelectorQuery = cssSelector("a[hreflang=en]")
   private lazy val selectWelsh: CssSelectorQuery = cssSelector("a[hreflang=cy]")
 
@@ -38,6 +39,14 @@ trait BasePage extends BrowserDriver {
     webDriverWillWait.until(visibilityOfElementLocated(By.id(s"$field-error")))
   }
 
+  def isSignOutLinkDisplayed: Boolean = {
+    signOutLink.findAllElements.nonEmpty
+  }
+
+  def getSignOutLinkLocation: String = {
+    signOutLink.webElement.getAttribute("href")
+  }
+
   def getPageHeading: String = {
     pageHeading.get.text
   }
@@ -45,6 +54,10 @@ trait BasePage extends BrowserDriver {
   def clickBackLink(): Unit = {
     webDriverWillWait.until(ExpectedConditions.elementToBeClickable(backLink.by))
     click on backLink
+  }
+
+  def clickSignOut(): Unit = {
+    click on signOutLink
   }
 
   def switchToWelsh(): Unit = {

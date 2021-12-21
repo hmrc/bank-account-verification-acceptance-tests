@@ -35,7 +35,8 @@ case class InitRequest(serviceIdentifier: String = DEFAULT_SERVICE_IDENTIFIER,
                        messages: Option[Messages] = Some(DEFAULT_MESSAGES),
                        customisationsUrl: Option[String] = None,
                        bacsRequirements: Option[InitBACSRequirements] = Some(InitBACSRequirements(directDebitRequired = false, directCreditRequired = false)),
-                       timeoutConfig: Option[InitRequestTimeoutConfig] = None) {
+                       timeoutConfig: Option[InitRequestTimeoutConfig] = None,
+                       signOutUrl: Option[String] = None) {
 
   def asJsonString(): String = {
     Json.toJson(this).toString()

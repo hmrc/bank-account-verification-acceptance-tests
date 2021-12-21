@@ -99,6 +99,30 @@ trait MockServer extends AnyFeatureSpec
              |""".stripMargin)
         .withStatusCode(200)
     )
+    //Sign out page
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("GET")
+        .withPath("/sign-out")
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "text/html")
+        .withBody(
+          s"""
+             |<!DOCTYPE html>
+             |<html lang="en">
+             |<head>
+             |	<meta charset="utf-8">
+             |	<title>Signed out</title>
+             |</head>
+             |<body>
+             |	<h1>Sign Out</h1>
+             |  <p>Successfully signed out</p>
+             |</body>
+             |</html>
+             |""".stripMargin)
+        .withStatusCode(200)
+    )
   }
 
   override def afterEach: Unit = {

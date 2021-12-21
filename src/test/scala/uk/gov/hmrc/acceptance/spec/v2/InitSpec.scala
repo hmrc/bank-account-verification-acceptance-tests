@@ -18,9 +18,11 @@ package uk.gov.hmrc.acceptance.spec.v2
 
 import org.assertj.core.api.Assertions.assertThat
 import play.api.libs.json.{JsString, Json}
+import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.models.init.InitRequest
 import uk.gov.hmrc.acceptance.pages.bavfe.{BusinessAccountEntryPage, PersonalAccountEntryPage, SelectAccountTypePage}
+import uk.gov.hmrc.acceptance.pages.stubbed.JourneySignOutPage
 import uk.gov.hmrc.acceptance.spec.BaseSpec
 import uk.gov.hmrc.acceptance.utils.MockServer
 
@@ -236,5 +238,72 @@ class InitSpec extends BaseSpec with MockServer {
     assertThat(BusinessAccountEntryPage().getAccountNumberHint).isNotEqualTo(english("hint.accountNumber.personal").asInstanceOf[JsString].value)
     assertThat(BusinessAccountEntryPage().getRollNumberLabel).isNotEqualTo(english("label.rollNumber.optional.personal").asInstanceOf[JsString].value)
     assertThat(BusinessAccountEntryPage().getRollNumberHint).isNotEqualTo(english("hint.rollNumber.personal").asInstanceOf[JsString].value)
+  }
+
+  //  Scenario("Cannot initialize a new journey with an absolute sign out link") {
+  //
+  //    val thrown = intercept[Exception] {
+  //      initializeJourneyV2(InitRequest(signOutUrl = Some("http://www.google.co.uk/")).asJsonString())
+  //    }
+  //
+  //    assert(thrown.getMessage === "Unable to initialize a new journey!")
+  //  }
+
+  Scenario("The sign out link is displayed when a sign out URL is supplied") {
+    Given("A sign out URL has not been supplied in the init call")
+
+    val signOutURL = s"${TestConfig.environmentHost}:${TestConfig.mockServerPort()}/sign-out"
+    val journeyData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(signOutUrl = Some(signOutURL)).asJsonString())
+    startGGJourney(journeyData)
+
+    When("A user starts a bank account entry journey")
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    Then("The sign out link is displayed and links to the correct sign out URL")
+
+    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isTrue
+    assertThat(SelectAccountTypePage().getSignOutLinkLocation).isEqualTo(signOutURL)
+
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isTrue
+    assertThat(SelectAccountTypePage().getSignOutLinkLocation).isEqualTo(signOutURL)
+
+    PersonalAccountEntryPage().clickBackLink()
+    SelectAccountTypePage().selectBusinessAccount().clickContinue()
+
+    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isTrue
+    assertThat(SelectAccountTypePage().getSignOutLinkLocation).isEqualTo(signOutURL)
+
+    When("The user clicks on the sign out link")
+
+    BusinessAccountEntryPage().clickSignOut()
+
+    Then("The user is redirected to the sign out page")
+
+    assertThat(JourneySignOutPage().isOnPage).isTrue
+  }
+
+  Scenario("The sign out link is not displayed by defaul") {
+    Given("A sign out URL has not been supplied in the init call")
+
+    startGGJourney(initializeJourneyV2())
+    When("A user starts a bank account entry journey")
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    Then("The sign out link is not displayed")
+    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isFalse
+
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isFalse
+
+    PersonalAccountEntryPage().clickBackLink()
+    SelectAccountTypePage().selectBusinessAccount().clickContinue()
+    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isFalse
   }
 }

@@ -47,7 +47,7 @@ case class TimeoutSpec() extends BaseSpec with MockServer {
 
     Then("I click on sign out and I'm sent to a relative URL correctly")
 
-    TimeoutDialoguePartial().clickSignOut()
+    TimeoutDialoguePartial().clickTimeoutSignOut()
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.getHost("bank-account-verification")}$timeoutRelativePath")
   }
 
@@ -69,7 +69,7 @@ case class TimeoutSpec() extends BaseSpec with MockServer {
 
     Then("I click on sign out and I'm sent to a relative URL correctly")
 
-    TimeoutDialoguePartial().clickSignOut()
+    TimeoutDialoguePartial().clickTimeoutSignOut()
     assertThat(webDriver.getCurrentUrl).isEqualTo(s"${TestConfig.url("bank-account-verification")}/destroySession?journeyId=${session.journeyId}&timeoutUrl=${URLEncoder.encode(timeoutURL, "UTF-8")}")
     assertThat(TechnicalErrorPage().isOnPage).isTrue
   }
@@ -115,7 +115,7 @@ case class TimeoutSpec() extends BaseSpec with MockServer {
 
     Then("I click on sign out and I'm sent to the absolute URL that is on the allow list correctly")
 
-    TimeoutDialoguePartial().clickSignOut()
+    TimeoutDialoguePartial().clickTimeoutSignOut()
 
     assertThat(JourneyTimeOutPage().isOnPage).isTrue
   }

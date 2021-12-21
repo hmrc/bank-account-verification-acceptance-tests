@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.acceptance.pages.bavfe
+package uk.gov.hmrc.acceptance.pages.stubbed
 
+import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
 import uk.gov.hmrc.acceptance.pages.BasePage
 
-case class TimeoutDialoguePartial() extends BasePage {
+case class JourneySignOutPage() extends BasePage {
 
-  private lazy val timeoutDialogue: IdQuery = id("hmrc-timeout-dialog")
-  private lazy val staySignedInButton: IdQuery = id("hmrc-timeout-keep-signin-btn")
-  private lazy val timeoutSignOutLink: IdQuery = id("hmrc-timeout-sign-out-link")
-
-  def isVisible: Boolean = {
-    timeoutDialogue.webElement.isDisplayed
+  override def isOnPage: Boolean = {
+    webDriverWillWait.until(titleIs("Signed out"))
   }
-
-  def clickStaySignedIn(): Unit = {
-    click on staySignedInButton
-  }
-
-  def clickTimeoutSignOut(): Unit = {
-    click on timeoutSignOutLink
-  }
-
 }
