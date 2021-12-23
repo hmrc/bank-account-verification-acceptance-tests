@@ -240,14 +240,14 @@ class InitSpec extends BaseSpec with MockServer {
     assertThat(BusinessAccountEntryPage().getRollNumberHint).isNotEqualTo(english("hint.rollNumber.personal").asInstanceOf[JsString].value)
   }
 
-  //  Scenario("Cannot initialize a new journey with an absolute sign out link") {
-  //
-  //    val thrown = intercept[Exception] {
-  //      initializeJourneyV2(InitRequest(signOutUrl = Some("http://www.google.co.uk/")).asJsonString())
-  //    }
-  //
-  //    assert(thrown.getMessage === "Unable to initialize a new journey!")
-  //  }
+    Scenario("Cannot initialize a new journey with an absolute sign out link") {
+
+      val thrown = intercept[Exception] {
+        initializeJourneyV2(InitRequest(signOutUrl = Some("http://www.google.co.uk/")).asJsonString())
+      }
+
+      assert(thrown.getMessage === "Unable to initialize a new journey!")
+    }
 
   Scenario("The sign out link is displayed when a sign out URL is supplied") {
     Given("A sign out URL has not been supplied in the init call")
