@@ -17,7 +17,7 @@
 package uk.gov.hmrc.acceptance.spec.v2
 
 import org.assertj.core.api.Assertions.assertThat
-import org.mockserver.model.{HttpError, HttpRequest, HttpResponse, JsonPathBody}
+import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER

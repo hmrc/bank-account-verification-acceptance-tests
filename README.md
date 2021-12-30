@@ -23,7 +23,6 @@ To start services locally, run the following:
 
     sm --start BANK_ACCOUNT_VERIFICATION -r --appendArgs '{
       "BANK_ACCOUNT_REPUTATION": [
-        "-J-Dmicroservice.services.creditsafe.endpoint=http://localhost:6001/Match",
         "-J-Dmicroservice.services.callvalidate.endpoint=http://localhost:6001/callvalidateapi",
         "-J-Dmicroservice.services.surepay.hostname=http://localhost:6001/surepay/",
         "-J-Dmicroservice.services.surepay.enabled=true",

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.acceptance.spec.v1
 
 import org.assertj.core.api.Assertions.assertThat
-import org.mockserver.model.{HttpError, HttpRequest, HttpResponse, JsonPathBody}
+import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
@@ -26,11 +26,9 @@ import uk.gov.hmrc.acceptance.models.response.v1.CompleteResponse
 import uk.gov.hmrc.acceptance.pages.bavfe.{BusinessAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.pages.stubbed.JourneyCompletePage
 import uk.gov.hmrc.acceptance.spec.BaseSpec
-import uk.gov.hmrc.acceptance.stubs.creditsafe.CreditSafePayload
 import uk.gov.hmrc.acceptance.utils._
 
 import java.util.UUID
-import java.util.UUID.randomUUID
 
 class BusinessAddressSpec extends BaseSpec with MockServer {
 
