@@ -52,23 +52,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     ).respond(
       HttpResponse.response()
         .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(CREDITSAFE_PATH)
-        .withBody(CreditSafePayload(
-          DEFAULT_ACCOUNT_DETAILS.sortCode,
-          DEFAULT_ACCOUNT_DETAILS.accountNumber,
-          DEFAULT_BUSINESS.companyName,
-          DEFAULT_BUSINESS.address.get.postcode.get
-        ).asJsonString())
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "text/plain")
-        .withBody(s"""{"requestId":"${randomUUID().toString}","result":"exact","isActive":true,"confidence":{}}""")
+        .withBody("""{"Matched": true}""".stripMargin)
         .withStatusCode(200)
     )
 
@@ -146,7 +130,6 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.business.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.business.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
 
-    mockServer.verify(HttpRequest.request().withPath(CREDITSAFE_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(
       HttpRequest.request()
         .withPath("/write/audit")
@@ -168,39 +151,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     ).respond(
       HttpResponse.response()
         .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(CREDITSAFE_PATH)
-        .withBody(CreditSafePayload(
-          DEFAULT_ACCOUNT_DETAILS.sortCode,
-          DEFAULT_ACCOUNT_DETAILS.accountNumber,
-          DEFAULT_BUSINESS.companyName,
-          DEFAULT_BUSINESS.address.get.postcode.get
-        ).asJsonString())
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "text/plain")
-        .withBody(s"""{"requestId":"${randomUUID().toString}","result":"exact","isActive":true,"confidence":{}}""")
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(CREDITSAFE_PATH)
-        .withBody(CreditSafePayload(
-          ALTERNATE_ACCOUNT_DETAILS.sortCode,
-          ALTERNATE_ACCOUNT_DETAILS.accountNumber,
-          DEFAULT_BUSINESS.companyName,
-          DEFAULT_BUSINESS.address.get.postcode.get
-        ).asJsonString())
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "text/plain")
-        .withBody(s"""{"requestId":"${randomUUID().toString}","result":"exact","isActive":true,"confidence":{}}""")
+        .withBody("""{"Matched": true}""".stripMargin)
         .withStatusCode(200)
     )
 
@@ -342,23 +293,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     ).respond(
       HttpResponse.response()
         .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(CREDITSAFE_PATH)
-        .withBody(CreditSafePayload(
-          DEFAULT_ACCOUNT_DETAILS.sortCode,
-          DEFAULT_ACCOUNT_DETAILS.accountNumber,
-          DEFAULT_BUSINESS.companyName,
-          DEFAULT_BUSINESS.address.get.postcode.get
-        ).asJsonString())
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "text/plain")
-        .withBody(s"""{"requestId":"${randomUUID().toString}","result":"exact","isActive":true,"confidence":{}}""")
+        .withBody("""{"Matched": true}""".stripMargin)
         .withStatusCode(200)
     )
 
@@ -508,15 +443,6 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
         .withStatusCode(200)
     )
 
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(CREDITSAFE_PATH)
-    ).error(
-      HttpError.error()
-        .withDropConnection(true)
-    )
-
     Given("I want to collect and validate a companies bank account details")
 
     val journeyBuilderData: JourneyBuilderResponse = initializeJourneyV1(InitRequest(address = DEFAULT_BUSINESS_ADDRESS).asJsonString())
@@ -618,15 +544,6 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
         .withHeader("Content-Type", "application/json")
         .withBody(s"""{"Matched": false, "ReasonCode": "PANM"}""".stripMargin)
         .withStatusCode(200)
-    )
-
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(CREDITSAFE_PATH)
-    ).error(
-      HttpError.error()
-        .withDropConnection(true)
     )
 
     Given("I want to collect and validate a companies bank account details")

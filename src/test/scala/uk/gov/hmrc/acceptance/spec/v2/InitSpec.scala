@@ -243,7 +243,7 @@ class InitSpec extends BaseSpec with MockServer {
     Scenario("Cannot initialize a new journey with an absolute sign out link") {
 
       val thrown = intercept[Exception] {
-        initializeJourneyV2(InitRequest(signOutUrl = Some("http://www.google.co.uk/")).asJsonString())
+        initializeJourneyV2(InitRequest(signOutUrl = Some("https://www.google.co.uk/")).asJsonString())
       }
 
       assert(thrown.getMessage === "Unable to initialize a new journey!")

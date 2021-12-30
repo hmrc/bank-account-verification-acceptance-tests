@@ -39,7 +39,6 @@ To start services locally, run the following:
         "-J-Dmicroservice.services.modcheck.aws.bucket=txm-dev-bacs-modcheck",
         "-J-Dmicroservice.services.modcheck.aws.accesskeyid=EXAMPLEID",
         "-J-Dmicroservice.services.modcheck.aws.secretkey=EXAMPLEKEY",
-        "-J-Dauditing.enabled=true",
         "-J-Dmicroservice.services.thirdPartyCache.endpoint=http://localhost:9899/cache",
         "-J-Dmicroservice.services.surepay.cache.enabled=true",
         "-J-Dmicroservice.services.access-control.enabled=true",
