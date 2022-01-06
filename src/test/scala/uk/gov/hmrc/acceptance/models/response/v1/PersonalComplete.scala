@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,8 @@ case class PersonalComplete(address: Option[Address],
                             nonStandardAccountDetailsRequiredForBacs: Option[String] = None,
                             sortCodeBankName: Option[String] = None,
                             sortCodeSupportsDirectDebit: Option[String] = None,
-                            sortCodeSupportsDirectCredit: Option[String] = None)
+                            sortCodeSupportsDirectCredit: Option[String] = None,
+                            iban: Option[String] = None)
 
 object PersonalComplete {
   implicit val writes: OWrites[PersonalComplete] = Json.writes[PersonalComplete]

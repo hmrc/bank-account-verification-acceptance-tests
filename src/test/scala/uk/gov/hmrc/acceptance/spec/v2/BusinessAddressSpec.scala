@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
   val DEFAULT_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
   val ALTERNATE_ACCOUNT_DETAILS: Account = Account("207102", "80044660", bankName = Some("BARCLAYS BANK PLC"))
+  val ACCOUNT_NUMBER_WITH_IBAN: Account = Account("601613", "26344696", bankName = Some("HSBC UK BANK PLC"), iban = Some("GB36 HBUK 6016 1326 3446 96"))
   val UNKNOWN_ACCOUNT_DETAILS: Account = Account("207106", "80044666")
   val DEFAULT_BUSINESS_ADDRESS: Option[Address] = Some(Address(List("22303 Darwin Turnpike"), postcode = Some("CZ0 8IW")))
   val BUSINESS_NAME: String = UUID.randomUUID().toString
@@ -125,6 +126,104 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.business.get.sortCodeBankName.get).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.business.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.business.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to ${session.completeUrl}'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+  }
+
+  Scenario("Business Bank Account Verification is successful with IBAN in response") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody("""{"Matched": true}""".stripMargin)
+        .withStatusCode(200)
+    )
+
+    Given("I want to collect and validate a companies bank account details")
+
+    val journeyData: JourneyBuilderResponse = initializeJourneyV2()
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            "&& @.detail.input=='Request to /api/v2/init'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
+    val session = startGGJourney(journeyData)
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s" && @.detail.input=='Request to ${session.startUrl}'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
+    SelectAccountTypePage().selectBusinessAccount().clickContinue()
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            s"&& @.detail.input=='Request to /bank-account-verification/verify/business/${session.journeyId}'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+
+    When("a company representative enters all required information and clicks continue")
+
+    BusinessAccountEntryPage()
+      .enterCompanyName(DEFAULT_BUSINESS.companyName)
+      .enterSortCode(ACCOUNT_NUMBER_WITH_IBAN.sortCode)
+      .enterAccountNumber(ACCOUNT_NUMBER_WITH_IBAN.accountNumber)
+      .clickContinue()
+
+    Then("the company representative is redirected to continue URL")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
+
+    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+
+    assertThat(actual.accountType).isEqualTo("business")
+    assertThat(actual.business.get.companyName).isEqualTo(DEFAULT_BUSINESS.companyName)
+    assertThat(actual.business.get.sortCode).isEqualTo(ACCOUNT_NUMBER_WITH_IBAN.storedSortCode())
+    assertThat(actual.business.get.accountNumber).isEqualTo(ACCOUNT_NUMBER_WITH_IBAN.accountNumber)
+    assertThat(actual.business.get.rollNumber).isEqualTo(None)
+    assertThat(actual.business.get.accountNumberIsWellFormatted).isEqualTo("yes")
+    assertThat(actual.business.get.nameMatches.get).isEqualTo("yes")
+    assertThat(actual.business.get.accountExists.get).isEqualTo("yes")
+    assertThat(actual.business.get.sortCodeBankName.get).isEqualTo(ACCOUNT_NUMBER_WITH_IBAN.bankName.get)
+    assertThat(actual.business.get.sortCodeSupportsDirectDebit.get).isEqualTo("yes")
+    assertThat(actual.business.get.sortCodeSupportsDirectCredit.get).isEqualTo("yes")
+    assertThat(actual.business.get.iban).isEqualTo(ACCOUNT_NUMBER_WITH_IBAN.iban)
 
     mockServer.verify(
       HttpRequest.request()

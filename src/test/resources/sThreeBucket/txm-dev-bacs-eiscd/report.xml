@@ -366,7 +366,105 @@
                         <Std>01604</Std>
                         <Number>234234</Number>
                     </Telephone>
-
+                </BankOffices>
+                <BankOffices SortCode="235262" BicBank="" BicBranch="" Suffix="00">
+                    <BankOfficeTitle>BARCLAYS BANK PLC</BankOfficeTitle>
+                    <BankOfficeType>M</BankOfficeType>
+                    <DateLastChanged>2017-10-30</DateLastChanged>
+                    <PrintIndicator>0</PrintIndicator>
+                    <Address>
+                        <AddresseeName>1234 Pavilion Drive</AddresseeName>
+                        <PostalName>Brackmills</PostalName>
+                        <AddressLine1/>
+                        <AddressLine2/>
+                        <CityOrTown>Northampton</CityOrTown>
+                        <AreaOrCounty/>
+                        <Country>UNITED KINGDOM</Country>
+                        <PostCodeOutcode>NN4</PostCodeOutcode>
+                        <PostCodeIncode>7SG</PostCodeIncode>
+                        <ZipCode/>
+                    </Address>
+                    <CHAPSSterling>
+                        <Status>I</Status>
+                    </CHAPSSterling>
+                    <BACSServiceOffice>
+                        <Status>A</Status>
+                        <DDIVoucherFlag>N</DDIVoucherFlag>
+                        <DisallowedTransactions>
+                            <TransactionGroupCode>AU</TransactionGroupCode>
+                        </DisallowedTransactions>
+                    </BACSServiceOffice>
+                    <Telephone>
+                        <InternationalPrefix/>
+                        <Std>01604</Std>
+                        <Number>234234</Number>
+                    </Telephone>
+                </BankOffices>
+                <BankOffices SortCode="209057" BicBank="" BicBranch="" Suffix="00">
+                    <BankOfficeTitle>BARCLAYS BANK PLC</BankOfficeTitle>
+                    <BankOfficeType>M</BankOfficeType>
+                    <DateLastChanged>2017-10-30</DateLastChanged>
+                    <PrintIndicator>0</PrintIndicator>
+                    <Address>
+                        <AddresseeName>1234 Pavilion Drive</AddresseeName>
+                        <PostalName>Brackmills</PostalName>
+                        <AddressLine1/>
+                        <AddressLine2/>
+                        <CityOrTown>Northampton</CityOrTown>
+                        <AreaOrCounty/>
+                        <Country>UNITED KINGDOM</Country>
+                        <PostCodeOutcode>NN4</PostCodeOutcode>
+                        <PostCodeIncode>7SG</PostCodeIncode>
+                        <ZipCode/>
+                    </Address>
+                    <CHAPSSterling>
+                        <Status>I</Status>
+                    </CHAPSSterling>
+                    <BACSServiceOffice>
+                        <Status>M</Status>
+                        <DDIVoucherFlag>N</DDIVoucherFlag>
+                        <DisallowedTransactions>
+                            <TransactionGroupCode>CR</TransactionGroupCode>
+                        </DisallowedTransactions>
+                    </BACSServiceOffice>
+                    <Telephone>
+                        <InternationalPrefix/>
+                        <Std>01604</Std>
+                        <Number>234234</Number>
+                    </Telephone>
+                </BankOffices>
+                <BankOffices SortCode="203007" BicBank="" BicBranch="" Suffix="00">
+                    <BankOfficeTitle>BARCLAYS BANK PLC</BankOfficeTitle>
+                    <BankOfficeType>M</BankOfficeType>
+                    <DateLastChanged>2017-10-30</DateLastChanged>
+                    <PrintIndicator>0</PrintIndicator>
+                    <Address>
+                        <AddresseeName>1234 Pavilion Drive</AddresseeName>
+                        <PostalName>Brackmills</PostalName>
+                        <AddressLine1/>
+                        <AddressLine2/>
+                        <CityOrTown>Northampton</CityOrTown>
+                        <AreaOrCounty/>
+                        <Country>UNITED KINGDOM</Country>
+                        <PostCodeOutcode>NN4</PostCodeOutcode>
+                        <PostCodeIncode>7SG</PostCodeIncode>
+                        <ZipCode/>
+                    </Address>
+                    <CHAPSSterling>
+                        <Status>I</Status>
+                    </CHAPSSterling>
+                    <BACSServiceOffice>
+                        <Status>M</Status>
+                        <DDIVoucherFlag>N</DDIVoucherFlag>
+                        <DisallowedTransactions>
+                            <TransactionGroupCode>DR</TransactionGroupCode>
+                        </DisallowedTransactions>
+                    </BACSServiceOffice>
+                    <Telephone>
+                        <InternationalPrefix/>
+                        <Std>01604</Std>
+                        <Number>234234</Number>
+                    </Telephone>
                 </BankOffices>
             </Bank>
             <Bank BankCode="0769">
@@ -794,208 +892,6 @@
                     <OfficeOrPlaceNameSecond/>
                     <SecondEntryIndicator>1</SecondEntryIndicator>
                     <OfficeTitle>Wilmslow (A)</OfficeTitle>
-                    <DeletedDate/>
-                    <NCBCountryCode/>
-                </BankOffices>
-            </Bank>
-            <Bank BankCode="0013">
-                <SupervisoryBody>A</SupervisoryBody>
-                <AbbreviatedBankName>NATIONWIDE BLDG SCTY</AbbreviatedBankName>
-                <BankName>NATIONWIDE BUILDING SOCIETY</BankName>
-                <BankOffices SortCode="070093" BicBank="" BicBranch="" Suffix="00">
-                    <BankOfficeTitle>NATIONWIDE BUILDING SOCIETY</BankOfficeTitle>
-                    <BankOfficeType>M</BankOfficeType>
-                    <DateLastChanged>2017-07-18</DateLastChanged>
-                    <PrintIndicator>0</PrintIndicator>
-                    <Address>
-                        <AddresseeName>P.O. Box 8888</AddresseeName>
-                        <PostalName>Nationwide Hse</PostalName>
-                        <AddressLine1>Pipers Way</AddressLine1>
-                        <AddressLine2/>
-                        <CityOrTown>Swindon L</CityOrTown>
-                        <AreaOrCounty>Wilts.</AreaOrCounty>
-                        <Country>UNITED KINGDOM</Country>
-                        <PostCodeOutcode>SN38</PostCodeOutcode>
-                        <PostCodeIncode>1NW</PostCodeIncode>
-                        <ZipCode/>
-                    </Address>
-                    <CHAPSEuroNull>
-                        <Status>N</Status>
-                        <DateLastChanged/>
-                        <DateClosed/>
-                        <RoutingBICBank/>
-                        <RoutingBICBranch/>
-                        <CHAPSEuroID/>
-                        <ReturnIndicator/>
-                        <RTGSIndicatorTargetStatus/>
-                    </CHAPSEuroNull>
-                    <CHAPSSterling>
-                        <Status>I</Status>
-                        <ReturnIndicator/>
-                        <DateLastChanged>1991-12-02</DateLastChanged>
-                        <DateClosed/>
-                        <CHAPSSterlingID>005</CHAPSSterlingID>
-                        <RoutingBICBank>MIDLGB22</RoutingBICBank>
-                        <RoutingBICBranch>XXX</RoutingBICBranch>
-                    </CHAPSSterling>
-                    <CnCCC>
-                        <Status>M</Status>
-                        <ReturnIndicator/>
-                        <DateLastChanged>2017-07-18</DateLastChanged>
-                        <DateClosed/>
-                        <SettlementBank>0013</SettlementBank>
-                        <DebitAgencySortCode>000013</DebitAgencySortCode>
-                        <GBNIIndicator>GB</GBNIIndicator>
-                    </CnCCC>
-                    <BACSServiceOffice>
-                        <Stream HandlingBank="0013" HandlingBankStream="01"/>
-                        <Status>M</Status>
-                        <AccountNumbersFlag>N</AccountNumbersFlag>
-                        <DDIVoucherFlag>N</DDIVoucherFlag>
-                        <DisallowedTransactions>
-                            <TransactionGroupCode>DR</TransactionGroupCode>
-                            <TransactionGroupCode>CU</TransactionGroupCode>
-                            <TransactionGroupCode>AU</TransactionGroupCode>
-                        </DisallowedTransactions>
-                        <DateLastChanged>2005-06-06</DateLastChanged>
-                        <DateClosed/>
-                        <RedirectionFromFlag/>
-                        <RedirectionToSortCode/>
-                        <SettlementBank>0013</SettlementBank>
-                        <SettlementSection>01</SettlementSection>
-                        <SettlementSubSection>08</SettlementSubSection>
-                        <ToDDaSO4/>
-                    </BACSServiceOffice>
-                    <FPServiceOffice>
-                        <Status>M</Status>
-                        <AccountNumbersFlag>N</AccountNumbersFlag>
-                        <DateLastChanged>2011-12-02</DateLastChanged>
-                        <DateClosed/>
-                        <RedirectionFromFlag/>
-                        <RedirectionToSortCode/>
-                        <SettlementBankCode>0013</SettlementBankCode>
-                        <SettlementBankConnection>01</SettlementBankConnection>
-                        <HandlingBankCode>0013</HandlingBankCode>
-                        <HandlingBankConnection>01</HandlingBankConnection>
-                        <AgencyType/>
-                    </FPServiceOffice>
-                    <Telephone>
-                        <InternationalPrefix/>
-                        <Std>0800</Std>
-                        <Number>302011</Number>
-                    </Telephone>
-                    <SecondTelephoneNumber>
-                        <InternationalPrefix/>
-                        <Std/>
-                        <Number/>
-                    </SecondTelephoneNumber>
-                    <MainBankOfficeSortCode/>
-                    <MajorLocation>SWINDON</MajorLocation>
-                    <MinorLocation/>
-                    <OfficeOrPlaceName>Investment Credits</OfficeOrPlaceName>
-                    <OfficeOrPlaceNameSecond/>
-                    <SecondEntryIndicator>1</SecondEntryIndicator>
-                    <OfficeTitle>Investment Credits</OfficeTitle>
-                    <DeletedDate/>
-                    <NCBCountryCode/>
-                </BankOffices>
-            </Bank>
-            <Bank BankCode="0002">
-                <SupervisoryBody>A</SupervisoryBody>
-                <AbbreviatedBankName>BARCLAYS BANK PLC</AbbreviatedBankName>
-                <BankName>BARCLAYS BANK PLC</BankName>
-                <BankOffices SortCode="207102" BicBank="" BicBranch="" Suffix="00">
-                    <BankOfficeTitle>SOUTHERN INTL OPS PAYMENTS</BankOfficeTitle>
-                    <BankOfficeType>M</BankOfficeType>
-                    <DateLastChanged>2018-02-28</DateLastChanged>
-                    <PrintIndicator>0</PrintIndicator>
-                    <Address>
-                        <AddresseeName>P.O. Box 44</AddresseeName>
-                        <PostalName>Napier Court</PostalName>
-                        <AddressLine1>Napier Rd</AddressLine1>
-                        <AddressLine2>Kings Meadow</AddressLine2>
-                        <CityOrTown>Reading</CityOrTown>
-                        <AreaOrCounty/>
-                        <Country>UNITED KINGDOM</Country>
-                        <PostCodeOutcode>RG1</PostCodeOutcode>
-                        <PostCodeIncode>8BW</PostCodeIncode>
-                        <ZipCode/>
-                    </Address>
-                    <CHAPSEuroClosed>
-                        <Status>N</Status>
-                        <DateLastChanged/>
-                        <DateClosed>2008-09-23</DateClosed>
-                        <RoutingBICBank/>
-                        <RoutingBICBranch/>
-                        <CHAPSEuroID/>
-                        <ReturnIndicator/>
-                        <RTGSIndicatorTargetStatus/>
-                    </CHAPSEuroClosed>
-                    <CHAPSSterling>
-                        <Status>I</Status>
-                        <ReturnIndicator/>
-                        <DateLastChanged>2001-07-09</DateLastChanged>
-                        <DateClosed/>
-                        <CHAPSSterlingID>003</CHAPSSterlingID>
-                        <RoutingBICBank>BARCGB22</RoutingBICBank>
-                        <RoutingBICBranch>XXX</RoutingBICBranch>
-                    </CHAPSSterling>
-                    <CnCCC>
-                        <Status>M</Status>
-                        <ReturnIndicator/>
-                        <DateLastChanged>2017-07-18</DateLastChanged>
-                        <DateClosed/>
-                        <SettlementBank>0002</SettlementBank>
-                        <DebitAgencySortCode>000002</DebitAgencySortCode>
-                        <GBNIIndicator>GB</GBNIIndicator>
-                    </CnCCC>
-                    <BACSServiceOffice>
-                        <Stream HandlingBank="0002" HandlingBankStream="01"/>
-                        <Status>M</Status>
-                        <AccountNumbersFlag>Y</AccountNumbersFlag>
-                        <DDIVoucherFlag>N</DDIVoucherFlag>
-                        <DisallowedTransactions>
-                            <TransactionGroupCode>CR</TransactionGroupCode>
-                        </DisallowedTransactions>
-                        <DateLastChanged>2011-09-01</DateLastChanged>
-                        <DateClosed/>
-                        <RedirectionFromFlag/>
-                        <RedirectionToSortCode/>
-                        <SettlementBank>0002</SettlementBank>
-                        <SettlementSection>01</SettlementSection>
-                        <SettlementSubSection>26</SettlementSubSection>
-                        <ToDDaSO4/>
-                    </BACSServiceOffice>
-                    <FPServiceOfficeClosed>
-                        <Status>N</Status>
-                        <AccountNumbersFlag/>
-                        <DateLastChanged/>
-                        <DateClosed>2008-03-17</DateClosed>
-                        <RedirectionFromFlag/>
-                        <RedirectionToSortCode/>
-                        <SettlementBankCode/>
-                        <SettlementBankConnection/>
-                        <HandlingBankCode/>
-                        <HandlingBankConnection/>
-                        <AgencyType/>
-                    </FPServiceOfficeClosed>
-                    <Telephone>
-                        <InternationalPrefix/>
-                        <Std>01734</Std>
-                        <Number>802000</Number>
-                    </Telephone>
-                    <SecondTelephoneNumber>
-                        <InternationalPrefix/>
-                        <Std/>
-                        <Number/>
-                    </SecondTelephoneNumber>
-                    <MainBankOfficeSortCode/>
-                    <MajorLocation>READING</MajorLocation>
-                    <MinorLocation/>
-                    <OfficeOrPlaceName>Southern Intl Ops Payments</OfficeOrPlaceName>
-                    <OfficeOrPlaceNameSecond>Southern Intl Ops Payments</OfficeOrPlaceNameSecond>
-                    <SecondEntryIndicator>2</SecondEntryIndicator>
-                    <OfficeTitle>Southern International Operations Payments</OfficeTitle>
                     <DeletedDate/>
                     <NCBCountryCode/>
                 </BankOffices>

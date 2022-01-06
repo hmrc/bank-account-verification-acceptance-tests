@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ object Account {
 case class Account(sortCode: String,
                    accountNumber: String,
                    rollNumber: Option[String] = None,
-                   bankName: Option[String] = None) {
+                   bankName: Option[String] = None,
+                   iban: Option[String] = None) {
   def asJsonString(): String = {
     Json.toJson(this).toString()
   }

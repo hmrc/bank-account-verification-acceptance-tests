@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import io.findify.s3mock.S3Mock
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, GivenWhenThen, Outcome}
+import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.utils.{BrowserDriver, CommonActions, CommonAssertions, JourneyBuilder}
 
 import java.nio.file.Paths
@@ -34,9 +35,9 @@ trait BaseSpec extends AnyFeatureSpec
   with CommonActions
   with Matchers {
 
-  val s3Mock: S3Mock = new S3Mock.Builder().withPort(8001).withFileBackend(getClass.getResource("/sThreeBucket").getPath).build()
+  val s3Mock: S3Mock = new S3Mock.Builder().withPort(TestConfig.s3MockPort()).withFileBackend(getClass.getResource("/sThreeBucket").getPath).build()
 
-  override def beforeAll() {
+  override def beforeAll(): Unit = {
     super.beforeAll()
     s3Mock.start
     sys.addShutdownHook {
@@ -50,7 +51,7 @@ trait BaseSpec extends AnyFeatureSpec
     webDriver.manage().deleteAllCookies()
   }
 
-  override def afterAll() {
+  override def afterAll(): Unit = {
     webDriver.quit()
     s3Mock.stop
   }
