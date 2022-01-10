@@ -296,16 +296,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
         .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
         .withStatusCode(200)
     )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(CREDITSAFE_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "text/plain")
-        .withBody(s"""{"requestId":"${randomUUID().toString}","result":"none","isActive":true,"confidence":{}}""".stripMargin)
-        .withStatusCode(200)
-    )
 
     Given("I want to collect and validate a companies bank account details")
 
@@ -387,16 +377,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
         .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
         .withStatusCode(200)
     )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(CREDITSAFE_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "text/plain")
-        .withBody(s"""{"requestId":"${randomUUID().toString}","result":"none","isActive":true,"confidence":{}}""".stripMargin)
-        .withStatusCode(200)
-    )
 
     Given("I want to collect and validate a companies bank account details")
 
@@ -450,16 +430,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       HttpResponse.response()
         .withHeader("Content-Type", "application/json")
         .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(CREDITSAFE_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "text/plain")
-        .withBody(s"""{"requestId":"${randomUUID().toString}","result":"none","isActive":true,"confidence":{}}""".stripMargin)
         .withStatusCode(200)
     )
 
@@ -517,16 +487,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       HttpResponse.response()
         .withHeader("Content-Type", "application/json")
         .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(CREDITSAFE_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "text/plain")
-        .withBody(s"""{"requestId":"${randomUUID().toString}","result":"none","isActive":true,"confidence":{}}""".stripMargin)
         .withStatusCode(200)
     )
 

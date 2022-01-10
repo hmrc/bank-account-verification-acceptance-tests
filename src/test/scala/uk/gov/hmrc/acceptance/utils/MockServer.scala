@@ -32,7 +32,6 @@ trait MockServer extends AnyFeatureSpec
 
   val SUREPAY_PATH = "/surepay/v1/gateway"
   val TRANSUNION_PATH = "/callvalidateapi"
-  val CREDITSAFE_PATH = "/Match"
 
   private val mockServerPort = TestConfig.mockServerPort()
   lazy val mockServer: ClientAndServer = ClientAndServer.startClientAndServer(mockServerPort)
