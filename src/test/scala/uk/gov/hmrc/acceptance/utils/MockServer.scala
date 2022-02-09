@@ -122,6 +122,37 @@ trait MockServer extends AnyFeatureSpec
              |""".stripMargin)
         .withStatusCode(200)
     )
+    //Continue URL
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("GET")
+        .withPath("/too/many/attempts/.*")
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "text/html")
+        .withBody(
+          s"""
+             |<!DOCTYPE html>
+             |<html lang="en">
+             |<head>
+             |	<meta charset="utf-8">
+             |	<title>Too many attempts</title>
+             |</head>
+             |<body>
+             |	<h1>Returned to calling service</h1>
+             |  <p>Too many attempts to enter bank account details for
+             |    <span id="journeyId">
+             |      <script type="text/javascript">
+             |      let journeyId = this.window.location.pathname.split('/').slice(-1)[0];
+             |      document.write(journeyId);
+             |      </script>
+             |    </span>
+             |  </p>
+             |</body>
+             |</html>
+             |""".stripMargin)
+        .withStatusCode(200)
+    )
   }
 
   override def afterEach: Unit = {

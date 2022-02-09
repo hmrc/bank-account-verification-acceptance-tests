@@ -29,7 +29,6 @@ import uk.gov.hmrc.acceptance.spec.BaseSpec
 import uk.gov.hmrc.acceptance.utils.MockServer
 
 import java.util.UUID
-import java.util.UUID.randomUUID
 
 class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 

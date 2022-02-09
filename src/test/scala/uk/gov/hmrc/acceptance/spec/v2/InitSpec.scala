@@ -20,7 +20,7 @@ import org.assertj.core.api.Assertions.assertThat
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
-import uk.gov.hmrc.acceptance.models.init.InitRequest
+import uk.gov.hmrc.acceptance.models.init.{InitRequest, MaxCallConfig}
 import uk.gov.hmrc.acceptance.pages.bavfe.{BusinessAccountEntryPage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.pages.stubbed.JourneySignOutPage
 import uk.gov.hmrc.acceptance.spec.BaseSpec
@@ -240,14 +240,14 @@ class InitSpec extends BaseSpec with MockServer {
     assertThat(BusinessAccountEntryPage().getRollNumberHint).isNotEqualTo(english("hint.rollNumber.personal").asInstanceOf[JsString].value)
   }
 
-    Scenario("Cannot initialize a new journey with an absolute sign out link") {
+  Scenario("Cannot initialize a new journey with an absolute sign out link") {
 
-      val thrown = intercept[Exception] {
-        initializeJourneyV2(InitRequest(signOutUrl = Some("https://www.google.co.uk/")).asJsonString())
-      }
-
-      assert(thrown.getMessage === "Unable to initialize a new journey!")
+    val thrown = intercept[Exception] {
+      initializeJourneyV2(InitRequest(signOutUrl = Some("https://www.google.co.uk/")).asJsonString())
     }
+
+    assert(thrown.getMessage === "Unable to initialize a new journey!")
+  }
 
   Scenario("The sign out link is displayed when a sign out URL is supplied") {
     Given("A sign out URL has not been supplied in the init call")
@@ -305,5 +305,41 @@ class InitSpec extends BaseSpec with MockServer {
     PersonalAccountEntryPage().clickBackLink()
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
     assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isFalse
+  }
+
+  Scenario("Cannot initialize a new journey with a maxCallCount but no maxCallCountRedirectUrl") {
+
+    val thrown = intercept[Exception] {
+      initializeJourneyV2("{\"serviceIdentifier\":\"bavf-acceptance-test\",\"continueUrl\":\"http://localhost:6001/complete\",\"messages\":{\"en\":{\"service.name\":\"bavf-acceptance-test\"}},\"bacsRequirements\":{\"directDebitRequired\":false,\"directCreditRequired\":false},\"maxCallConfig\":{\"count\":3}}")
+    }
+
+    assert(thrown.getMessage === "Unable to initialize a new journey!")
+  }
+
+  Scenario("Cannot initialize a new journey with a maxCallCountRedirectUrl but no maxCallCount") {
+
+    val thrown = intercept[Exception] {
+      initializeJourneyV2("{\"serviceIdentifier\":\"bavf-acceptance-test\",\"continueUrl\":\"http://localhost:6001/complete\",\"messages\":{\"en\":{\"service.name\":\"bavf-acceptance-test\"}},\"bacsRequirements\":{\"directDebitRequired\":false,\"directCreditRequired\":false},\"maxCallConfig\":{\"redirectUrl\":\"http://localhost:6001/too/many/attempts\"}}")
+    }
+
+    assert(thrown.getMessage === "Unable to initialize a new journey!")
+  }
+
+  Scenario("Cannot initialize a new journey with a valid maxCallCount and an empty maxCallCountRedirectUrl") {
+
+    val thrown = intercept[Exception] {
+      initializeJourneyV2(InitRequest(maxCallConfig = Some(MaxCallConfig(3, ""))).asJsonString())
+    }
+
+    assert(thrown.getMessage === "Unable to initialize a new journey!")
+  }
+
+  Scenario("Cannot initialize a new journey with a maxCallCountRedirectUrl that redirects to an external resource") {
+
+    val thrown = intercept[Exception] {
+      initializeJourneyV2(InitRequest(maxCallConfig = Some(MaxCallConfig(3, "https://www.google.co.uk"))).asJsonString())
+    }
+
+    assert(thrown.getMessage === "Unable to initialize a new journey!")
   }
 }

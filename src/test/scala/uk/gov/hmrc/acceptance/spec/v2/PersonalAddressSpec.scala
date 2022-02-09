@@ -19,12 +19,13 @@ package uk.gov.hmrc.acceptance.spec.v2
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpError, HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
+import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
-import uk.gov.hmrc.acceptance.models.init.{InitRequest, PrepopulatedData}
+import uk.gov.hmrc.acceptance.models.init.{InitBACSRequirements, InitRequest, MaxCallConfig, PrepopulatedData}
 import uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse
 import uk.gov.hmrc.acceptance.pages.bavfe.{PersonalAccountEntryPage, SelectAccountTypePage}
-import uk.gov.hmrc.acceptance.pages.stubbed.JourneyCompletePage
+import uk.gov.hmrc.acceptance.pages.stubbed.{JourneyCompletePage, TooManyAttemptsPage}
 import uk.gov.hmrc.acceptance.spec.BaseSpec
 import uk.gov.hmrc.acceptance.stubs.transunion.{CallValidateResponseBuilder, IdentityCheckBuilder}
 import uk.gov.hmrc.acceptance.utils._
@@ -641,4 +642,66 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     )
   }
 
+  Scenario("Personal Bank Account accepts only three tries when relevant configuration is set") {
+    mockServer.when(
+      HttpRequest.request()
+        .withMethod("POST")
+        .withPath(SUREPAY_PATH)
+    ).respond(
+      HttpResponse.response()
+        .withHeader("Content-Type", "application/json")
+        .withBody(s"""{"Matched": false, "ReasonCode": "AC01"}""".stripMargin)
+        .withStatusCode(200)
+    )
+
+    Given("I want to collect and validate a companies bank account details")
+
+    val companyName = "Fail Three Tries"
+    val initRequest = InitRequest(
+      bacsRequirements = Some(InitBACSRequirements(directDebitRequired = true, directCreditRequired = false)),
+      maxCallConfig = Some(MaxCallConfig(
+        count = 3,
+        redirectUrl = s"${TestConfig.environmentHost}:${TestConfig.mockServerPort()}/too/many/attempts"
+      ))
+    ).asJsonString()
+    val session = startGGJourney(initializeJourneyV2(initRequest))
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+
+    SelectAccountTypePage().selectPersonalAccount().clickContinue()
+
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+
+    When("I enter invalid details three times")
+
+    PersonalAccountEntryPage()
+      .enterAccountName(companyName)
+      .enterSortCode(ALTERNATE_ACCOUNT_DETAILS.sortCode)
+      .enterAccountNumber(ALTERNATE_ACCOUNT_DETAILS.accountNumber)
+      .clickContinue()
+
+    PersonalAccountEntryPage()
+      .clickContinue()
+
+    PersonalAccountEntryPage()
+      .clickContinue()
+
+    Then("I am returned to the calling service using the maxCallCountRedirectUrl")
+
+    assertThat(TooManyAttemptsPage().isOnPage).isTrue
+    assertThat(TooManyAttemptsPage().getJourneyId()).isEqualTo(session.journeyId)
+
+    mockServer.verify(
+      HttpRequest.request()
+        .withPath("/write/audit")
+        .withBody(
+          JsonPathBody.jsonPath("$[?(" +
+            "@.auditType=='RequestReceived' " +
+            "&& @.detail.input=='Request to /api/v2/init'" +
+            s"&& @.detail.requestBody=='$initRequest'" +
+            ")]")
+        ),
+      VerificationTimes.atLeast(1)
+    )
+  }
 }
