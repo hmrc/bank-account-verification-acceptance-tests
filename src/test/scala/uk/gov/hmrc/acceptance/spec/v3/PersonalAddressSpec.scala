@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.acceptance.spec.v2
+package uk.gov.hmrc.acceptance.spec.v3
 
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpError, HttpRequest, HttpResponse, JsonPathBody}
@@ -23,7 +23,7 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.models.init.{InitBACSRequirements, InitRequest, MaxCallConfig, PrepopulatedData}
-import uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse
+import uk.gov.hmrc.acceptance.models.response.v3.CompleteResponse
 import uk.gov.hmrc.acceptance.pages.bavfe.{PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.pages.stubbed.{JourneyCompletePage, TooManyAttemptsPage}
 import uk.gov.hmrc.acceptance.spec.BaseSpec
@@ -79,7 +79,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV3(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -87,7 +87,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -135,7 +135,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
@@ -177,7 +177,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV2()
+    val journeyData: JourneyBuilderResponse = initializeJourneyV3()
 
     mockServer.verify(
       HttpRequest.request()
@@ -185,7 +185,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -233,7 +233,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
@@ -295,7 +295,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV3(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -303,7 +303,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -326,7 +326,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val initial: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val initial: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(initial.accountType).isEqualTo("personal")
     assertThat(initial.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
@@ -379,7 +379,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val updated: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val updated: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(updated.accountType).isEqualTo("personal")
     assertThat(updated.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
@@ -430,7 +430,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV3(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -438,7 +438,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -461,7 +461,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo(accountName.asString())
@@ -543,7 +543,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     ).respond(
       HttpResponse.response()
         .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "Patrick O'Conner-Smith"}""".stripMargin)
+        .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "${DEFAULT_NAME.toString}"}""".stripMargin)
         .withStatusCode(200)
     )
 
@@ -558,7 +558,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV3(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -566,7 +566,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -614,7 +614,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo(accountName.asString())
@@ -623,7 +623,8 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.personal.get.rollNumber).isEqualTo(None)
     assertThat(actual.personal.get.accountNumberIsWellFormatted).isEqualTo("yes")
     assertThat(actual.personal.get.accountExists.get).isEqualTo("yes")
-    assertThat(actual.personal.get.nameMatches.get).isEqualTo("yes")
+    assertThat(actual.personal.get.nameMatches.get).isEqualTo("partial")
+    assertThat(actual.personal.get.matchedAccountName.get).isEqualTo(accountName.asString())
     assertThat(actual.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
@@ -664,7 +665,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         redirectUrl = s"${TestConfig.environmentHost}:${TestConfig.mockServerPort()}/too/many/attempts"
       ))
     ).asJsonString()
-    val session = startGGJourney(initializeJourneyV2(initRequest))
+    val session = startGGJourney(initializeJourneyV3(initRequest))
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -697,7 +698,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             s"&& @.detail.requestBody=='$initRequest'" +
             ")]")
         ),

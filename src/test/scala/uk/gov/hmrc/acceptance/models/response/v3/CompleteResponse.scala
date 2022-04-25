@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.acceptance.models.init
+package uk.gov.hmrc.acceptance.models.response.v3
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, OWrites, Reads}
 
-object MaxCallConfig {
-  implicit val initJsonFormat: OFormat[MaxCallConfig] = Json.format[MaxCallConfig]
-}
+case class CompleteResponse(accountType: String, personal: Option[PersonalComplete],
+                            business: Option[BusinessComplete])
 
-case class MaxCallConfig(count: Int,
-                         redirectUrl: String) {
-  def asJsonString(): String = {
-    Json.toJson(this).toString()
-  }
+object CompleteResponse {
+  implicit val writes: OWrites[CompleteResponse] = Json.writes[CompleteResponse]
+  implicit val reads: Reads[CompleteResponse] = Json.reads[CompleteResponse]
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.acceptance.spec.v2
+package uk.gov.hmrc.acceptance.spec.v3
 
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
@@ -23,7 +23,7 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 import uk.gov.hmrc.acceptance.models._
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.models.init.{InitBACSRequirements, InitRequest, MaxCallConfig, PrepopulatedData}
-import uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse
+import uk.gov.hmrc.acceptance.models.response.v3.CompleteResponse
 import uk.gov.hmrc.acceptance.pages.bavfe.{BusinessAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.pages.stubbed.{JourneyCompletePage, TooManyAttemptsPage}
 import uk.gov.hmrc.acceptance.spec.BaseSpec
@@ -58,7 +58,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = DEFAULT_BUSINESS_ADDRESS).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV3(InitRequest(address = DEFAULT_BUSINESS_ADDRESS).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -66,7 +66,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -114,7 +114,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("business")
     assertThat(actual.business.get.companyName).isEqualTo(DEFAULT_BUSINESS.companyName)
@@ -155,7 +155,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV2()
+    val journeyData: JourneyBuilderResponse = initializeJourneyV3()
 
     mockServer.verify(
       HttpRequest.request()
@@ -163,7 +163,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -211,7 +211,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("business")
     assertThat(actual.business.get.companyName).isEqualTo(DEFAULT_BUSINESS.companyName)
@@ -253,7 +253,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate business bank account details")
 
-    val journeyBuilderData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = DEFAULT_BUSINESS_ADDRESS, prepopulatedData = Some(PrepopulatedData(accountType = "business"))).asJsonString())
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourneyV3(InitRequest(address = DEFAULT_BUSINESS_ADDRESS, prepopulatedData = Some(PrepopulatedData(accountType = "business"))).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -261,7 +261,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -309,7 +309,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val initial: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyBuilderData.credId)
+    val initial: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyBuilderData.credId)
 
     assertThat(initial.accountType).isEqualTo("business")
     assertThat(initial.business.get.companyName).isEqualTo(DEFAULT_BUSINESS.companyName)
@@ -362,7 +362,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val updated = getDataCollectedByBAVFEV2(session.journeyId, journeyBuilderData.credId)
+    val updated = getDataCollectedByBAVFEV3(session.journeyId, journeyBuilderData.credId)
 
     assertThat(updated.accountType).isEqualTo("business")
     assertThat(updated.business.get.companyName).isEqualTo(DEFAULT_BUSINESS.companyName)
@@ -390,7 +390,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate business bank account details")
 
-    val journeyBuilderData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = DEFAULT_BUSINESS_ADDRESS, prepopulatedData = Some(PrepopulatedData(accountType = "business"))).asJsonString())
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourneyV3(InitRequest(address = DEFAULT_BUSINESS_ADDRESS, prepopulatedData = Some(PrepopulatedData(accountType = "business"))).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -398,7 +398,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -446,7 +446,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyBuilderData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyBuilderData.credId)
 
     assertThat(actual.accountType).isEqualTo("business")
     assertThat(actual.business.get.companyName).isEqualTo(DEFAULT_BUSINESS.companyName)
@@ -534,7 +534,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
-    val journeyBuilderData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = DEFAULT_BUSINESS_ADDRESS).asJsonString())
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourneyV3(InitRequest(address = DEFAULT_BUSINESS_ADDRESS).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -542,7 +542,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -590,7 +590,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyBuilderData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyBuilderData.credId)
 
     assertThat(actual.accountType).isEqualTo("business")
     assertThat(actual.business.get.companyName).isEqualTo(businessDetails.companyName)
@@ -598,7 +598,8 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.business.get.accountNumber).isEqualTo(DEFAULT_ACCOUNT_DETAILS.accountNumber)
     assertThat(actual.business.get.rollNumber).isEqualTo(None)
     assertThat(actual.business.get.accountNumberIsWellFormatted).isEqualTo("yes")
-    assertThat(actual.business.get.nameMatches.get).isEqualTo("yes")
+    assertThat(actual.business.get.nameMatches.get).isEqualTo("partial")
+    assertThat(actual.business.get.matchedAccountName.get).isEqualTo("Real company name")
     assertThat(actual.business.get.accountExists.get).isEqualTo("yes")
     assertThat(actual.business.get.sortCodeBankName.get).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.business.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
@@ -634,7 +635,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a companies bank account details")
 
-    val journeyBuilderData: JourneyBuilderResponse = initializeJourneyV2(InitRequest(address = DEFAULT_BUSINESS_ADDRESS).asJsonString())
+    val journeyBuilderData: JourneyBuilderResponse = initializeJourneyV3(InitRequest(address = DEFAULT_BUSINESS_ADDRESS).asJsonString())
 
     mockServer.verify(
       HttpRequest.request()
@@ -642,7 +643,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -690,7 +691,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyBuilderData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyBuilderData.credId)
 
     assertThat(actual.accountType).isEqualTo("business")
     assertThat(actual.business.get.companyName).isEqualTo(businessDetails.companyName)
@@ -740,7 +741,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
         redirectUrl = s"${TestConfig.environmentHost}:${TestConfig.mockServerPort()}/too/many/attempts"
       ))
     ).asJsonString()
-    val session = startGGJourney(initializeJourneyV2(initRequest))
+    val session = startGGJourney(initializeJourneyV3(initRequest))
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -773,7 +774,7 @@ class BusinessAddressSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             s"&& @.detail.requestBody=='$initRequest'" +
             ")]")
         ),

@@ -74,6 +74,22 @@ trait JourneyBuilder {
     }
   }
 
+  def initializeJourneyV3(configuration: String = InitRequest.apply().asJsonString(), userAgent: String = defaultUserAgent): JourneyBuilderResponse = {
+    // **NOTE** credId can only be a maximum of 30 characters, anything longer will result in a mismatch and no journey will be found
+    val credId = randomUUID().toString.slice(0, 29)
+    val request = new Request.Builder()
+      .url(s"${TestConfig.apiUrl("bank-account-verification")}/v3/init")
+      .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
+      .addHeader("Authorization", generateBearerToken(credId))
+      .addHeader("User-Agent", userAgent)
+    val response = okHttpClient.newCall(request.build()).execute()
+    if (response.isSuccessful) {
+      JourneyBuilderResponse(Json.parse(response.body.string()).as[InitResponse], credId)
+    } else {
+      throw new IllegalStateException("Unable to initialize a new journey!")
+    }
+  }
+
   def getDataCollectedByBAVFEV1(journeyId: String, credId: String, userAgent: String = defaultUserAgent): uk.gov.hmrc.acceptance.models.response.v1.CompleteResponse = {
     val request = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/complete/$journeyId")
@@ -97,6 +113,20 @@ trait JourneyBuilder {
     val response = okHttpClient.newCall(request.build()).execute()
     if (response.isSuccessful) {
       Json.parse(response.body.string()).as[uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse]
+    } else {
+      throw new IllegalStateException("Unable to complete journey!")
+    }
+  }
+
+  def getDataCollectedByBAVFEV3(journeyId: String, credId: String, userAgent: String = defaultUserAgent): uk.gov.hmrc.acceptance.models.response.v3.CompleteResponse = {
+    val request = new Request.Builder()
+      .url(s"${TestConfig.apiUrl("bank-account-verification")}/v3/complete/$journeyId")
+      .method("GET", null)
+      .addHeader("Authorization", generateBearerToken(credId))
+      .addHeader("User-Agent", userAgent)
+    val response = okHttpClient.newCall(request.build()).execute()
+    if (response.isSuccessful) {
+      Json.parse(response.body.string()).as[uk.gov.hmrc.acceptance.models.response.v3.CompleteResponse]
     } else {
       throw new IllegalStateException("Unable to complete journey!")
     }

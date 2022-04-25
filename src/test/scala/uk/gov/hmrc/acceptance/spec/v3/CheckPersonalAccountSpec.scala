@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.acceptance.spec.v2
+package uk.gov.hmrc.acceptance.spec.v3
 
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.model.{HttpError, HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.acceptance.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.acceptance.models.init.{InitBACSRequirements, InitRequest}
-import uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse
+import uk.gov.hmrc.acceptance.models.response.v3.CompleteResponse
 import uk.gov.hmrc.acceptance.models.{Account, Individual, JourneyBuilderResponse}
 import uk.gov.hmrc.acceptance.pages.bavfe.{ConfirmDetailsPage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.acceptance.pages.stubbed.JourneyCompletePage
@@ -52,7 +52,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a customers bank account details")
 
-    val journeyData = initializeJourneyV2()
+    val journeyData = initializeJourneyV3()
     val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
@@ -92,7 +92,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
@@ -121,7 +121,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to audit where a request came from")
 
-    startGGJourney(initializeJourneyV2())
+    startGGJourney(initializeJourneyV3())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -169,7 +169,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a customers bank account details")
 
-    val journeyData = initializeJourneyV2()
+    val journeyData = initializeJourneyV3()
     val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
@@ -208,7 +208,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
@@ -231,13 +231,15 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     ).respond(
       HttpResponse.response()
         .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "Patrick O'Conner-Smith"}""".stripMargin)
+        .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "${DEFAULT_NAME.asString()}"}""".stripMargin)
         .withStatusCode(200)
     )
 
+
     Given("I want to collect and validate a customers bank account details")
 
-    val journeyData = initializeJourneyV2()
+    val almostCorrectName = "Patrick O'Conner-Smith"
+    val journeyData = initializeJourneyV3()
     val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
@@ -249,7 +251,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     When("a customer enters all required information and clicks continue")
 
     PersonalAccountEntryPage()
-      .enterAccountName(DEFAULT_NAME.asString())
+      .enterAccountName(almostCorrectName)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
@@ -261,7 +263,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='AccountDetailsEntered' " +
             "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
+            s"&& @.detail.accountName=='${almostCorrectName.replaceAll("\'", "\\\\\'")}'" +
             s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
             s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
             "&& @.detail.rollNumber==''" +
@@ -275,16 +277,17 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
-    assertThat(actual.personal.get.accountName).isEqualTo(DEFAULT_NAME.asString())
+    assertThat(actual.personal.get.accountName).isEqualTo(almostCorrectName)
     assertThat(actual.personal.get.sortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
     assertThat(actual.personal.get.accountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
     assertThat(actual.personal.get.rollNumber).isEqualTo(None)
     assertThat(actual.personal.get.accountNumberIsWellFormatted).isEqualTo("yes")
     assertThat(actual.personal.get.accountExists.get).isEqualTo("yes")
-    assertThat(actual.personal.get.nameMatches.get).isEqualTo("yes")
+    assertThat(actual.personal.get.nameMatches.get).isEqualTo("partial")
+    assertThat(actual.personal.get.matchedAccountName.get).isEqualTo(DEFAULT_NAME.asString())
     assertThat(actual.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
@@ -305,7 +308,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a customers bank account details")
 
     val customerName = "Account Closed"
-    startGGJourney(initializeJourneyV2())
+    startGGJourney(initializeJourneyV3())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -370,7 +373,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV2()
+    val journeyData: JourneyBuilderResponse = initializeJourneyV3()
 
     mockServer.verify(
       HttpRequest.request()
@@ -378,7 +381,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         .withBody(
           JsonPathBody.jsonPath("$[?(" +
             "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
+            "&& @.detail.input=='Request to /api/v3/init'" +
             ")]")
         ),
       VerificationTimes.atLeast(1)
@@ -472,7 +475,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a customers bank account details")
 
     val companyName = "Cannot Match"
-    val journeyData = initializeJourneyV2()
+    val journeyData = initializeJourneyV3()
     val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
@@ -521,7 +524,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(JourneyCompletePage().isOnPage).isTrue
     assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
 
-    val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
+    val actual: CompleteResponse = getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
     assertThat(actual.accountType).isEqualTo("personal")
     assertThat(actual.personal.get.accountName).isEqualTo("Cannot Match")
@@ -563,7 +566,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a customers bank account details")
 
     val companyName = "Cannot Match"
-    startGGJourney(initializeJourneyV2())
+    startGGJourney(initializeJourneyV3())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -617,7 +620,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a customers bank account details")
 
-    startGGJourney(initializeJourneyV2())
+    startGGJourney(initializeJourneyV3())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -681,7 +684,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a customers bank account details")
 
     val companyName = "Cannot Match"
-    startGGJourney(initializeJourneyV2(InitRequest(
+    startGGJourney(initializeJourneyV3(InitRequest(
       bacsRequirements = Some(InitBACSRequirements(directDebitRequired = false, directCreditRequired = true))).asJsonString()
     ))
 
@@ -750,7 +753,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Given("I want to collect and validate a customers bank account details")
 
     val companyName = "Cannot Match"
-    startGGJourney(initializeJourneyV2(InitRequest(
+    startGGJourney(initializeJourneyV3(InitRequest(
       bacsRequirements = Some(InitBACSRequirements(directDebitRequired = true, directCreditRequired = false))).asJsonString()
     ))
 
