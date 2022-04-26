@@ -543,7 +543,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     ).respond(
       HttpResponse.response()
         .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "${DEFAULT_NAME.toString}"}""".stripMargin)
+        .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "Mr Patrick O'Connor-Smith"}""".stripMargin)
         .withStatusCode(200)
     )
 
@@ -624,7 +624,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.personal.get.accountNumberIsWellFormatted).isEqualTo("yes")
     assertThat(actual.personal.get.accountExists.get).isEqualTo("yes")
     assertThat(actual.personal.get.nameMatches.get).isEqualTo("partial")
-    assertThat(actual.personal.get.matchedAccountName.get).isEqualTo(accountName.asString())
+    assertThat(actual.personal.get.matchedAccountName.get).isEqualTo("Mr Patrick O'Connor-Smith")
     assertThat(actual.personal.get.sortCodeBankName.get).isEqualTo(DEFAULT_ACCOUNT_DETAILS.bankName.get)
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
