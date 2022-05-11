@@ -25,17 +25,21 @@ import uk.gov.hmrc.acceptance.utils.{BrowserDriver, CommonActions, CommonAsserti
 
 import java.nio.file.Paths
 
-trait BaseSpec extends AnyFeatureSpec
-  with GivenWhenThen
-  with BeforeAndAfterAll
-  with BeforeAndAfterEach
-  with JourneyBuilder
-  with BrowserDriver
-  with CommonAssertions
-  with CommonActions
-  with Matchers {
+trait BaseSpec
+    extends AnyFeatureSpec
+    with GivenWhenThen
+    with BeforeAndAfterAll
+    with BeforeAndAfterEach
+    with JourneyBuilder
+    with BrowserDriver
+    with CommonAssertions
+    with CommonActions
+    with Matchers {
 
-  val s3Mock: S3Mock = new S3Mock.Builder().withPort(TestConfig.s3MockPort()).withFileBackend(getClass.getResource("/sThreeBucket").getPath).build()
+  val s3Mock: S3Mock = new S3Mock.Builder()
+    .withPort(TestConfig.s3MockPort())
+    .withFileBackend(getClass.getResource("/sThreeBucket").getPath)
+    .build()
 
   override def beforeAll(): Unit = {
     super.beforeAll()
@@ -47,9 +51,8 @@ trait BaseSpec extends AnyFeatureSpec
     initializeModCheckCache()
   }
 
-  override def afterEach: Unit = {
+  override def afterEach: Unit =
     webDriver.manage().deleteAllCookies()
-  }
 
   override def afterAll(): Unit = {
     webDriver.quit()
@@ -60,7 +63,7 @@ trait BaseSpec extends AnyFeatureSpec
     val fixture = super.withFixture(test)
     if (!fixture.isSucceeded) {
       val screenshotDirectory = Paths.get("./target/screenshots").toAbsolutePath.toString
-      val screenshotFilename = test.name.replaceAll("\\s", "_").replaceAll("/", "")
+      val screenshotFilename  = test.name.replaceAll("\\s", "_").replaceAll("/", "")
       setCaptureDir(screenshotDirectory)
       capture to screenshotFilename
       println(s"Saved screenshot for failing test to '$screenshotDirectory/$screenshotFilename'")

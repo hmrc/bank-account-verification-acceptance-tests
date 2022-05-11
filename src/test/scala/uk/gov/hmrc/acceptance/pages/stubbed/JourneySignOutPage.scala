@@ -21,7 +21,6 @@ import uk.gov.hmrc.acceptance.pages.BasePage
 
 case class JourneySignOutPage() extends BasePage {
 
-  override def isOnPage: Boolean = {
+  override def isOnPage: Boolean =
     webDriverWillWait.until(titleIs("Signed out"))
-  }
 }

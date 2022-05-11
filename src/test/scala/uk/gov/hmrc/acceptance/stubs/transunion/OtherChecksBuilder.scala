@@ -19,7 +19,7 @@ package uk.gov.hmrc.acceptance.stubs.transunion
 class OtherChecksBuilder {
 
   private var identityResult = "Pass"
-  private var identityScore = "65"
+  private var identityScore  = "65"
 
   def identityResult(identityResult: String): OtherChecksBuilder = {
     this.identityResult = identityResult
@@ -31,7 +31,7 @@ class OtherChecksBuilder {
     this
   }
 
-  def build(): String = {
+  def build(): String =
     s"""<AgeVerify/>
        |<OtherChecks>
        |  <IdentityResult>$identityResult</IdentityResult>
@@ -45,5 +45,4 @@ class OtherChecksBuilder {
        |    <Score/>
        |  </MobileRisk>
        |</Phone>""".stripMargin
-  }
 }

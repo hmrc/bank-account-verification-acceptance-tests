@@ -23,50 +23,42 @@ import uk.gov.hmrc.acceptance.utils.BrowserDriver
 
 trait BasePage extends BrowserDriver {
 
-  private lazy val pageHeading: Option[Element] = find(id("pageHeading"))
-  private lazy val backLink: IdQuery = id("back")
-  private lazy val signOutLink: CssSelectorQuery = cssSelector(".hmrc-sign-out-nav__link")
+  private lazy val pageHeading: Option[Element]    = find(id("pageHeading"))
+  private lazy val backLink: IdQuery               = id("back")
+  private lazy val signOutLink: CssSelectorQuery   = cssSelector(".hmrc-sign-out-nav__link")
   private lazy val selectEnglish: CssSelectorQuery = cssSelector("a[hreflang=en]")
-  private lazy val selectWelsh: CssSelectorQuery = cssSelector("a[hreflang=cy]")
+  private lazy val selectWelsh: CssSelectorQuery   = cssSelector("a[hreflang=cy]")
 
   def isOnPage: Boolean = false
 
-  def errorSummaryLink(element: String): WebElement = {
+  def errorSummaryLink(element: String): WebElement =
     webDriverWillWait.until(visibilityOfElementLocated(By.cssSelector(s"a[href*='$element']")))
-  }
 
-  def errorNotificationField(field: String): WebElement = {
+  def errorNotificationField(field: String): WebElement =
     webDriverWillWait.until(visibilityOfElementLocated(By.id(s"$field-error")))
-  }
 
-  def isSignOutLinkDisplayed: Boolean = {
+  def isSignOutLinkDisplayed: Boolean =
     signOutLink.findAllElements.nonEmpty
-  }
 
-  def getSignOutLinkLocation: String = {
+  def getSignOutLinkLocation: String =
     signOutLink.webElement.getAttribute("href")
-  }
 
-  def getPageHeading: String = {
+  def getPageHeading: String =
     pageHeading.get.text
-  }
 
   def clickBackLink(): Unit = {
     webDriverWillWait.until(ExpectedConditions.elementToBeClickable(backLink.by))
     click on backLink
   }
 
-  def clickSignOut(): Unit = {
+  def clickSignOut(): Unit =
     click on signOutLink
-  }
 
-  def switchToWelsh(): Unit = {
+  def switchToWelsh(): Unit =
     click on selectWelsh
-  }
 
-  def switchToEnglish(): Unit = {
+  def switchToEnglish(): Unit =
     click on selectEnglish
-  }
 
   def errorMessageSummaryCount(): Int = {
     webDriverWillWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".govuk-error-summary__list")))

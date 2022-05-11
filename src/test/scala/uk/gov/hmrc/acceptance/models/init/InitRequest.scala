@@ -28,19 +28,22 @@ object InitRequest {
   implicit val initJsonFormat: OFormat[InitRequest] = Json.format[InitRequest]
 }
 
-case class InitRequest(serviceIdentifier: String = DEFAULT_SERVICE_IDENTIFIER,
-                       continueUrl: String = s"${TestConfig.environmentHost}:${TestConfig.mockServerPort()}/complete",
-                       prepopulatedData: Option[PrepopulatedData] = None,
-                       address: Option[Address] = None,
-                       messages: Option[Messages] = Some(DEFAULT_MESSAGES),
-                       customisationsUrl: Option[String] = None,
-                       bacsRequirements: Option[InitBACSRequirements] = Some(InitBACSRequirements(directDebitRequired = false, directCreditRequired = false)),
-                       timeoutConfig: Option[InitRequestTimeoutConfig] = None,
-                       signOutUrl: Option[String] = None,
-                       maxCallConfig: Option[MaxCallConfig] = None) {
+case class InitRequest(
+  serviceIdentifier: String = DEFAULT_SERVICE_IDENTIFIER,
+  continueUrl: String = s"${TestConfig.environmentHost}:${TestConfig.mockServerPort()}/complete",
+  prepopulatedData: Option[PrepopulatedData] = None,
+  address: Option[Address] = None,
+  messages: Option[Messages] = Some(DEFAULT_MESSAGES),
+  customisationsUrl: Option[String] = None,
+  bacsRequirements: Option[InitBACSRequirements] = Some(
+    InitBACSRequirements(directDebitRequired = false, directCreditRequired = false)
+  ),
+  timeoutConfig: Option[InitRequestTimeoutConfig] = None,
+  signOutUrl: Option[String] = None,
+  maxCallConfig: Option[MaxCallConfig] = None
+) {
 
-  def asJsonString(): String = {
+  def asJsonString(): String =
     Json.toJson(this).toString()
-  }
 
 }

@@ -20,8 +20,9 @@ import uk.gov.hmrc.acceptance.models.Address
 
 class IdentityCheckBuilder {
 
-  private var currentAddressMatched: Address = Address(List("1", "Buck House"), town = Some("London"), postcode = Some("SW1A 1AA"))
-  private var nameMatched = ""
+  private var currentAddressMatched: Address =
+    Address(List("1", "Buck House"), town = Some("London"), postcode = Some("SW1A 1AA"))
+  private var nameMatched                    = ""
 
   def currentAddressMatched(currentAddressMatched: Address): IdentityCheckBuilder = {
     this.currentAddressMatched = currentAddressMatched
@@ -33,7 +34,7 @@ class IdentityCheckBuilder {
     this
   }
 
-  def build(): String = {
+  def build(): String =
     s"""<IdentityCheck>
        |  <addresspicklistfound>false</addresspicklistfound>
        |  <appverified>Yes</appverified>
@@ -69,5 +70,4 @@ class IdentityCheckBuilder {
        |  <readmatch>false</readmatch>
        |  <totaldobs>13</totaldobs>
        |</IdentityCheck>""".stripMargin
-  }
 }

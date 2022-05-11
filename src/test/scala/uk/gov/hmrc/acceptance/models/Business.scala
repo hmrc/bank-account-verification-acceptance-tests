@@ -22,9 +22,7 @@ object Business {
   implicit val jsonFormat: OFormat[Business] = Json.format[Business]
 }
 
-case class Business(companyName: String,
-                    address: Option[Address] = None) {
-  def asJsonString(): String = {
+case class Business(companyName: String, address: Option[Address] = None) {
+  def asJsonString(): String =
     Json.toJson(this).toString()
-  }
 }

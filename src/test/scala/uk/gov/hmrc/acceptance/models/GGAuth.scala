@@ -23,15 +23,15 @@ object GGAuth {
   implicit val jsonFormat: OFormat[GGAuth] = Json.format[GGAuth]
 }
 
-case class GGAuth(credId: CredId,
-                  affinityGroup: AffinityGroup,
-                  confidenceLevel: Option[ConfidenceLevel],
-                  credentialStrength: CredentialStrength,
-                  credentialRole: Option[CredentialRole],
-                  enrolments: Seq[Enrolment]) {
+case class GGAuth(
+  credId: CredId,
+  affinityGroup: AffinityGroup,
+  confidenceLevel: Option[ConfidenceLevel],
+  credentialStrength: CredentialStrength,
+  credentialRole: Option[CredentialRole],
+  enrolments: Seq[Enrolment]
+) {
 
-  def asJsonString(): String = {
+  def asJsonString(): String =
     Json.toJson(this).toString()
-  }
 }
-

@@ -18,21 +18,23 @@ package uk.gov.hmrc.acceptance.models.response.v3
 
 import play.api.libs.json.{Json, OWrites, Reads}
 
-case class PersonalComplete(accountName: String,
-                            sortCode: String,
-                            accountNumber: String,
-                            accountNumberIsWellFormatted: String,
-                            rollNumber: Option[String] = None,
-                            accountExists: Option[String] = None,
-                            nameMatches: Option[String] = None,
-                            nonStandardAccountDetailsRequiredForBacs: Option[String] = None,
-                            sortCodeBankName: Option[String] = None,
-                            sortCodeSupportsDirectDebit: Option[String] = None,
-                            sortCodeSupportsDirectCredit: Option[String] = None,
-                            iban: Option[String] = None,
-                            matchedAccountName: Option[String] = None)
+case class PersonalComplete(
+  accountName: String,
+  sortCode: String,
+  accountNumber: String,
+  accountNumberIsWellFormatted: String,
+  rollNumber: Option[String] = None,
+  accountExists: Option[String] = None,
+  nameMatches: Option[String] = None,
+  nonStandardAccountDetailsRequiredForBacs: Option[String] = None,
+  sortCodeBankName: Option[String] = None,
+  sortCodeSupportsDirectDebit: Option[String] = None,
+  sortCodeSupportsDirectCredit: Option[String] = None,
+  iban: Option[String] = None,
+  matchedAccountName: Option[String] = None
+)
 
 object PersonalComplete {
   implicit val writes: OWrites[PersonalComplete] = Json.writes[PersonalComplete]
-  implicit val reads: Reads[PersonalComplete] = Json.reads[PersonalComplete]
+  implicit val reads: Reads[PersonalComplete]    = Json.reads[PersonalComplete]
 }

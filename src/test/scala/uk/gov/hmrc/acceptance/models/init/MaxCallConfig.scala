@@ -22,9 +22,7 @@ object MaxCallConfig {
   implicit val initJsonFormat: OFormat[MaxCallConfig] = Json.format[MaxCallConfig]
 }
 
-case class MaxCallConfig(count: Int,
-                         redirectUrl: String) {
-  def asJsonString(): String = {
+case class MaxCallConfig(count: Int, redirectUrl: String) {
+  def asJsonString(): String =
     Json.toJson(this).toString()
-  }
 }

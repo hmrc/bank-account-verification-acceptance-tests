@@ -30,18 +30,20 @@ trait CommonAssertions extends BrowserDriver {
   }
 
   def assertThatInputFieldErrorMessageExists(elementIdentifier: String): Unit = {
-    val dataEntryField = id(s"$elementIdentifier").findElement.get
-    val errorBorderClass = "govuk-input--error"
-    val errorMessageLocator = By.id(s"$elementIdentifier-error")
-    val errorMessage: WebElement = webDriverWillWait.until(ExpectedConditions.presenceOfElementLocated(errorMessageLocator))
+    val dataEntryField           = id(s"$elementIdentifier").findElement.get
+    val errorBorderClass         = "govuk-input--error"
+    val errorMessageLocator      = By.id(s"$elementIdentifier-error")
+    val errorMessage: WebElement =
+      webDriverWillWait.until(ExpectedConditions.presenceOfElementLocated(errorMessageLocator))
     assertThat(errorMessage.isDisplayed).isTrue
     assertThat(errorMessage.getText).isNotEmpty
     assertThat(dataEntryField.attribute("class").get).contains(errorBorderClass)
   }
 
   def assertThatRadioButtonErrorMessageIsDisplayed(elementIdentifier: String): Unit = {
-    val errorMessageLocator = By.id(s"$elementIdentifier-error")
-    val errorMessage: WebElement = webDriverWillWait.until(ExpectedConditions.presenceOfElementLocated(errorMessageLocator))
+    val errorMessageLocator      = By.id(s"$elementIdentifier-error")
+    val errorMessage: WebElement =
+      webDriverWillWait.until(ExpectedConditions.presenceOfElementLocated(errorMessageLocator))
     assertThat(errorMessage.isDisplayed).isTrue
     assertThat(errorMessage.getText).isNotEmpty
   }

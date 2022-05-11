@@ -19,22 +19,24 @@ package uk.gov.hmrc.acceptance.models.response.v1
 import play.api.libs.json.{Json, OWrites, Reads}
 import uk.gov.hmrc.acceptance.models.Address
 
-case class BusinessComplete(address: Option[Address],
-                            companyName: String,
-                            sortCode: String,
-                            accountNumber: String,
-                            rollNumber: Option[String] = None,
-                            accountNumberWithSortCodeIsValid: String,
-                            accountExists: Option[String] = None,
-                            companyNameMatches: Option[String],
-                            companyPostCodeMatches: Option[String],
-                            companyRegistrationNumberMatches: Option[String],
-                            nonStandardAccountDetailsRequiredForBacs: Option[String] = None,
-                            sortCodeBankName: Option[String] = None,
-                            sortCodeSupportsDirectDebit: Option[String] = None,
-                            sortCodeSupportsDirectCredit: Option[String] = None)
+case class BusinessComplete(
+  address: Option[Address],
+  companyName: String,
+  sortCode: String,
+  accountNumber: String,
+  rollNumber: Option[String] = None,
+  accountNumberWithSortCodeIsValid: String,
+  accountExists: Option[String] = None,
+  companyNameMatches: Option[String],
+  companyPostCodeMatches: Option[String],
+  companyRegistrationNumberMatches: Option[String],
+  nonStandardAccountDetailsRequiredForBacs: Option[String] = None,
+  sortCodeBankName: Option[String] = None,
+  sortCodeSupportsDirectDebit: Option[String] = None,
+  sortCodeSupportsDirectCredit: Option[String] = None
+)
 
 object BusinessComplete {
   implicit val writes: OWrites[BusinessComplete] = Json.writes[BusinessComplete]
-  implicit val reads: Reads[BusinessComplete] = Json.reads[BusinessComplete]
+  implicit val reads: Reads[BusinessComplete]    = Json.reads[BusinessComplete]
 }

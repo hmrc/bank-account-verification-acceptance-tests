@@ -41,21 +41,21 @@ object ConfidenceLevel {
     case 300 => L300
     case 200 => L200
     case 100 => L100
-    case 50 => L50
-    case 0 => L0
-    case _ => throw new NoSuchElementException(s"Illegal confidence level: $level")
+    case 50  => L50
+    case 0   => L0
+    case _   => throw new NoSuchElementException(s"Illegal confidence level: $level")
   }
 
   implicit val format: Format[ConfidenceLevel] = {
-    val reads = Reads[ConfidenceLevel] { json =>
+    val reads  = Reads[ConfidenceLevel] { json =>
       Try {
         fromInt(json.as[Int])
       } match {
         case Success(level) => JsSuccess(level)
-        case Failure(ex) => JsError(ex.getMessage)
+        case Failure(ex)    => JsError(ex.getMessage)
       }
     }
-    val writes = Writes[ConfidenceLevel] { level => JsNumber(level.level) }
+    val writes = Writes[ConfidenceLevel](level => JsNumber(level.level))
     Format(reads, writes)
   }
 }

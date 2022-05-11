@@ -35,7 +35,9 @@ trait CommonActions extends BrowserDriver {
     go to s"${TestConfig.url("auth-login-stub")}/gg-sign-in"
     GGAuthStubPage()
       .enterCredID(journeyStart.credId)
-      .enterRedirectUrl(s"${TestConfig.getHost("bank-account-verification")}${journeyStart.initResponse.detailsUrl.get}")
+      .enterRedirectUrl(
+        s"${TestConfig.getHost("bank-account-verification")}${journeyStart.initResponse.detailsUrl.get}"
+      )
       .submit()
   }
 

@@ -22,16 +22,16 @@ object Account {
   implicit val jsonFormat: OFormat[Account] = Json.format[Account]
 }
 
-case class Account(sortCode: String,
-                   accountNumber: String,
-                   rollNumber: Option[String] = None,
-                   bankName: Option[String] = None,
-                   iban: Option[String] = None) {
-  def asJsonString(): String = {
+case class Account(
+  sortCode: String,
+  accountNumber: String,
+  rollNumber: Option[String] = None,
+  bankName: Option[String] = None,
+  iban: Option[String] = None
+) {
+  def asJsonString(): String =
     Json.toJson(this).toString()
-  }
 
-  def storedSortCode(): String = {
+  def storedSortCode(): String =
     this.sortCode.replaceAll("\\s|-", "")
-  }
 }

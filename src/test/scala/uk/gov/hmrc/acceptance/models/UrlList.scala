@@ -22,5 +22,4 @@ object UrlList {
   implicit val jsonFormat: OFormat[UrlList] = Json.format[UrlList]
 }
 
-case class UrlList(urlsByUrlRegex: Array[UrlData]) {
-}
+case class UrlList(urlsByUrlRegex: Array[UrlData]) {}

@@ -18,10 +18,10 @@ package uk.gov.hmrc.acceptance.stubs.transunion
 
 class WarningsBuilder {
 
-  private var nonGBRCardWarning = false
-  private var namePicklistWarning = false
-  private var addressPicklistWarning = false
-  private var pafNonValidWarning = false
+  private var nonGBRCardWarning        = false
+  private var namePicklistWarning      = false
+  private var addressPicklistWarning   = false
+  private var pafNonValidWarning       = false
   private var cardAccountClosedWarning = false
   private var bankAccountClosedWarning = false
 
@@ -55,7 +55,7 @@ class WarningsBuilder {
     this
   }
 
-  def build(): String = {
+  def build(): String =
     s"""<Warnings>
        |  <NonGBRCardWarning>$nonGBRCardWarning</NonGBRCardWarning>
        |  <NamePicklistWarning>$namePicklistWarning</NamePicklistWarning>
@@ -64,5 +64,4 @@ class WarningsBuilder {
        |  <CardAccountClosedWarning>$cardAccountClosedWarning</CardAccountClosedWarning>
        |  <BankAccountClosedWarning>$bankAccountClosedWarning</BankAccountClosedWarning>
        |</Warnings>""".stripMargin
-  }
 }

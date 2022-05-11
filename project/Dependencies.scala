@@ -9,8 +9,8 @@ object Dependencies {
     "uk.gov.hmrc"             %% "webdriver-factory"  % "0.+"         %   Test,
     "com.typesafe.play"       %% "play-json"          % "2.9.2"       %   Test,
     "io.findify"              %% "s3mock"             % "0.2.6"       %   Test,
-    "org.mock-server"         % "mockserver-netty"    % "5.13.2"      %   Test,
+    "org.mock-server"         % "mockserver-netty"    % "5.12.0"      %   Test,
     "org.assertj"             % "assertj-core"        % "3.22.0"      %   Test,
-    "com.google.guava"        %  "guava"              % "30.1.1-jre"  %   Test
+    "com.google.guava"        %  "guava"              % "31.1-jre"  %   Test
   )
 }

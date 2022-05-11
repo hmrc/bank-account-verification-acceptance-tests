@@ -20,20 +20,17 @@ import uk.gov.hmrc.acceptance.pages.BasePage
 
 case class TimeoutDialoguePartial() extends BasePage {
 
-  private lazy val timeoutDialogue: IdQuery = id("hmrc-timeout-dialog")
+  private lazy val timeoutDialogue: IdQuery    = id("hmrc-timeout-dialog")
   private lazy val staySignedInButton: IdQuery = id("hmrc-timeout-keep-signin-btn")
   private lazy val timeoutSignOutLink: IdQuery = id("hmrc-timeout-sign-out-link")
 
-  def isVisible: Boolean = {
+  def isVisible: Boolean =
     timeoutDialogue.webElement.isDisplayed
-  }
 
-  def clickStaySignedIn(): Unit = {
+  def clickStaySignedIn(): Unit =
     click on staySignedInButton
-  }
 
-  def clickTimeoutSignOut(): Unit = {
+  def clickTimeoutSignOut(): Unit =
     click on timeoutSignOutLink
-  }
 
 }

@@ -22,13 +22,14 @@ object PrepopulatedData {
   implicit val jsonFormat: OFormat[PrepopulatedData] = Json.format[PrepopulatedData]
 }
 
-case class PrepopulatedData(accountType: String,
-                            name: Option[String] = None,
-                            sortCode: Option[String] = None,
-                            accountNumber: Option[String] = None,
-                            rollNumber: Option[String] = None) {
+case class PrepopulatedData(
+  accountType: String,
+  name: Option[String] = None,
+  sortCode: Option[String] = None,
+  accountNumber: Option[String] = None,
+  rollNumber: Option[String] = None
+) {
 
-  def asJsonString(): String = {
+  def asJsonString(): String =
     Json.toJson(this).toString()
-  }
 }

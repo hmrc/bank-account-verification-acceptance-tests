@@ -20,18 +20,19 @@ import uk.gov.hmrc.acceptance.models.{Address, Individual}
 
 class CallValidateResponseBuilder() {
 
-  private var individual: Individual = Individual(title = Some("Mrs"), firstName = Some("Annie"), lastName = Some("Mclaren"))
-  private var address: Address = Address(List("1", "Buck House"), town = Some("London"), postcode = Some("SW1A 1AA"))
-  private var dateOfBirth = "1970-10-01"
-  private var bankCheckEnhanced: String = new BankCheckEnhancedBuilder().build()
-  private var bankEnhancedCompleted = "yes"
-  private var identityCheck: String = new IdentityCheckBuilder()
+  private var individual: Individual        =
+    Individual(title = Some("Mrs"), firstName = Some("Annie"), lastName = Some("Mclaren"))
+  private var address: Address              = Address(List("1", "Buck House"), town = Some("London"), postcode = Some("SW1A 1AA"))
+  private var dateOfBirth                   = "1970-10-01"
+  private var bankCheckEnhanced: String     = new BankCheckEnhancedBuilder().build()
+  private var bankEnhancedCompleted         = "yes"
+  private var identityCheck: String         = new IdentityCheckBuilder()
     .nameMatched(individual.asString())
     .build()
-  private var otherChecks: String = new OtherChecksBuilder().build()
-  private var warnings: String = new WarningsBuilder().build()
+  private var otherChecks: String           = new OtherChecksBuilder().build()
+  private var warnings: String              = new WarningsBuilder().build()
   private var additionalChecksFlag: Boolean = true
-  private var errors = ""
+  private var errors                        = ""
 
   def setInputIndividualData(individual: Individual): CallValidateResponseBuilder = {
     this.individual = individual
@@ -69,8 +70,7 @@ class CallValidateResponseBuilder() {
   }
 
   def withError(error: String): CallValidateResponseBuilder = {
-    this.errors =
-      s"""
+    this.errors = s"""
          |<Errors>
          |    <Error>$error</Error>
          |</Errors>""".stripMargin
@@ -79,7 +79,7 @@ class CallValidateResponseBuilder() {
     this
   }
 
-  private def additionalChecks(): String = {
+  private def additionalChecks(): String =
     if (additionalChecksFlag) {
       s"""
          |$bankCheckEnhanced
@@ -89,11 +89,11 @@ class CallValidateResponseBuilder() {
     } else {
       ""
     }
-  }
 
-  def build(): String = {
-    scala.xml.XML.loadString(
-      s"""<Results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" APIVERSION="5.7.0 - 20150811">
+  def build(): String =
+    scala.xml.XML
+      .loadString(
+        s"""<Results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" APIVERSION="5.7.0 - 20150811">
          |  <Result RID="CC-TEST-HARNESS" PID="LTJ-CT1-8871-46651-5788" DateTime="21-06-2016 14:29">
          |    <Displays>
          |      <ChecksCompleted>
@@ -176,7 +176,7 @@ class CallValidateResponseBuilder() {
          |  </Result>
          |</Results>
          |  """.stripMargin
-    ).toString()
-  }
+      )
+      .toString()
 
 }

@@ -23,11 +23,11 @@ object InitRequestTimeoutConfig {
 }
 
 case class InitRequestTimeoutConfig(
-                                     timeoutUrl: String,
-                                     timeoutAmount: Int,
-                                     timeoutKeepAliveUrl: Option[String] = None) {
+  timeoutUrl: String,
+  timeoutAmount: Int,
+  timeoutKeepAliveUrl: Option[String] = None
+) {
 
-  def asJsonString(): String = {
+  def asJsonString(): String =
     Json.toJson(this).toString()
-  }
 }

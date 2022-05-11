@@ -18,10 +18,9 @@ package uk.gov.hmrc.acceptance.models.response.v3
 
 import play.api.libs.json.{Json, OWrites, Reads}
 
-case class CompleteResponse(accountType: String, personal: Option[PersonalComplete],
-                            business: Option[BusinessComplete])
+case class CompleteResponse(accountType: String, personal: Option[PersonalComplete], business: Option[BusinessComplete])
 
 object CompleteResponse {
   implicit val writes: OWrites[CompleteResponse] = Json.writes[CompleteResponse]
-  implicit val reads: Reads[CompleteResponse] = Json.reads[CompleteResponse]
+  implicit val reads: Reads[CompleteResponse]    = Json.reads[CompleteResponse]
 }

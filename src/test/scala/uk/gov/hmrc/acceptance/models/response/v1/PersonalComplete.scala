@@ -19,24 +19,26 @@ package uk.gov.hmrc.acceptance.models.response.v1
 import play.api.libs.json.{Json, OWrites, Reads}
 import uk.gov.hmrc.acceptance.models.Address
 
-case class PersonalComplete(address: Option[Address],
-                            accountName: String,
-                            sortCode: String,
-                            accountNumber: String,
-                            accountNumberWithSortCodeIsValid: String,
-                            rollNumber: Option[String] = None,
-                            accountExists: Option[String] = None,
-                            nameMatches: Option[String] = None,
-                            addressMatches: Option[String] = None,
-                            nonConsented: Option[String] = None,
-                            subjectHasDeceased: Option[String] = None,
-                            nonStandardAccountDetailsRequiredForBacs: Option[String] = None,
-                            sortCodeBankName: Option[String] = None,
-                            sortCodeSupportsDirectDebit: Option[String] = None,
-                            sortCodeSupportsDirectCredit: Option[String] = None,
-                            iban: Option[String] = None)
+case class PersonalComplete(
+  address: Option[Address],
+  accountName: String,
+  sortCode: String,
+  accountNumber: String,
+  accountNumberWithSortCodeIsValid: String,
+  rollNumber: Option[String] = None,
+  accountExists: Option[String] = None,
+  nameMatches: Option[String] = None,
+  addressMatches: Option[String] = None,
+  nonConsented: Option[String] = None,
+  subjectHasDeceased: Option[String] = None,
+  nonStandardAccountDetailsRequiredForBacs: Option[String] = None,
+  sortCodeBankName: Option[String] = None,
+  sortCodeSupportsDirectDebit: Option[String] = None,
+  sortCodeSupportsDirectCredit: Option[String] = None,
+  iban: Option[String] = None
+)
 
 object PersonalComplete {
   implicit val writes: OWrites[PersonalComplete] = Json.writes[PersonalComplete]
-  implicit val reads: Reads[PersonalComplete] = Json.reads[PersonalComplete]
+  implicit val reads: Reads[PersonalComplete]    = Json.reads[PersonalComplete]
 }

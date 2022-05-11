@@ -24,7 +24,7 @@ case class SelectAccountTypePage() extends BasePage {
 
   private lazy val businessAccount: RadioButton = radioButton(id("accountType"))
   private lazy val personalAccount: RadioButton = radioButton(id("accountType-2"))
-  private lazy val continueButton: IdQuery = id("continue")
+  private lazy val continueButton: IdQuery      = id("continue")
 
   def selectPersonalAccount(): SelectAccountTypePage = {
     click on personalAccount
@@ -36,11 +36,11 @@ case class SelectAccountTypePage() extends BasePage {
     this
   }
 
-  def clickContinue(): Unit = {
+  def clickContinue(): Unit =
     click on continueButton
-  }
 
-  override def isOnPage: Boolean = {
-    webDriverWillWait.until(titleIs(s"What type of account details are you providing? - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK"))
-  }
+  override def isOnPage: Boolean =
+    webDriverWillWait.until(
+      titleIs(s"What type of account details are you providing? - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK")
+    )
 }

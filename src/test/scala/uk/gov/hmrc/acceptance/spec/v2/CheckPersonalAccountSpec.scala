@@ -33,27 +33,33 @@ import java.util.UUID
 
 class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
-  val DEFAULT_NAME: Individual = Individual(title = Some("Mr"), firstName = Some("Paddy"), lastName = Some("O'Conner-Smith"))
-  val DEFAULT_BUILDING_SOCIETY_DETAILS: Account = Account("07-00-93", "33333334", Some("NW/1356"), Some("NATIONWIDE BUILDING SOCIETY"))
-  val DEFAULT_BANK_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
-  val HMRC_ACCOUNT_DETAILS: Account = Account("08 32 10", "12001039")
+  val DEFAULT_NAME: Individual                  =
+    Individual(title = Some("Mr"), firstName = Some("Paddy"), lastName = Some("O'Conner-Smith"))
+  val DEFAULT_BUILDING_SOCIETY_DETAILS: Account =
+    Account("07-00-93", "33333334", Some("NW/1356"), Some("NATIONWIDE BUILDING SOCIETY"))
+  val DEFAULT_BANK_ACCOUNT_DETAILS: Account     = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
+  val HMRC_ACCOUNT_DETAILS: Account             = Account("08 32 10", "12001039")
 
   Scenario("Personal Bank Account Verification successful building society check") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": true}""".stripMargin)
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": true}""".stripMargin)
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate a customers bank account details")
 
     val journeyData = initializeJourneyV2()
-    val session = startGGJourney(journeyData)
+    val session     = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -73,24 +79,27 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("the customer is redirected to continue URL")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
-            s"&& @.detail.sortCode=='${DEFAULT_BUILDING_SOCIETY_DETAILS.sortCode}'" +
-            s"&& @.detail.accountNumber=='${DEFAULT_BUILDING_SOCIETY_DETAILS.accountNumber}'" +
-            s"&& @.detail.rollNumber=='${DEFAULT_BUILDING_SOCIETY_DETAILS.rollNumber.get}'" +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal'" +
+              s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
+              s"&& @.detail.sortCode=='${DEFAULT_BUILDING_SOCIETY_DETAILS.sortCode}'" +
+              s"&& @.detail.accountNumber=='${DEFAULT_BUILDING_SOCIETY_DETAILS.accountNumber}'" +
+              s"&& @.detail.rollNumber=='${DEFAULT_BUILDING_SOCIETY_DETAILS.rollNumber.get}'" +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
 
     assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
 
@@ -108,16 +117,20 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Check that correct user agent and true calling client is passed through to BARS") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": true}""".stripMargin)
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": true}""".stripMargin)
+          .withStatusCode(200)
+      )
 
     Given("I want to audit where a request came from")
 
@@ -141,36 +154,43 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("the user agent and true calling client is sent over to BARS and correctly audited")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='TxSucceeded' " +
-            "&& @.detail.length()==16" +
-            "&& @.detail.userAgent=='bank-account-verification-frontend'" +
-            s"&& @.detail.callingClient=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='TxSucceeded' " +
+              "&& @.detail.length()==16" +
+              "&& @.detail.userAgent=='bank-account-verification-frontend'" +
+              s"&& @.detail.callingClient=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
   }
 
   Scenario("Personal Bank Account Verification successful bank check") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": true}""".stripMargin)
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": true}""".stripMargin)
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate a customers bank account details")
 
     val journeyData = initializeJourneyV2()
-    val session = startGGJourney(journeyData)
+    val session     = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -189,24 +209,27 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("the customer is redirected to continue URL")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
-            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
-            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
-            "&& @.detail.rollNumber==''" +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal'" +
+              s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
+              s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+              s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
+              "&& @.detail.rollNumber==''" +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
 
     assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
 
@@ -224,21 +247,25 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Personal Bank Account Verification partial name match") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "Patrick O'Conner-Smith"}""".stripMargin)
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "Patrick O'Conner-Smith"}""".stripMargin)
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate a customers bank account details")
 
     val journeyData = initializeJourneyV2()
-    val session = startGGJourney(journeyData)
+    val session     = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -255,25 +282,28 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
-            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
-            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
-            "&& @.detail.rollNumber==''" +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal'" +
+              s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
+              s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+              s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
+              "&& @.detail.rollNumber==''" +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
 
     Then("the customer is redirected to continue URL")
     assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
 
@@ -291,16 +321,20 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Personal Bank Account Verification closed bank account") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "AC01"}""".stripMargin)
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": false, "ReasonCode": "AC01"}""".stripMargin)
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate a customers bank account details")
 
@@ -324,18 +358,21 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("an error message is displayed to the customer telling them that the account is invalid")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='$customerName'" +
-            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
-            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
-            "&& @.detail.rollNumber==''" +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal'" +
+              s"&& @.detail.accountName=='$customerName'" +
+              s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+              s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
+              "&& @.detail.rollNumber==''" +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -346,40 +383,52 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Personal Bank Account Verification when the supplied account is a valid business account it is rejected") {
-    val accountName: Individual = Individual(title = Some("Mr"), firstName = Some(UUID.randomUUID().toString), lastName = Some("Haywood-Smith"))
+    val accountName: Individual =
+      Individual(title = Some("Mr"), firstName = Some(UUID.randomUUID().toString), lastName = Some("Haywood-Smith"))
 
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "BANM"}""".stripMargin)
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": false, "ReasonCode": "BANM"}""".stripMargin)
+          .withStatusCode(200)
+      )
 
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(TRANSUNION_PATH)
-    ).error(
-      HttpError.error()
-        .withDropConnection(true)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(TRANSUNION_PATH)
+      )
+      .error(
+        HttpError
+          .error()
+          .withDropConnection(true)
+      )
 
     Given("I want to collect and validate personal bank account details")
 
     val journeyData: JourneyBuilderResponse = initializeJourneyV2()
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/v2/init'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              "&& @.detail.input=='Request to /api/v2/init'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -388,13 +437,16 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s" && @.detail.input=='Request to ${session.startUrl}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s" && @.detail.input=='Request to ${session.startUrl}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -402,13 +454,16 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -424,18 +479,21 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("an error message is displayed to the customer telling them that the account is invalid")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='${accountName.asString()}'" +
-            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
-            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
-            "&& @.detail.rollNumber==''" +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal'" +
+              s"&& @.detail.accountName=='${accountName.asString()}'" +
+              s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+              s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
+              "&& @.detail.rollNumber==''" +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -446,34 +504,44 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Personal Bank Account Verification unable to find bank account") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(TRANSUNION_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/xml")
-        .withBody(new CallValidateResponseBuilder()
-          .withError("BV3: Unknown account")
-          .build())
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+          .withStatusCode(200)
+      )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(TRANSUNION_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/xml")
+          .withBody(
+            new CallValidateResponseBuilder()
+              .withError("BV3: Unknown account")
+              .build()
+          )
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate a customers bank account details")
 
     val companyName = "Cannot Match"
     val journeyData = initializeJourneyV2()
-    val session = startGGJourney(journeyData)
+    val session     = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -492,18 +560,21 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("the customer is redirected to the confirm account screen")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='$companyName'" +
-            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
-            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
-            "&& @.detail.rollNumber==''" +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal'" +
+              s"&& @.detail.accountName=='$companyName'" +
+              s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+              s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
+              "&& @.detail.rollNumber==''" +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -519,7 +590,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("the customer is redirected to continue URL")
 
     assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = getDataCollectedByBAVFEV2(session.journeyId, journeyData.credId)
 
@@ -537,28 +608,38 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Personal Bank Account Verification trying to use HMRC bank account") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(TRANSUNION_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/xml")
-        .withBody(new CallValidateResponseBuilder()
-          .withError("BV3: Unknown account")
-          .build())
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+          .withStatusCode(200)
+      )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(TRANSUNION_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/xml")
+          .withBody(
+            new CallValidateResponseBuilder()
+              .withError("BV3: Unknown account")
+              .build()
+          )
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate a customers bank account details")
 
@@ -586,34 +667,41 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='$companyName'" +
-            s"&& @.detail.sortCode=='${HMRC_ACCOUNT_DETAILS.sortCode}'" +
-            s"&& @.detail.accountNumber=='${HMRC_ACCOUNT_DETAILS.accountNumber}'" +
-            "&& @.detail.rollNumber==''" +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal'" +
+              s"&& @.detail.accountName=='$companyName'" +
+              s"&& @.detail.sortCode=='${HMRC_ACCOUNT_DETAILS.sortCode}'" +
+              s"&& @.detail.accountNumber=='${HMRC_ACCOUNT_DETAILS.accountNumber}'" +
+              "&& @.detail.rollNumber==''" +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
   }
 
   Scenario("Reproduce bank name defect") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": true}""".stripMargin)
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": true}""".stripMargin)
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate a customers bank account details")
 
@@ -636,18 +724,21 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("the customer is redirected to continue URL")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
-            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
-            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
-            "&& @.detail.rollNumber==''" +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal'" +
+              s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
+              s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+              s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
+              "&& @.detail.rollNumber==''" +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -655,35 +746,49 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Personal Bank Account Verification accounts that don't support Direct Credit are Blocked") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(TRANSUNION_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/xml")
-        .withBody(new CallValidateResponseBuilder()
-          .withError("BV3: Unknown account")
-          .build())
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+          .withStatusCode(200)
+      )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(TRANSUNION_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/xml")
+          .withBody(
+            new CallValidateResponseBuilder()
+              .withError("BV3: Unknown account")
+              .build()
+          )
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate a customers bank account details")
 
     val companyName = "Cannot Match"
-    startGGJourney(initializeJourneyV2(InitRequest(
-      bacsRequirements = Some(InitBACSRequirements(directDebitRequired = false, directCreditRequired = true))).asJsonString()
-    ))
+    startGGJourney(
+      initializeJourneyV2(
+        InitRequest(
+          bacsRequirements = Some(InitBACSRequirements(directDebitRequired = false, directCreditRequired = true))
+        ).asJsonString()
+      )
+    )
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -706,53 +811,70 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='$companyName'" +
-            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
-            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
-            "&& @.detail.rollNumber==''" +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal'" +
+              s"&& @.detail.accountName=='$companyName'" +
+              s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+              s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
+              "&& @.detail.rollNumber==''" +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
   }
 
   Scenario("Personal Bank Account Verification accounts that don't support Direct Debit are Blocked") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(TRANSUNION_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/xml")
-        .withBody(new CallValidateResponseBuilder()
-          .withError("BV3: Unknown account")
-          .build())
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+          .withStatusCode(200)
+      )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(TRANSUNION_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/xml")
+          .withBody(
+            new CallValidateResponseBuilder()
+              .withError("BV3: Unknown account")
+              .build()
+          )
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate a customers bank account details")
 
     val companyName = "Cannot Match"
-    startGGJourney(initializeJourneyV2(InitRequest(
-      bacsRequirements = Some(InitBACSRequirements(directDebitRequired = true, directCreditRequired = false))).asJsonString()
-    ))
+    startGGJourney(
+      initializeJourneyV2(
+        InitRequest(
+          bacsRequirements = Some(InitBACSRequirements(directDebitRequired = true, directCreditRequired = false))
+        ).asJsonString()
+      )
+    )
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -775,18 +897,21 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='$companyName'" +
-            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
-            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
-            "&& @.detail.rollNumber==''" +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal'" +
+              s"&& @.detail.accountName=='$companyName'" +
+              s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+              s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
+              "&& @.detail.rollNumber==''" +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )

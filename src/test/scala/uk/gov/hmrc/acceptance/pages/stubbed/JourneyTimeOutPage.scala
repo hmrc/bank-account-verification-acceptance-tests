@@ -21,7 +21,6 @@ import uk.gov.hmrc.acceptance.pages.BasePage
 
 case class JourneyTimeOutPage() extends BasePage {
 
-  override def isOnPage: Boolean = {
+  override def isOnPage: Boolean =
     webDriverWillWait.until(titleIs("Timeout"))
-  }
 }

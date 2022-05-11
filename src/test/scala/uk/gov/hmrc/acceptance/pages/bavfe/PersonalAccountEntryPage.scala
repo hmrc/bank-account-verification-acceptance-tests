@@ -22,19 +22,19 @@ import uk.gov.hmrc.acceptance.pages.BasePage
 
 case class PersonalAccountEntryPage() extends BasePage {
 
-  private lazy val pageHeading = cssSelector("h1")
-  private lazy val accountNameLabel = cssSelector("label[for=accountName]")
+  private lazy val pageHeading                 = cssSelector("h1")
+  private lazy val accountNameLabel            = cssSelector("label[for=accountName]")
   private lazy val accountNameField: TextField = textField(id("accountName"))
-  private lazy val sortCodeLabel = cssSelector("label[for=sortCode]")
-  private lazy val sortCodeHint = id("sortCode-hint")
-  private lazy val sortCodeField = textField(id("sortCode"))
-  private lazy val accountNumberLabel = cssSelector("label[for=accountNumber]")
-  private lazy val accountNumberHint = id("accountNumber-hint")
-  private lazy val accountNumberField = textField(id("accountNumber"))
-  private lazy val rollNumberLabel = cssSelector("label[for=rollNumber]")
-  private lazy val rollNumberHint = id("rollNumber-hint")
-  private lazy val rollNumberField = textField(id("rollNumber"))
-  private lazy val continueButton: IdQuery = id("continue")
+  private lazy val sortCodeLabel               = cssSelector("label[for=sortCode]")
+  private lazy val sortCodeHint                = id("sortCode-hint")
+  private lazy val sortCodeField               = textField(id("sortCode"))
+  private lazy val accountNumberLabel          = cssSelector("label[for=accountNumber]")
+  private lazy val accountNumberHint           = id("accountNumber-hint")
+  private lazy val accountNumberField          = textField(id("accountNumber"))
+  private lazy val rollNumberLabel             = cssSelector("label[for=rollNumber]")
+  private lazy val rollNumberHint              = id("rollNumber-hint")
+  private lazy val rollNumberField             = textField(id("rollNumber"))
+  private lazy val continueButton: IdQuery     = id("continue")
 
   def enterAccountName(accountName: String): PersonalAccountEntryPage = {
     accountNameField.value = accountName
@@ -56,43 +56,33 @@ case class PersonalAccountEntryPage() extends BasePage {
     this
   }
 
-  def getHeading: String = {
+  def getHeading: String =
     pageHeading.webElement.getText
-  }
 
-  def getAccountNameLabel: String = {
+  def getAccountNameLabel: String =
     accountNameLabel.webElement.getText
-  }
 
-  def getSortCodeLabel: String = {
+  def getSortCodeLabel: String =
     sortCodeLabel.webElement.getText
-  }
 
-  def getSortCodeHint: String = {
+  def getSortCodeHint: String =
     sortCodeHint.webElement.getText
-  }
 
-  def getAccountNumberLabel: String = {
+  def getAccountNumberLabel: String =
     accountNumberLabel.webElement.getText
-  }
 
-  def getAccountNumberHint: String = {
+  def getAccountNumberHint: String =
     accountNumberHint.webElement.getText
-  }
 
-  def getRollNumberLabel: String = {
+  def getRollNumberLabel: String =
     rollNumberLabel.webElement.getText
-  }
 
-  def getRollNumberHint: String = {
+  def getRollNumberHint: String =
     rollNumberHint.webElement.getText
-  }
 
-  def clickContinue(): Unit = {
+  def clickContinue(): Unit =
     click on continueButton
-  }
 
-  override def isOnPage: Boolean = {
+  override def isOnPage: Boolean =
     webDriverWillWait.until(titleIs(s"Bank or building society account details - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK"))
-  }
 }

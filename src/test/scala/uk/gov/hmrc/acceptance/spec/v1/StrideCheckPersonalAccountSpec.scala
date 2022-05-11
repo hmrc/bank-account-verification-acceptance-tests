@@ -29,25 +29,30 @@ import uk.gov.hmrc.acceptance.utils.MockServer
 
 class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
 
-  val DEFAULT_NAME: Individual = Individual(title = Some("Mr"), firstName = Some("Paddy"), lastName = Some("O'Conner-Smith"))
+  val DEFAULT_NAME: Individual              =
+    Individual(title = Some("Mr"), firstName = Some("Paddy"), lastName = Some("O'Conner-Smith"))
   val DEFAULT_BANK_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
 
   Scenario("Personal Bank Account Verification successful bank check with Stride") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": true}""".stripMargin)
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": true}""".stripMargin)
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate a customers bank account details")
 
     val journeyData = initializeJourneyV1()
-    val session = startStrideJourney(journeyData)
+    val session     = startStrideJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
@@ -66,24 +71,27 @@ class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("the company representative is redirected to continue URL")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal'" +
-            s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
-            s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
-            s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
-            "&& @.detail.rollNumber==''" +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal'" +
+              s"&& @.detail.accountName=='${DEFAULT_NAME.asEscapedString()}'" +
+              s"&& @.detail.sortCode=='${DEFAULT_BANK_ACCOUNT_DETAILS.sortCode}'" +
+              s"&& @.detail.accountNumber=='${DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber}'" +
+              "&& @.detail.rollNumber==''" +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
 
     assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = getDataCollectedByBAVFEV1(session.journeyId, journeyData.credId)
 

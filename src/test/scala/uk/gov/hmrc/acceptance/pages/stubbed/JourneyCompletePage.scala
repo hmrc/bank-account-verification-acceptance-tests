@@ -23,11 +23,9 @@ case class JourneyCompletePage() extends BasePage {
 
   private lazy val journeyId = id("journeyId")
 
-  def getJourneyId(): String = {
+  def getJourneyId: String =
     journeyId.findElement.get.text
-  }
 
-  override def isOnPage: Boolean = {
+  override def isOnPage: Boolean =
     webDriverWillWait.until(titleIs("Journey complete"))
-  }
 }

@@ -32,20 +32,20 @@ object AffinityGroup {
 
   def isValid(name: String): Boolean = Try(AffinityGroup(name)).isSuccess
 
-  def apply(name: String): AffinityGroup = {
+  def apply(name: String): AffinityGroup =
     name match {
-      case "Individual" => Individual
+      case "Individual"   => Individual
       case "Organisation" => Organisation
-      case "Agent" => Agent
-      case _ => throw new Exception(s"Invalid affinity group: $name")
+      case "Agent"        => Agent
+      case _              => throw new Exception(s"Invalid affinity group: $name")
     }
-  }
 
-  implicit val reads: Reads[AffinityGroup] = Reads[AffinityGroup] { json =>
+  implicit val reads: Reads[AffinityGroup]   = Reads[AffinityGroup] { json =>
     val nameString = json.as[String]
     if (AffinityGroup.isValid(nameString)) JsSuccess(AffinityGroup(nameString))
     else JsError(s"Unsupported AffinityGroup: $nameString")
   }
-  implicit val writes: Writes[AffinityGroup] = Writes[AffinityGroup] { affinityGroup => JsString(affinityGroup.toString) }
+  implicit val writes: Writes[AffinityGroup] = Writes[AffinityGroup] { affinityGroup =>
+    JsString(affinityGroup.toString)
+  }
 }
-

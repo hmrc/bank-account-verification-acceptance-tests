@@ -22,5 +22,5 @@ case class Enrolment(key: String, identifiers: Seq[EnrolmentIdentifier], state: 
 
 object Enrolment {
   implicit val enrolmentIdentifierFormat: OFormat[EnrolmentIdentifier] = Json.format[EnrolmentIdentifier]
-  implicit val format: OFormat[Enrolment] = Json.format[Enrolment]
+  implicit val format: OFormat[Enrolment]                              = Json.format[Enrolment]
 }

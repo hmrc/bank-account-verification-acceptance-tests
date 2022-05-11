@@ -32,19 +32,18 @@ object CredentialRole {
 
   def isValid(role: String): Boolean = Try(CredentialRole(role)).isSuccess
 
-  def apply(role: String): CredentialRole = {
+  def apply(role: String): CredentialRole =
     role.toLowerCase match {
-      case "user" => User
-      case "admin" => Admin
+      case "user"      => User
+      case "admin"     => Admin
       case "assistant" => Assistant
-      case _ => throw new Exception(s"Invalid role: $role")
+      case _           => throw new Exception(s"Invalid role: $role")
     }
-  }
 
-  implicit val reads: Reads[CredentialRole] = Reads[CredentialRole] { json =>
+  implicit val reads: Reads[CredentialRole]   = Reads[CredentialRole] { json =>
     val roleString = json.as[String]
     if (CredentialRole.isValid(roleString)) JsSuccess(CredentialRole(roleString))
     else JsError(s"Unsupported CredentialRole: $roleString")
   }
-  implicit val writes: Writes[CredentialRole] = Writes[CredentialRole] { role => JsString(role.toString) }
+  implicit val writes: Writes[CredentialRole] = Writes[CredentialRole](role => JsString(role.toString))
 }

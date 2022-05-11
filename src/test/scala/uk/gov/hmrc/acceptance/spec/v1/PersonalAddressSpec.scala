@@ -36,57 +36,71 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
   // **NOTE TO FUTURE TESTERS** Remember caching is based on a combination of name/sort code/account number.
   // When adding new scenarios make sure you generate a unique name, if you use FIRST_NAME you will probably get a cached response!
 
-  val FIRST_NAME: String = UUID.randomUUID().toString
-  val DEFAULT_NAME: Individual = Individual(title = Some("Mr"), firstName = Some(FIRST_NAME), lastName = Some("O'Conner-Smith"))
-  val DEFAULT_ACCOUNT_DETAILS: Account = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
+  val FIRST_NAME: String                 = UUID.randomUUID().toString
+  val DEFAULT_NAME: Individual           =
+    Individual(title = Some("Mr"), firstName = Some(FIRST_NAME), lastName = Some("O'Conner-Smith"))
+  val DEFAULT_ACCOUNT_DETAILS: Account   = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
   val ALTERNATE_ACCOUNT_DETAILS: Account = Account("207102", "80044660", bankName = Some("BARCLAYS BANK PLC"))
-  val UNKNOWN_ACCOUNT_DETAILS: Account = Account("207106", "80044666")
-  val DEFAULT_ADDRESS: Address = Address(List("2664 Little Darwin"), postcode = Some("CZ0 9AV"))
+  val UNKNOWN_ACCOUNT_DETAILS: Account   = Account("207106", "80044666")
+  val DEFAULT_ADDRESS: Address           = Address(List("2664 Little Darwin"), postcode = Some("CZ0 9AV"))
 
   Scenario("Personal Bank Account Verification with address is successful") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(TRANSUNION_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/xml")
-        .withBody(
-          new CallValidateResponseBuilder()
-            .setInputIndividualData(DEFAULT_NAME)
-            .setInputAddress(DEFAULT_ADDRESS)
-            .identityCheck(new IdentityCheckBuilder()
-              .nameMatched(DEFAULT_NAME.asString())
-              .currentAddressMatched(DEFAULT_ADDRESS)
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+          .withStatusCode(200)
+      )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(TRANSUNION_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/xml")
+          .withBody(
+            new CallValidateResponseBuilder()
+              .setInputIndividualData(DEFAULT_NAME)
+              .setInputAddress(DEFAULT_ADDRESS)
+              .identityCheck(
+                new IdentityCheckBuilder()
+                  .nameMatched(DEFAULT_NAME.asString())
+                  .currentAddressMatched(DEFAULT_ADDRESS)
+                  .build()
+              )
               .build()
-            )
-            .build()
-        )
-        .withStatusCode(200)
-    )
+          )
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV1(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
+    val journeyData: JourneyBuilderResponse =
+      initializeJourneyV1(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/init'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              "&& @.detail.input=='Request to /api/init'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -95,13 +109,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s" && @.detail.input=='Request to ${session.startUrl}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s" && @.detail.input=='Request to ${session.startUrl}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -109,13 +126,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -131,7 +151,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     Then("the user is redirected to the continue URL")
 
     assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = getDataCollectedByBAVFEV1(session.journeyId, journeyData.credId)
 
@@ -153,62 +173,80 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     mockServer.verify(HttpRequest.request().withPath(TRANSUNION_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to ${session.completeUrl}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s"&& @.detail.input=='Request to ${session.completeUrl}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
   }
 
   Scenario("Personal Bank Account change is successful") {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(TRANSUNION_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/xml")
-        .withBody(
-          new CallValidateResponseBuilder()
-            .setInputIndividualData(DEFAULT_NAME)
-            .setInputAddress(DEFAULT_ADDRESS)
-            .identityCheck(new IdentityCheckBuilder()
-              .nameMatched(DEFAULT_NAME.asString())
-              .currentAddressMatched(DEFAULT_ADDRESS)
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+          .withStatusCode(200)
+      )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(TRANSUNION_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/xml")
+          .withBody(
+            new CallValidateResponseBuilder()
+              .setInputIndividualData(DEFAULT_NAME)
+              .setInputAddress(DEFAULT_ADDRESS)
+              .identityCheck(
+                new IdentityCheckBuilder()
+                  .nameMatched(DEFAULT_NAME.asString())
+                  .currentAddressMatched(DEFAULT_ADDRESS)
+                  .build()
+              )
               .build()
-            )
-            .build()
-        )
-        .withStatusCode(200)
-    )
+          )
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV1(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV1(
+      InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal")))
+        .asJsonString()
+    )
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/init'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              "&& @.detail.input=='Request to /api/init'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -228,7 +266,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     Then("the user is redirected to the continue URL")
 
     assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val initial: CompleteResponse = getDataCollectedByBAVFEV1(session.journeyId, journeyData.credId)
 
@@ -249,13 +287,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(initial.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to ${session.completeUrl}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s"&& @.detail.input=='Request to ${session.completeUrl}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -265,13 +306,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     continueGGJourney(journeyData)
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -285,7 +329,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     Then("the updated details have been saved")
 
     assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val updated: CompleteResponse = getDataCollectedByBAVFEV1(session.journeyId, journeyData.credId)
 
@@ -309,49 +353,64 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
   Scenario("Personal Bank Account cannot be changed to an unknown bank") {
     val accountName: Individual = Individual(title = Some("Mr"), firstName = Some(FIRST_NAME), lastName = Some("Jones"))
 
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(TRANSUNION_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/xml")
-        .withBody(
-          new CallValidateResponseBuilder()
-            .setInputIndividualData(accountName)
-            .setInputAddress(DEFAULT_ADDRESS)
-            .identityCheck(new IdentityCheckBuilder()
-              .nameMatched(accountName.asString())
-              .currentAddressMatched(DEFAULT_ADDRESS)
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+          .withStatusCode(200)
+      )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(TRANSUNION_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/xml")
+          .withBody(
+            new CallValidateResponseBuilder()
+              .setInputIndividualData(accountName)
+              .setInputAddress(DEFAULT_ADDRESS)
+              .identityCheck(
+                new IdentityCheckBuilder()
+                  .nameMatched(accountName.asString())
+                  .currentAddressMatched(DEFAULT_ADDRESS)
+                  .build()
+              )
               .build()
-            )
-            .build()
-        )
-        .withStatusCode(200)
-    )
+          )
+          .withStatusCode(200)
+      )
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV1(InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal"))).asJsonString())
+    val journeyData: JourneyBuilderResponse = initializeJourneyV1(
+      InitRequest(address = Some(DEFAULT_ADDRESS), prepopulatedData = Some(PrepopulatedData(accountType = "personal")))
+        .asJsonString()
+    )
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/init'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              "&& @.detail.input=='Request to /api/init'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -371,7 +430,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     Then("the user is redirected to the continue URL")
 
     assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = getDataCollectedByBAVFEV1(session.journeyId, journeyData.credId)
 
@@ -392,13 +451,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to ${session.completeUrl}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s"&& @.detail.input=='Request to ${session.completeUrl}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -408,13 +470,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     continueGGJourney(journeyData)
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -428,18 +493,21 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     Then("an error is displayed")
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='AccountDetailsEntered' " +
-            "&& @.detail.accountType=='personal' " +
-            s"&& @.detail.accountName=='${accountName.asString()}' " +
-            s"&& @.detail.sortCode=='${UNKNOWN_ACCOUNT_DETAILS.sortCode}' " +
-            s"&& @.detail.accountNumber=='${UNKNOWN_ACCOUNT_DETAILS.accountNumber}' " +
-            "&& @.detail.rollNumber=='' " +
-            s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER' " +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='AccountDetailsEntered' " +
+              "&& @.detail.accountType=='personal' " +
+              s"&& @.detail.accountName=='${accountName.asString()}' " +
+              s"&& @.detail.sortCode=='${UNKNOWN_ACCOUNT_DETAILS.sortCode}' " +
+              s"&& @.detail.accountNumber=='${UNKNOWN_ACCOUNT_DETAILS.accountNumber}' " +
+              "&& @.detail.rollNumber=='' " +
+              s"&& @.detail.trueCallingService=='$DEFAULT_SERVICE_IDENTIFIER' " +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -450,40 +518,53 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
   }
 
   Scenario("Personal Bank Account Verification when the supplied name is a close match") {
-    val accountName: Individual = Individual(title = Some("Mr"), firstName = Some(UUID.randomUUID().toString), lastName = Some("O'Conner-Smith"))
+    val accountName: Individual =
+      Individual(title = Some("Mr"), firstName = Some(UUID.randomUUID().toString), lastName = Some("O'Conner-Smith"))
 
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(SUREPAY_PATH)
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "Patrick O'Conner-Smith"}""".stripMargin)
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(SUREPAY_PATH)
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "Patrick O'Conner-Smith"}""".stripMargin)
+          .withStatusCode(200)
+      )
 
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath(TRANSUNION_PATH)
-    ).error(
-      HttpError.error()
-        .withDropConnection(true)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath(TRANSUNION_PATH)
+      )
+      .error(
+        HttpError
+          .error()
+          .withDropConnection(true)
+      )
 
     Given("I want to collect and validate personal bank account details")
 
-    val journeyData: JourneyBuilderResponse = initializeJourneyV1(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
+    val journeyData: JourneyBuilderResponse =
+      initializeJourneyV1(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            "&& @.detail.input=='Request to /api/init'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              "&& @.detail.input=='Request to /api/init'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -492,13 +573,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s" && @.detail.input=='Request to ${session.startUrl}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s" && @.detail.input=='Request to ${session.startUrl}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -506,13 +590,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )
@@ -528,7 +615,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     Then("the user is redirected to the continue URL")
 
     assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId()).isEqualTo(session.journeyId)
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = getDataCollectedByBAVFEV1(session.journeyId, journeyData.credId)
 
@@ -550,13 +637,16 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     mockServer.verify(HttpRequest.request().withPath(SUREPAY_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(
-      HttpRequest.request()
+      HttpRequest
+        .request()
         .withPath("/write/audit")
         .withBody(
-          JsonPathBody.jsonPath("$[?(" +
-            "@.auditType=='RequestReceived' " +
-            s"&& @.detail.input=='Request to ${session.completeUrl}'" +
-            ")]")
+          JsonPathBody.jsonPath(
+            "$[?(" +
+              "@.auditType=='RequestReceived' " +
+              s"&& @.detail.input=='Request to ${session.completeUrl}'" +
+              ")]"
+          )
         ),
       VerificationTimes.atLeast(1)
     )

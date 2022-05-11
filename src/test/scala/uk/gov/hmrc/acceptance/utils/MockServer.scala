@@ -25,58 +25,71 @@ import uk.gov.hmrc.acceptance.config.TestConfig
 
 import java.util.UUID
 
-trait MockServer extends AnyFeatureSpec
-  with Eventually
-  with BeforeAndAfterAll
-  with BeforeAndAfterEach {
+trait MockServer extends AnyFeatureSpec with Eventually with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  val SUREPAY_PATH = "/surepay/v1/gateway"
+  val SUREPAY_PATH    = "/surepay/v1/gateway"
   val TRANSUNION_PATH = "/callvalidateapi"
 
-  private val mockServerPort = TestConfig.mockServerPort()
+  private val mockServerPort           = TestConfig.mockServerPort()
   lazy val mockServer: ClientAndServer = ClientAndServer.startClientAndServer(mockServerPort)
 
-  override def beforeAll(): Unit = {
+  override def beforeAll(): Unit =
     super.beforeAll()
-  }
 
   override def beforeEach: Unit = {
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath("/write/audit")
-    ).respond(
-      HttpResponse.response()
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath("/write/audit/merged")
-    ).respond(
-      HttpResponse.response()
-        .withStatusCode(200)
-    )
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("POST")
-        .withPath("/surepay/oauth/client_credential/accesstoken")
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "application/json")
-        .withBody(s"""{"access_token" : "${UUID.randomUUID().toString}", "expires_in" : "3599", "token_type" : "BearerToken" }""".stripMargin)
-        .withStatusCode(200)
-    )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath("/write/audit")
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withStatusCode(200)
+      )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath("/write/audit/merged")
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withStatusCode(200)
+      )
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("POST")
+          .withPath("/surepay/oauth/client_credential/accesstoken")
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "application/json")
+          .withBody(s"""{"access_token" : "${UUID
+            .randomUUID()
+            .toString}", "expires_in" : "3599", "token_type" : "BearerToken" }""".stripMargin)
+          .withStatusCode(200)
+      )
     //Continue URL
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("GET")
-        .withPath("/complete/.*")
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "text/html")
-        .withBody(
-          s"""
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("GET")
+          .withPath("/complete/.*")
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "text/html")
+          .withBody(s"""
              |<!DOCTYPE html>
              |<html lang="en">
              |<head>
@@ -96,18 +109,21 @@ trait MockServer extends AnyFeatureSpec
              |</body>
              |</html>
              |""".stripMargin)
-        .withStatusCode(200)
-    )
+          .withStatusCode(200)
+      )
     //Sign out page
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("GET")
-        .withPath("/sign-out")
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "text/html")
-        .withBody(
-          s"""
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("GET")
+          .withPath("/sign-out")
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "text/html")
+          .withBody(s"""
              |<!DOCTYPE html>
              |<html lang="en">
              |<head>
@@ -120,18 +136,21 @@ trait MockServer extends AnyFeatureSpec
              |</body>
              |</html>
              |""".stripMargin)
-        .withStatusCode(200)
-    )
+          .withStatusCode(200)
+      )
     //Continue URL
-    mockServer.when(
-      HttpRequest.request()
-        .withMethod("GET")
-        .withPath("/too/many/attempts/.*")
-    ).respond(
-      HttpResponse.response()
-        .withHeader("Content-Type", "text/html")
-        .withBody(
-          s"""
+    mockServer
+      .when(
+        HttpRequest
+          .request()
+          .withMethod("GET")
+          .withPath("/too/many/attempts/.*")
+      )
+      .respond(
+        HttpResponse
+          .response()
+          .withHeader("Content-Type", "text/html")
+          .withBody(s"""
              |<!DOCTYPE html>
              |<html lang="en">
              |<head>
@@ -151,13 +170,12 @@ trait MockServer extends AnyFeatureSpec
              |</body>
              |</html>
              |""".stripMargin)
-        .withStatusCode(200)
-    )
+          .withStatusCode(200)
+      )
   }
 
-  override def afterEach: Unit = {
+  override def afterEach: Unit =
     mockServer.reset()
-  }
 
   override def afterAll(): Unit = {
     mockServer.stop()

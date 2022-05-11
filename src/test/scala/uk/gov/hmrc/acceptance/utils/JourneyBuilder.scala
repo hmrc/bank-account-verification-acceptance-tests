@@ -31,22 +31,29 @@ trait JourneyBuilder {
   val defaultUserAgent = "bavfe-acceptance-tests"
 
   object BarsEndpoints {
-    val REFRESH_EISCD_CACHE = "/refresh/cache/eiscd"
+    val REFRESH_EISCD_CACHE    = "/refresh/cache/eiscd"
     val REFRESH_MODCHECK_CACHE = "/refresh/cache/modcheck"
   }
 
-  private val okHttpClient: OkHttpClient = new OkHttpClient().newBuilder()
+  private val okHttpClient: OkHttpClient = new OkHttpClient()
+    .newBuilder()
     .connectTimeout(10L, SECONDS)
     .readTimeout(10L, SECONDS)
     .build()
 
   //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
-  def initializeJourneyV1(configuration: String = InitRequest.apply().asJsonString(), userAgent: String = defaultUserAgent): JourneyBuilderResponse = {
+  def initializeJourneyV1(
+    configuration: String = InitRequest.apply().asJsonString(),
+    userAgent: String = defaultUserAgent
+  ): JourneyBuilderResponse = {
     // **NOTE** credId can only be a maximum of 30 characters, anything longer will result in a mismatch and no journey will be found
-    val credId = randomUUID().toString.slice(0, 29)
-    val request = new Request.Builder()
+    val credId   = randomUUID().toString.slice(0, 29)
+    val request  = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/init")
-      .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
+      .method(
+        "POST",
+        RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value)
+      )
       .addHeader("Authorization", generateBearerToken(credId))
       .addHeader("User-Agent", userAgent)
     val response = okHttpClient.newCall(request.build()).execute()
@@ -58,12 +65,18 @@ trait JourneyBuilder {
   }
 
   //TODO set a "serviceIdentifier" with whitespace to check it returns with a 400 when #TAV-101 is complete?
-  def initializeJourneyV2(configuration: String = InitRequest.apply().asJsonString(), userAgent: String = defaultUserAgent): JourneyBuilderResponse = {
+  def initializeJourneyV2(
+    configuration: String = InitRequest.apply().asJsonString(),
+    userAgent: String = defaultUserAgent
+  ): JourneyBuilderResponse = {
     // **NOTE** credId can only be a maximum of 30 characters, anything longer will result in a mismatch and no journey will be found
-    val credId = randomUUID().toString.slice(0, 29)
-    val request = new Request.Builder()
+    val credId   = randomUUID().toString.slice(0, 29)
+    val request  = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/v2/init")
-      .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
+      .method(
+        "POST",
+        RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value)
+      )
       .addHeader("Authorization", generateBearerToken(credId))
       .addHeader("User-Agent", userAgent)
     val response = okHttpClient.newCall(request.build()).execute()
@@ -74,12 +87,18 @@ trait JourneyBuilder {
     }
   }
 
-  def initializeJourneyV3(configuration: String = InitRequest.apply().asJsonString(), userAgent: String = defaultUserAgent): JourneyBuilderResponse = {
+  def initializeJourneyV3(
+    configuration: String = InitRequest.apply().asJsonString(),
+    userAgent: String = defaultUserAgent
+  ): JourneyBuilderResponse = {
     // **NOTE** credId can only be a maximum of 30 characters, anything longer will result in a mismatch and no journey will be found
-    val credId = randomUUID().toString.slice(0, 29)
-    val request = new Request.Builder()
+    val credId   = randomUUID().toString.slice(0, 29)
+    val request  = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/v3/init")
-      .method("POST", RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value))
+      .method(
+        "POST",
+        RequestBody.create(MediaType.parse("application/json"), Json.toJson(configuration).asInstanceOf[JsString].value)
+      )
       .addHeader("Authorization", generateBearerToken(credId))
       .addHeader("User-Agent", userAgent)
     val response = okHttpClient.newCall(request.build()).execute()
@@ -90,8 +109,12 @@ trait JourneyBuilder {
     }
   }
 
-  def getDataCollectedByBAVFEV1(journeyId: String, credId: String, userAgent: String = defaultUserAgent): uk.gov.hmrc.acceptance.models.response.v1.CompleteResponse = {
-    val request = new Request.Builder()
+  def getDataCollectedByBAVFEV1(
+    journeyId: String,
+    credId: String,
+    userAgent: String = defaultUserAgent
+  ): uk.gov.hmrc.acceptance.models.response.v1.CompleteResponse = {
+    val request  = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/complete/$journeyId")
       .method("GET", null)
       .addHeader("Authorization", generateBearerToken(credId))
@@ -104,8 +127,12 @@ trait JourneyBuilder {
     }
   }
 
-  def getDataCollectedByBAVFEV2(journeyId: String, credId: String, userAgent: String = defaultUserAgent): uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse = {
-    val request = new Request.Builder()
+  def getDataCollectedByBAVFEV2(
+    journeyId: String,
+    credId: String,
+    userAgent: String = defaultUserAgent
+  ): uk.gov.hmrc.acceptance.models.response.v2.CompleteResponse = {
+    val request  = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/v2/complete/$journeyId")
       .method("GET", null)
       .addHeader("Authorization", generateBearerToken(credId))
@@ -118,8 +145,12 @@ trait JourneyBuilder {
     }
   }
 
-  def getDataCollectedByBAVFEV3(journeyId: String, credId: String, userAgent: String = defaultUserAgent): uk.gov.hmrc.acceptance.models.response.v3.CompleteResponse = {
-    val request = new Request.Builder()
+  def getDataCollectedByBAVFEV3(
+    journeyId: String,
+    credId: String,
+    userAgent: String = defaultUserAgent
+  ): uk.gov.hmrc.acceptance.models.response.v3.CompleteResponse = {
+    val request  = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-verification")}/v3/complete/$journeyId")
       .method("GET", null)
       .addHeader("Authorization", generateBearerToken(credId))
@@ -133,16 +164,23 @@ trait JourneyBuilder {
   }
 
   def generateBearerToken(credId: String): String = {
-    val content: String = GGAuth(CredId(credId), AffinityGroup.Individual, Some(ConfidenceLevel.L50), CredentialStrength.Weak, Some(CredentialRole.User), List.empty[Enrolment]).asJsonString()
-    val request = new Request.Builder()
+    val content: String = GGAuth(
+      CredId(credId),
+      AffinityGroup.Individual,
+      Some(ConfidenceLevel.L50),
+      CredentialStrength.Weak,
+      Some(CredentialRole.User),
+      List.empty[Enrolment]
+    ).asJsonString()
+    val request         = new Request.Builder()
       .url(s"${TestConfig.apiUrl("auth-login-api")}/government-gateway/session/login")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), content))
-    val response = okHttpClient.newCall(request.build()).execute()
+    val response        = okHttpClient.newCall(request.build()).execute()
     response.header("Authorization")
   }
 
   def initializeEISCDCache(): Unit = {
-    val request = new Request.Builder()
+    val request  = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-reputation")}${BarsEndpoints.REFRESH_EISCD_CACHE}")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), ""))
     val response = okHttpClient.newCall(request.build()).execute()
@@ -152,7 +190,7 @@ trait JourneyBuilder {
   }
 
   def initializeModCheckCache(): Unit = {
-    val request = new Request.Builder()
+    val request  = new Request.Builder()
       .url(s"${TestConfig.apiUrl("bank-account-reputation")}${BarsEndpoints.REFRESH_MODCHECK_CACHE}")
       .method("POST", RequestBody.create(MediaType.parse("application/json"), ""))
     val response = okHttpClient.newCall(request.build()).execute()
@@ -161,4 +199,3 @@ trait JourneyBuilder {
     }
   }
 }
-

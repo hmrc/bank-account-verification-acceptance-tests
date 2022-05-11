@@ -23,7 +23,6 @@ object InitBACSRequirements {
 }
 
 case class InitBACSRequirements(directDebitRequired: Boolean, directCreditRequired: Boolean) {
-  def asJsonString(): String = {
+  def asJsonString(): String =
     Json.toJson(this).toString()
-  }
 }

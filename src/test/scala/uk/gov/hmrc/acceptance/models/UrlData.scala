@@ -22,9 +22,4 @@ object UrlData {
   implicit val jsonFormat: OFormat[UrlData] = Json.format[UrlData]
 }
 
-case class UrlData(code: String,
-                   method: String,
-                   id: String,
-                   time: String,
-                   url: String) {
-}
+case class UrlData(code: String, method: String, id: String, time: String, url: String) {}
