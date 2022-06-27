@@ -23,6 +23,8 @@ import org.openqa.selenium.{MutableCapabilities, WebDriver}
 import org.scalatestplus.selenium.WebBrowser
 import uk.gov.hmrc.webdriver.SingletonDriver
 
+import java.time.Duration
+
 trait BrowserDriver extends WebBrowser with LazyLogging {
   logger.info(
     s"Instantiating Browser: ${sys.props.getOrElse("browser", "'browser' System property not set. This is required")}"
@@ -30,6 +32,6 @@ trait BrowserDriver extends WebBrowser with LazyLogging {
 
   var options: Option[MutableCapabilities]  = None
   implicit lazy val webDriver: WebDriver    = SingletonDriver.getInstance(options)
-  lazy val webDriverWillWait: WebDriverWait = new WebDriverWait(webDriver, 5, 250)
+  lazy val webDriverWillWait: WebDriverWait = new WebDriverWait(webDriver, Duration.ofSeconds(5), Duration.ofMillis(250))
   lazy val action: Actions                  = new Actions(webDriver)
 }
