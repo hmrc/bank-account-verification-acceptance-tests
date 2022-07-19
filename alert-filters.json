@@ -58,15 +58,29 @@
     },
     {
       "reason": "Suppress false positive PII errors on metrics endpoint",
-      "contextId": 10062,
+      "contextId": 1,
       "url": "http:\/\/localhost:9903\/bank-account-verification\/verify\/business\/.*",
-      "ruleId": 10021,
+      "ruleId": 10062,
       "urlIsRegex": "true"
     },
     {
       "reason": "Suppress false positive PII errors on metrics endpoint",
-      "contextId": 10062,
+      "contextId": 1,
       "url": "http:\/\/localhost:9903\/bank-account-verification\/verify\/personal\/.*",
+      "ruleId": 10062,
+      "urlIsRegex": "true"
+    },
+    {
+      "reason": "Suppress googletagmanager Cross-Domain Misconfiguration errors as they are outside our control",
+      "contextId": 1,
+      "url": "https:\/\/www.googletagmanager.com\/gtm.js.*",
+      "ruleId": 10098,
+      "urlIsRegex": "true"
+    },
+    {
+      "reason": "Suppress googletagmanager X-Content-Type errors as they are outside our control",
+      "contextId": 1,
+      "url": "https:\/\/www.googletagmanager.com\/gtm.js.*",
       "ruleId": 10021,
       "urlIsRegex": "true"
     }
