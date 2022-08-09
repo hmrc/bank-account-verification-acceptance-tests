@@ -57,6 +57,13 @@
       "urlIsRegex": "true"
     },
     {
+      "reason": "Suppress false positive PII errors on start endpoint",
+      "contextId": 1,
+      "url": "http:\/\/localhost:9903\/bank-account-verification\/start\/.*",
+      "ruleId": 10062,
+      "urlIsRegex": "true"
+    },
+    {
       "reason": "Suppress false positive PII errors on metrics endpoint",
       "contextId": 1,
       "url": "http:\/\/localhost:9903\/bank-account-verification\/verify\/business\/.*",
