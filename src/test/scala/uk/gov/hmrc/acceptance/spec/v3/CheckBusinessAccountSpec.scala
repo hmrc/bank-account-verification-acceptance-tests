@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -159,7 +159,7 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
           JsonPathBody.jsonPath(
             "$[?(" +
               "@.auditType=='businessBankAccountCheck' " +
-              "&& @.detail.length()==5" +
+              "&& @.detail.length()==6" +
               "&& @.detail.userAgent=='bank-account-verification-frontend'" +
               s"&& @.detail.callingClient=='$DEFAULT_SERVICE_IDENTIFIER'" +
               "&& @.detail.context=='surepay_business_succeeded'" +
