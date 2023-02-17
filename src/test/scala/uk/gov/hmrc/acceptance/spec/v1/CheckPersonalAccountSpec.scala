@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -164,7 +164,7 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
           JsonPathBody.jsonPath(
             "$[?(" +
               "@.auditType=='TxSucceeded' " +
-              "&& @.detail.length()==16" +
+              "&& @.detail.length()==17" +
               "&& @.detail.userAgent=='bank-account-verification-frontend'" +
               s"&& @.detail.callingClient=='$DEFAULT_SERVICE_IDENTIFIER'" +
               ")]"
