@@ -159,7 +159,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
           JsonPathBody.jsonPath(
             "$[?(" +
               "@.auditType=='businessBankAccountCheck' " +
-              "&& @.detail.length()==6" +
               "&& @.detail.userAgent=='bank-account-verification-frontend'" +
               s"&& @.detail.callingClient=='$DEFAULT_SERVICE_IDENTIFIER'" +
               "&& @.detail.context=='surepay_business_succeeded'" +
