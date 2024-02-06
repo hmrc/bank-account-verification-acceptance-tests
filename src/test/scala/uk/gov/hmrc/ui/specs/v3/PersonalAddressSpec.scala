@@ -59,32 +59,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-          .withStatusCode(200)
-      )
-    mockServer
-      .when(
-        HttpRequest
-          .request()
-          .withMethod("POST")
-          .withPath(TRANSUNION_PATH)
-      )
-      .respond(
-        HttpResponse
-          .response()
-          .withHeader("Content-Type", "application/xml")
-          .withBody(
-            new CallValidateResponseBuilder()
-              .setInputIndividualData(DEFAULT_NAME)
-              .setInputAddress(DEFAULT_ADDRESS)
-              .identityCheck(
-                new IdentityCheckBuilder()
-                  .nameMatched(DEFAULT_NAME.asString())
-                  .currentAddressMatched(DEFAULT_ADDRESS)
-                  .build()
-              )
-              .build()
-          )
+          .withBody(s"""{"Matched": true}""".stripMargin)
           .withStatusCode(200)
       )
 
@@ -170,7 +145,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
 
-    mockServer.verify(HttpRequest.request().withPath(TRANSUNION_PATH), VerificationTimes.atLeast(1))
+    mockServer.verify(HttpRequest.request().withPath(SUREPAY_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(
       HttpRequest
         .request()
@@ -313,32 +288,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-          .withStatusCode(200)
-      )
-    mockServer
-      .when(
-        HttpRequest
-          .request()
-          .withMethod("POST")
-          .withPath(TRANSUNION_PATH)
-      )
-      .respond(
-        HttpResponse
-          .response()
-          .withHeader("Content-Type", "application/xml")
-          .withBody(
-            new CallValidateResponseBuilder()
-              .setInputIndividualData(DEFAULT_NAME)
-              .setInputAddress(DEFAULT_ADDRESS)
-              .identityCheck(
-                new IdentityCheckBuilder()
-                  .nameMatched(DEFAULT_NAME.asString())
-                  .currentAddressMatched(DEFAULT_ADDRESS)
-                  .build()
-              )
-              .build()
-          )
+          .withBody(s"""{"Matched": true}""".stripMargin)
           .withStatusCode(200)
       )
 
@@ -469,32 +419,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-          .withStatusCode(200)
-      )
-    mockServer
-      .when(
-        HttpRequest
-          .request()
-          .withMethod("POST")
-          .withPath(TRANSUNION_PATH)
-      )
-      .respond(
-        HttpResponse
-          .response()
-          .withHeader("Content-Type", "application/xml")
-          .withBody(
-            new CallValidateResponseBuilder()
-              .setInputIndividualData(accountName)
-              .setInputAddress(DEFAULT_ADDRESS)
-              .identityCheck(
-                new IdentityCheckBuilder()
-                  .nameMatched(accountName.asString())
-                  .currentAddressMatched(DEFAULT_ADDRESS)
-                  .build()
-              )
-              .build()
-          )
+          .withBody(s"""{"Matched": true}""".stripMargin)
           .withStatusCode(200)
       )
 
@@ -635,19 +560,6 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
           .withHeader("Content-Type", "application/json")
           .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "Mr Patrick O'Connor-Smith"}""".stripMargin)
           .withStatusCode(200)
-      )
-
-    mockServer
-      .when(
-        HttpRequest
-          .request()
-          .withMethod("POST")
-          .withPath(TRANSUNION_PATH)
-      )
-      .error(
-        HttpError
-          .error()
-          .withDropConnection(true)
       )
 
     Given("I want to collect and validate personal bank account details")

@@ -27,8 +27,7 @@ import java.util.UUID
 
 trait MockServer extends AnyFeatureSpec with Eventually with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  val SUREPAY_PATH    = "/surepay/v1/gateway"
-  val TRANSUNION_PATH = "/callvalidateapi"
+  val SUREPAY_PATH = "/surepay/v1/gateway"
 
   private val mockServerPort           = TestConfig.mockServerPort()
   lazy val mockServer: ClientAndServer = ClientAndServer.startClientAndServer(mockServerPort)

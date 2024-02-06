@@ -402,19 +402,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
           .withStatusCode(200)
       )
 
-    mockServer
-      .when(
-        HttpRequest
-          .request()
-          .withMethod("POST")
-          .withPath(TRANSUNION_PATH)
-      )
-      .error(
-        HttpError
-          .error()
-          .withDropConnection(true)
-      )
-
     Given("I want to collect and validate personal bank account details")
 
     val journeyData: JourneyBuilderResponse = journeyBuilder.initializeJourneyV3()
@@ -519,24 +506,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
           .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
           .withStatusCode(200)
       )
-    mockServer
-      .when(
-        HttpRequest
-          .request()
-          .withMethod("POST")
-          .withPath(TRANSUNION_PATH)
-      )
-      .respond(
-        HttpResponse
-          .response()
-          .withHeader("Content-Type", "application/xml")
-          .withBody(
-            new CallValidateResponseBuilder()
-              .withError("BV3: Unknown account")
-              .build()
-          )
-          .withStatusCode(200)
-      )
 
     Given("I want to collect and validate a customers bank account details")
 
@@ -621,24 +590,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
           .response()
           .withHeader("Content-Type", "application/json")
           .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-          .withStatusCode(200)
-      )
-    mockServer
-      .when(
-        HttpRequest
-          .request()
-          .withMethod("POST")
-          .withPath(TRANSUNION_PATH)
-      )
-      .respond(
-        HttpResponse
-          .response()
-          .withHeader("Content-Type", "application/xml")
-          .withBody(
-            new CallValidateResponseBuilder()
-              .withError("BV3: Unknown account")
-              .build()
-          )
           .withStatusCode(200)
       )
 
@@ -761,24 +712,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
           .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
           .withStatusCode(200)
       )
-    mockServer
-      .when(
-        HttpRequest
-          .request()
-          .withMethod("POST")
-          .withPath(TRANSUNION_PATH)
-      )
-      .respond(
-        HttpResponse
-          .response()
-          .withHeader("Content-Type", "application/xml")
-          .withBody(
-            new CallValidateResponseBuilder()
-              .withError("BV3: Unknown account")
-              .build()
-          )
-          .withStatusCode(200)
-      )
 
     Given("I want to collect and validate a customers bank account details")
 
@@ -845,24 +778,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
           .response()
           .withHeader("Content-Type", "application/json")
           .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-          .withStatusCode(200)
-      )
-    mockServer
-      .when(
-        HttpRequest
-          .request()
-          .withMethod("POST")
-          .withPath(TRANSUNION_PATH)
-      )
-      .respond(
-        HttpResponse
-          .response()
-          .withHeader("Content-Type", "application/xml")
-          .withBody(
-            new CallValidateResponseBuilder()
-              .withError("BV3: Unknown account")
-              .build()
-          )
           .withStatusCode(200)
       )
 
