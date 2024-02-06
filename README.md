@@ -54,16 +54,40 @@ To start services locally, run the following:
       ]
     }'
 
-## Running specs
+### Docker Selenium Grid
 
-Execute the `run-tests.sh` script:
+Confirm that [docker-selenium-grid](https://github.com/hmrc/docker-selenium-grid) is up-to-date and follow the provided [instructions](https://github.com/hmrc/docker-selenium-grid/blob/main/README.md).
 
-    ./run-tests.sh
+## Tests
 
-The `run-tests.sh` script defaults to the locally installed `chrome` driver binary. For a complete list of supported param values, see:
+Run tests as follows:
 
-- `src/test/resources/application.conf` for **environment**
-- [webdriver-factory](https://github.com/hmrc/webdriver-factory#2-instantiating-a-browser-with-default-options) for **browser-driver**
+* Argument `<browser>` must be `chrome`, `edge`, or `firefox`.
+* Argument `<environment>` must be `local`, `dev`, `qa` or `staging`.
+
+```bash
+./run-tests.sh <browser> <environment>
+```
+
+## Scalafmt
+
+Check all project files are formatted as expected as follows:
+
+```bash
+sbt scalafmtCheckAll scalafmtCheck
+```
+
+Format `*.sbt` and `project/*.scala` files as follows:
+
+```bash
+sbt scalafmtSbt
+```
+
+Format all project files as follows:
+
+```bash
+sbt scalafmtAll
+```
 
 ## License
 
