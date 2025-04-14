@@ -22,7 +22,7 @@ import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.ui.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.ui.models.response.v3.CompleteResponse
 import uk.gov.hmrc.ui.models.{Account, Individual}
-import uk.gov.hmrc.ui.pages.bavfe.{BusinessAccountEntryPage, PersonalAccountEntryPage, SelectAccountTypePage}
+import uk.gov.hmrc.ui.pages.bavfe.{BusinessAccountEntryPage, ConfirmDetailsPage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.ui.pages.stubbed.JourneyCompletePage
 import uk.gov.hmrc.ui.specs.BaseSpec
 import uk.gov.hmrc.ui.utils.MockServer
@@ -39,14 +39,21 @@ class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": true}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
 
     Given("I want to collect and validate a customers bank account details")
@@ -61,15 +68,16 @@ class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
     assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters all required information and clicks continue")
-
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
 
-    Then("the company representative is redirected to continue URL")
+    When("the `Confirm and continue` button is clicked on the 'Check the account details` page")
+    ConfirmDetailsPage().clickContinue()
 
+    Then("the company representative is redirected to continue URL")
     mockServer.verify(
       HttpRequest
         .request()

@@ -46,16 +46,22 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": true}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
-
     Given("I want to collect and validate a customers bank account details")
 
     val journeyData = journeyBuilder.initializeJourneyV3()
@@ -122,14 +128,21 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": true}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
 
     Given("I want to audit where a request came from")
@@ -176,14 +189,21 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": true}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
 
     Given("I want to collect and validate a customers bank account details")
@@ -251,15 +271,29 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "${DEFAULT_NAME.asString()}"}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
+//      .respond(
+//        HttpResponse
+//          .response()
+//          .withHeader("Content-Type", "application/json")
+//          .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "${DEFAULT_NAME.asString()}"}""".stripMargin)
+//          .withStatusCode(200)
+//      )
 
     Given("I want to collect and validate a customers bank account details")
 
@@ -327,15 +361,29 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "AC01"}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
+//      .respond(
+//        HttpResponse
+//          .response()
+//          .withHeader("Content-Type", "application/json")
+//          .withBody(s"""{"Matched": false, "ReasonCode": "AC01"}""".stripMargin)
+//          .withStatusCode(200)
+//      )
 
     Given("I want to collect and validate a customers bank account details")
 
@@ -392,15 +440,29 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "BANM"}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
+//      .respond(
+//        HttpResponse
+//          .response()
+//          .withHeader("Content-Type", "application/json")
+//          .withBody(s"""{"Matched": false, "ReasonCode": "BANM"}""".stripMargin)
+//          .withStatusCode(200)
+//      )
 
     Given("I want to collect and validate personal bank account details")
 
@@ -497,15 +559,29 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
+//      .respond(
+//        HttpResponse
+//          .response()
+//          .withHeader("Content-Type", "application/json")
+//          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+//          .withStatusCode(200)
+//      )
 
     Given("I want to collect and validate a customers bank account details")
 
@@ -583,15 +659,29 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
+//      .respond(
+//        HttpResponse
+//          .response()
+//          .withHeader("Content-Type", "application/json")
+//          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+//          .withStatusCode(200)
+//      )
 
     Given("I want to collect and validate a customers bank account details")
 
@@ -645,14 +735,21 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": true}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
 
     Given("I want to collect and validate a customers bank account details")
@@ -703,15 +800,29 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
+//      .respond(
+//        HttpResponse
+//          .response()
+//          .withHeader("Content-Type", "application/json")
+//          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+//          .withStatusCode(200)
+//      )
 
     Given("I want to collect and validate a customers bank account details")
 
@@ -771,15 +882,29 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(COP_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
+//      .respond(
+//        HttpResponse
+//          .response()
+//          .withHeader("Content-Type", "application/json")
+//          .withBody(s"""{"Matched": false, "ReasonCode": "SCNS"}""".stripMargin)
+//          .withStatusCode(200)
+//      )
 
     Given("I want to collect and validate a customers bank account details")
 

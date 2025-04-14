@@ -27,7 +27,7 @@ import java.util.UUID
 
 trait MockServer extends AnyFeatureSpec with Eventually with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  val SUREPAY_PATH = "/surepay/v1/gateway"
+  val COP_PATH = "/api-sandbox-token/account-name-check"
 
   private val mockServerPort           = TestConfig.mockServerPort()
   lazy val mockServer: ClientAndServer = ClientAndServer.startClientAndServer(mockServerPort)
@@ -60,22 +60,7 @@ trait MockServer extends AnyFeatureSpec with Eventually with BeforeAndAfterAll w
           .response()
           .withStatusCode(200)
       )
-    mockServer
-      .when(
-        HttpRequest
-          .request()
-          .withMethod("POST")
-          .withPath("/surepay/oauth/client_credential/accesstoken")
-      )
-      .respond(
-        HttpResponse
-          .response()
-          .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"access_token" : "${UUID
-            .randomUUID()
-            .toString}", "expires_in" : "3599", "token_type" : "BearerToken" }""".stripMargin)
-          .withStatusCode(200)
-      )
+
     //Continue URL
     mockServer
       .when(
