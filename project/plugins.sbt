@@ -4,9 +4,9 @@ resolvers += Resolver.url("HMRC-open-artefacts-ivy-local", url("https://open.art
 )
 
 addDependencyTreePlugin
-addSbtPlugin("uk.gov.hmrc" % "sbt-test-report" % "0.22.0")
+addSbtPlugin("uk.gov.hmrc" % "sbt-test-report" % "1.10.0")
 
-addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "3.14.0")
+addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "3.24.0")
 
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
 

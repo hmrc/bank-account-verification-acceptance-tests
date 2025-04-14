@@ -19,28 +19,26 @@ If you don't have mongodb installed locally you can run it in docker using the f
 
 To start services locally, run the following:
 
-    sm --start BANK_ACCOUNT_VERIFICATION -r --appendArgs '{
-      "BANK_ACCOUNT_REPUTATION": [
-        "-J-Dmicroservice.services.callvalidate.endpoint=http://localhost:6001/callvalidateapi",
-        "-J-Dmicroservice.services.surepay.hostname=http://localhost:6001/surepay/",
-        "-J-Dmicroservice.services.surepay.enabled=true",
-        "-J-Dauditing.consumer.baseUri.port=6001",
-        "-J-Dauditing.consumer.baseUri.host=localhost",
-        "-J-Dauditing.enabled=true",
-        "-J-Dproxy.proxyRequiredForThisEnvironment=false",
-        "-J-Dmicroservice.services.eiscd.aws.endpoint=http://localhost:6002",
-        "-J-Dmicroservice.services.eiscd.aws.bucket=txm-dev-bacs-eiscd",
-        "-J-Dmicroservice.services.eiscd.aws.accesskeyid=EXAMPLEID",
-        "-J-Dmicroservice.services.eiscd.aws.secretkey=EXAMPLEKEY",
-        "-J-Dmicroservice.services.modcheck.aws.endpoint=http://localhost:6002",
-        "-J-Dmicroservice.services.modcheck.aws.bucket=txm-dev-bacs-modcheck",
-        "-J-Dmicroservice.services.modcheck.aws.accesskeyid=EXAMPLEID",
-        "-J-Dmicroservice.services.modcheck.aws.secretkey=EXAMPLEKEY",
-        "-J-Dmicroservice.services.thirdPartyCache.endpoint=http://localhost:9899/cache",
-        "-J-Dmicroservice.services.surepay.cache.enabled=true",
-        "-J-Dmicroservice.services.access-control.enabled=true",
-        "-J-Dmicroservice.services.access-control.allow-list.0=bank-account-verification-frontend"
-      ],
+    sm2 --start BANK_ACCOUNT_VERIFICATION -r --appendArgs '{
+        "BANK_ACCOUNT_REPUTATION": [
+            "-J-Dapplication.router=testOnlyDoNotUseInAppConf.Routes",
+            "-J-Dmicroservice.services.modulr.enabled=true",
+            "-J-Dauditing.consumer.baseUri.port=6001",
+            "-J-Dauditing.consumer.baseUri.host=localhost",
+            "-J-Dauditing.enabled=true",
+            "-J-Dproxy.proxyRequiredForThisEnvironment=false",
+            "-J-Dmicroservice.services.eiscd.aws.endpoint=http://localhost:6002",
+            "-J-Dmicroservice.services.eiscd.aws.bucket=txm-dev-bacs-eiscd",
+            "-J-Dmicroservice.services.eiscd.aws.accesskeyid=AKIAIOSFODNN7EXAMPLE",
+            "-J-Dmicroservice.services.eiscd.aws.secretkey=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+            "-J-Dmicroservice.services.modcheck.aws.endpoint=http://localhost:6002",
+            "-J-Dmicroservice.services.modcheck.aws.bucket=txm-dev-bacs-modcheck",
+            "-J-Dmicroservice.services.modcheck.aws.accesskeyid=AKIAIOSFODNN7EXAMPLE",
+            "-J-Dmicroservice.services.modcheck.aws.secretkey=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+            "-J-Dmicroservice.services.thirdPartyCache.endpoint=http://localhost:9899/cache",
+            "-J-Dmicroservice.services.access-control.enabled=true",
+            "-J-Dmicroservice.services.access-control.allow-list.0=bank-account-verification-frontend"
+        ],
       "BANK_ACCOUNT_REPUTATION_THIRD_PARTY_CACHE": [
         "-J-Dcontrollers.confidenceLevel.uk.gov.hmrc.bankaccountreputationthirdpartycache.controllers.CacheController.needsLogging=true"
       ],
