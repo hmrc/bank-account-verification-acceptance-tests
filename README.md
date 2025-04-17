@@ -56,10 +56,6 @@ To start services locally, run the following:
       ]
     }'
 
-### Docker Selenium Grid
-
-Confirm that [docker-selenium-grid](https://github.com/hmrc/docker-selenium-grid) is up-to-date and follow the provided [instructions](https://github.com/hmrc/docker-selenium-grid/blob/main/README.md).
-
 ## Tests
 
 Run tests as follows:
