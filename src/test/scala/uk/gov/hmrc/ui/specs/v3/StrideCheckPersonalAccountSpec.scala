@@ -39,14 +39,21 @@ class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(MODULR_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": true}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
 
     Given("I want to collect and validate a customers bank account details")

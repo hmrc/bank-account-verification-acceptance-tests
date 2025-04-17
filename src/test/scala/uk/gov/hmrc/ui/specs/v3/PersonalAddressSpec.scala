@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ui.specs.v3
 
 import org.assertj.core.api.Assertions.assertThat
-import org.mockserver.model.{HttpError, HttpRequest, HttpResponse, JsonPathBody}
+import org.mockserver.model.{HttpRequest, HttpResponse, JsonPathBody}
 import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.ui.config.TestConfig
 import uk.gov.hmrc.ui.models._
@@ -27,7 +27,6 @@ import uk.gov.hmrc.ui.models.response.v3.CompleteResponse
 import uk.gov.hmrc.ui.pages.bavfe.{PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.ui.pages.stubbed.{JourneyCompletePage, TooManyAttemptsPage}
 import uk.gov.hmrc.ui.specs.BaseSpec
-import uk.gov.hmrc.ui.stubs.transunion.{CallValidateResponseBuilder, IdentityCheckBuilder}
 import uk.gov.hmrc.ui.utils._
 
 import java.util.UUID
@@ -53,14 +52,21 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(MODULR_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": true}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
 
     Given("I want to collect and validate personal bank account details")
@@ -145,7 +151,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
 
-    mockServer.verify(HttpRequest.request().withPath(SUREPAY_PATH), VerificationTimes.atLeast(1))
+    mockServer.verify(HttpRequest.request().withPath(MODULR_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(
       HttpRequest
         .request()
@@ -168,14 +174,21 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(MODULR_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody("""{"Matched": true}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
 
     Given("I want to collect and validate personal bank account details")
@@ -282,14 +295,21 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(MODULR_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": true}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
 
     Given("I want to collect and validate personal bank account details")
@@ -413,14 +433,21 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(MODULR_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": true}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "MATCHED"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
 
     Given("I want to collect and validate personal bank account details")
@@ -552,14 +579,22 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(MODULR_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "MBAM", "Name": "Mr Patrick O'Connor-Smith"}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "CLOSE_MATCH",
+                       |    "name": "Mr Patrick O'Connor-Smith"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
 
     Given("I want to collect and validate personal bank account details")
@@ -645,7 +680,7 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
 
-    mockServer.verify(HttpRequest.request().withPath(SUREPAY_PATH), VerificationTimes.atLeast(1))
+    mockServer.verify(HttpRequest.request().withPath(MODULR_PATH), VerificationTimes.atLeast(1))
     mockServer.verify(
       HttpRequest
         .request()
@@ -668,14 +703,21 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         HttpRequest
           .request()
           .withMethod("POST")
-          .withPath(SUREPAY_PATH)
+          .withPath(MODULR_PATH)
       )
       .respond(
         HttpResponse
           .response()
           .withHeader("Content-Type", "application/json")
-          .withBody(s"""{"Matched": false, "ReasonCode": "AC01"}""".stripMargin)
-          .withStatusCode(200)
+          .withBody(s"""
+                       |{
+                       |  "id": "C12001569Z",
+                       |  "result": {
+                       |    "code": "ACCOUNT_DOES_NOT_EXIST"
+                       |    }
+                       |}
+                       |""".stripMargin)
+          .withStatusCode(201)
       )
 
     Given("I want to collect and validate a companies bank account details")

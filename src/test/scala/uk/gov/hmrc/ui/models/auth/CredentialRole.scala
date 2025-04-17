@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ui.models.auth
 
-import play.api.libs.json.{JsError, JsString, JsSuccess, Reads, Writes}
+import play.api.libs.json._
 
 import scala.util.Try
 
