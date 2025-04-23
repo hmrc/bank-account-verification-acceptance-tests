@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ui.specs
 
-import io.findify.s3mock.S3Mock
+import com.adobe.testing.s3mock.S3MockApplication
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, GivenWhenThen}
@@ -40,13 +40,18 @@ trait BaseSpec
 
   val journeyBuilder = new JourneyBuilder
 
-  val s3Dir          = new File(getClass.getResource("/sThreeBucket").getFile())
-  private val s3Mock = S3Mock(port = TestConfig.s3MockPort(), dir = s3Dir.getAbsolutePath)
+  val s3Dir = new File(getClass.getResource("/sThreeBucket").getFile)
+
+  var s3MockApp: Option[S3MockApplication] = None
 
   override def beforeAll(): Unit = {
     super.beforeAll()
+
+    s3MockApp = Some(
+      S3MockApplication.start(f"--server.port=${TestConfig.s3MockPort()}", s"--root.directory=${s3Dir.getAbsolutePath}")
+    )
+
     startBrowser()
-    s3Mock.start
 
     sys.addShutdownHook {
       quitBrowser()
@@ -59,8 +64,12 @@ trait BaseSpec
   override def afterEach: Unit =
     webDriver.manage().deleteAllCookies()
 
-  override def afterAll(): Unit = {
-    quitBrowser()
-    s3Mock.stop
-  }
+  override def afterAll(): Unit =
+    if (s3MockApp.isDefined) {
+      s3MockApp.get.stop()
+      s3MockApp = None
+    }
+
+  quitBrowser()
+
 }
