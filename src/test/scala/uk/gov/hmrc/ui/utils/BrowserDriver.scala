@@ -26,9 +26,6 @@ import uk.gov.hmrc.selenium.webdriver.Driver
 import java.time.Duration
 
 trait BrowserDriver extends WebBrowser with LazyLogging {
-  logger.info(
-    s"Instantiating Browser: ${sys.props.getOrElse("browser", "'browser' System property not set. This is required")}"
-  )
 
   lazy val webDriverWillWait: WebDriverWait =
     new WebDriverWait(webDriver, Duration.ofSeconds(5), Duration.ofMillis(250))

@@ -7,7 +7,9 @@
         </encoder>
     </appender>
 
-    <root level="info">
+    <logger name="org.mockserver.log" level="WARN"/>
+
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
