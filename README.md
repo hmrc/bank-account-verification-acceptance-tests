@@ -21,40 +21,53 @@ To start services locally, run the following:
 
     sm2 --start BANK_ACCOUNT_VERIFICATION -r --appendArgs '{
       "BANK_ACCOUNT_REPUTATION": [
-        "-J-Dplay.http.router=testOnlyDoNotUseInAppConf.Routes",
-        "-J-Dmicroservice.services.modulr.protocol=http",
-        "-J-Dmicroservice.services.modulr.host=localhost",
-        "-J-Dmicroservice.services.modulr.port=6001",
-        "-J-Dmicroservice.services.modulr.enabled=true",
-        "-J-Dmicroservice.services.modulr.business.cache.enabled=false",
-        "-J-Dmicroservice.services.modulr.personal.cache.enabled=false",
-        "-J-Dauditing.consumer.baseUri.port=6001",
-        "-J-Dauditing.consumer.baseUri.host=localhost",
-        "-J-Dauditing.enabled=true",
-        "-J-Dproxy.proxyRequiredForThisEnvironment=false",
-        "-J-Dmicroservice.services.eiscd.aws.endpoint=http://0.0.0.0:6002",
-        "-J-Dmicroservice.services.eiscd.aws.bucket=txm-dev-bacs-eiscd",
-        "-J-Dmicroservice.services.eiscd.cache-schedule.initial-delay=86400",
-        "-J-Dmicroservice.services.modcheck.cache-schedule.initial-delay=86400",
-        "-J-Dmicroservice.services.thirdPartyCache.endpoint=http://localhost:9899/cache",
-        "-J-Dmicroservice.services.access-control.endpoint.verify.enabled=true",
-        "-J-Dmicroservice.services.access-control.endpoint.verify.allow-list.0=bank-account-verification-frontend",
-        "-J-Dmicroservice.services.access-control.endpoint.validate.enabled=true",
-        "-J-Dmicroservice.services.access-control.endpoint.validate.allow-list.0=bank-account-verification-frontend",
-        "-J-Dmicroservice.services.modcheck.useLocal=true"
+        "-Dplay.http.router=testOnlyDoNotUseInAppConf.Routes",
+        "-Dmicroservice.services.modulr.protocol=http",
+        "-Dmicroservice.services.modulr.host=localhost",
+        "-Dmicroservice.services.modulr.port=6001",
+        "-Dmicroservice.services.modulr.enabled=true",
+        "-Dmicroservice.services.modulr.business.cache.enabled=false",
+        "-Dmicroservice.services.modulr.personal.cache.enabled=false",
+        "-Dauditing.consumer.baseUri.port=6001",
+        "-Dauditing.consumer.baseUri.host=localhost",
+        "-Dauditing.enabled=true",
+        "-Dproxy.proxyRequiredForThisEnvironment=false",
+        "-Dmicroservice.services.eiscd.aws.endpoint=http://0.0.0.0:6002",
+        "-Dmicroservice.services.eiscd.aws.bucket=txm-dev-bacs-eiscd",
+        "-Dmicroservice.services.eiscd.cache-schedule.initial-delay=86400",
+        "-Dmicroservice.services.modcheck.cache-schedule.initial-delay=86400",
+        "-Dmicroservice.services.thirdPartyCache.endpoint=http://localhost:9899/cache",
+        "-Dmicroservice.services.access-control.endpoint.verify.enabled=true",
+        "-Dmicroservice.services.access-control.endpoint.verify.allow-list.0=bars-acceptance-tests",
+        "-Dmicroservice.services.access-control.endpoint.verify.allow-list.1=some-upstream-service",
+        "-Dmicroservice.services.access-control.endpoint.verify.allow-list.2=bank-account-reputation-frontend",
+        "-Dmicroservice.services.access-control.endpoint.verify.allow-list.3=bank-account-verification-frontend",
+        "-Dmicroservice.services.access-control.endpoint.validate.enabled=true",
+        "-Dmicroservice.services.access-control.endpoint.validate.allow-list.0=bars-acceptance-tests",
+        "-Dmicroservice.services.access-control.endpoint.validate.allow-list.1=some-upstream-service",
+        "-Dmicroservice.services.access-control.endpoint.validate.allow-list.2=bank-account-reputation-frontend",
+        "-Dmicroservice.services.access-control.endpoint.validate.allow-list.3=bank-account-verification-frontend",
+        "-Dmicroservice.services.modcheck.useLocal=true"
       ],
       "BANK_ACCOUNT_REPUTATION_THIRD_PARTY_CACHE": [
-        "-J-Dcontrollers.confidenceLevel.uk.gov.hmrc.bankaccountreputationthirdpartycache.controllers.CacheController.needsLogging=true"
+        "-Dcontrollers.confidenceLevel.uk.gov.hmrc.bankaccountreputationthirdpartycache.controllers.CacheController.needsLogging=true"
       ],
       "BANK_ACCOUNT_VERIFICATION_FRONTEND": [
-        "-J-Dmicroservice.hosts.allowList.1=localhost",
-        "-J-Dauditing.consumer.baseUri.port=6001",
-        "-J-Dauditing.consumer.baseUri.host=localhost",
-        "-J-Dauditing.enabled=true",
-        "-J-Dmicroservice.services.access-control.enabled=true",
-        "-J-Dmicroservice.services.access-control.allow-list.0=bavfe-acceptance-tests"
+        "-Dmicroservice.hosts.allowList.1=localhost",
+        "-Dauditing.consumer.baseUri.port=6001",
+        "-Dauditing.consumer.baseUri.host=localhost",
+        "-Dauditing.enabled=true",
+        "-Dmicroservice.services.access-control.enabled=true",
+        "-Dmicroservice.services.access-control.allow-list.0=bavfe-acceptance-tests"
+      ],
+      "BANK_ACCOUNT_REPUTATION_FRONTEND": [
+        "-Dauditing.enabled=true",
+        "-Dauditing.consumer.baseUri.port=6001",
+        "-Dauditing.consumer.baseUri.host=localhost"
       ]
     }'
+
+Or, alternatively, run this helper script: `.start_services.sh`
 
 ## Tests
 
