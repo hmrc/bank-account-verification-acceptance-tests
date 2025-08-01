@@ -17,18 +17,19 @@
 package uk.gov.hmrc.ui.specs.v3
 
 import org.assertj.core.api.Assertions.assertThat
+import org.openqa.selenium.support.ui.ExpectedConditions.titleContains
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.ui.config.TestConfig
 import uk.gov.hmrc.ui.models._
+import uk.gov.hmrc.ui.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.ui.models.init.{InitRequest, MaxCallConfig}
 import uk.gov.hmrc.ui.pages.bavfe.{BusinessAccountEntryPage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.ui.pages.stubbed.JourneySignOutPage
 import uk.gov.hmrc.ui.specs.BaseSpec
-import uk.gov.hmrc.ui.utils.MockServer
 
 import java.util.UUID
 
-class InitSpec extends BaseSpec with MockServer {
+class InitSpec extends BaseSpec {
 
   val DEFAULT_ACCOUNT_DETAILS: Account          = Account("40 47 84", "70872490", bankName = Some("Lloyds"))
   val DEFAULT_BUSINESS_ADDRESS: Option[Address] = Some(
@@ -76,6 +77,9 @@ class InitSpec extends BaseSpec with MockServer {
       "hint.rollNumber.business"              -> "roll number hint override"
     )
 
+    val enBusinessHeading = english("label.accountDetails.heading.business").asInstanceOf[JsString].value
+    val cyBusinessHeading = welsh("label.accountDetails.heading.business").asInstanceOf[JsString].value
+
     val journeyData: JourneyBuilderResponse = journeyBuilder.initializeJourneyV3(
       InitRequest(address = DEFAULT_BUSINESS_ADDRESS, messages = Some(Messages(en = english, cy = Some(welsh))))
         .asJsonString()
@@ -83,16 +87,15 @@ class InitSpec extends BaseSpec with MockServer {
 
     startGGJourney(journeyData)
 
-    assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     When("a user navigates to the business account entry page")
 
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
 
     Then("the English language copy overrides are displayed")
 
-    assertThat(BusinessAccountEntryPage().getHeading)
-      .isEqualTo(english("label.accountDetails.heading.business").asInstanceOf[JsString].value)
+    BusinessAccountEntryPage().fluentWait().until(titleContains(enBusinessHeading))
+    assertThat(BusinessAccountEntryPage().getHeading).isEqualTo(enBusinessHeading)
     assertThat(BusinessAccountEntryPage().getCompanyNameLabel)
       .isEqualTo(english("label.accountName.business").asInstanceOf[JsString].value)
     assertThat(BusinessAccountEntryPage().getSortCodeLabel)
@@ -114,8 +117,8 @@ class InitSpec extends BaseSpec with MockServer {
 
     Then("the Welsh copy overrides are displayed")
 
-    assertThat(BusinessAccountEntryPage().getHeading)
-      .isEqualTo(welsh("label.accountDetails.heading.business").asInstanceOf[JsString].value)
+    BusinessAccountEntryPage().fluentWait().until(titleContains(cyBusinessHeading))
+    assertThat(BusinessAccountEntryPage().getHeading).isEqualTo(cyBusinessHeading)
     assertThat(BusinessAccountEntryPage().getCompanyNameLabel)
       .isEqualTo(welsh("label.accountName.business").asInstanceOf[JsString].value)
     assertThat(BusinessAccountEntryPage().getSortCodeLabel)
@@ -136,12 +139,14 @@ class InitSpec extends BaseSpec with MockServer {
     //Two clicks on back due to the switch to welsh
     BusinessAccountEntryPage().clickBackLink()
     BusinessAccountEntryPage().clickBackLink()
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     Then("the Welsh copy overrides are not displayed")
 
-    assertThat(PersonalAccountEntryPage().getHeading)
-      .isNotEqualTo(welsh("label.accountDetails.heading.business").asInstanceOf[JsString].value)
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+    assertThat(PersonalAccountEntryPage().getHeading).isNotEqualTo(cyBusinessHeading)
     assertThat(PersonalAccountEntryPage().getAccountNameLabel)
       .isNotEqualTo(welsh("label.accountName.business").asInstanceOf[JsString].value)
     assertThat(PersonalAccountEntryPage().getSortCodeLabel)
@@ -163,8 +168,8 @@ class InitSpec extends BaseSpec with MockServer {
 
     Then("the English language copy overrides are not displayed")
 
-    assertThat(PersonalAccountEntryPage().getHeading)
-      .isNotEqualTo(english("label.accountDetails.heading.business").asInstanceOf[JsString].value)
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+    assertThat(PersonalAccountEntryPage().getHeading).isNotEqualTo(enBusinessHeading)
     assertThat(PersonalAccountEntryPage().getAccountNameLabel)
       .isNotEqualTo(english("label.accountName.business").asInstanceOf[JsString].value)
     assertThat(PersonalAccountEntryPage().getSortCodeLabel)
@@ -211,6 +216,9 @@ class InitSpec extends BaseSpec with MockServer {
       "hint.rollNumber.personal"              -> "roll number hint override"
     )
 
+    val enPersonalHeading = english("label.accountDetails.heading.personal").asInstanceOf[JsString].value
+    val cyPersonalHeading = welsh("label.accountDetails.heading.personal").asInstanceOf[JsString].value
+
     val journeyData: JourneyBuilderResponse = journeyBuilder.initializeJourneyV3(
       InitRequest(address = DEFAULT_BUSINESS_ADDRESS, messages = Some(Messages(en = english, cy = Some(welsh))))
         .asJsonString()
@@ -218,16 +226,15 @@ class InitSpec extends BaseSpec with MockServer {
 
     startGGJourney(journeyData)
 
-    assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     When("a user navigates to the personal account entry page")
 
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     Then("the copy overrides are displayed")
 
-    assertThat(PersonalAccountEntryPage().getHeading)
-      .isEqualTo(english("label.accountDetails.heading.personal").asInstanceOf[JsString].value)
+    PersonalAccountEntryPage().fluentWait().until(titleContains(enPersonalHeading))
+    assertThat(PersonalAccountEntryPage().getHeading).isEqualTo(enPersonalHeading)
     assertThat(PersonalAccountEntryPage().getAccountNameLabel)
       .isEqualTo(english("label.accountName.personal").asInstanceOf[JsString].value)
     assertThat(PersonalAccountEntryPage().getSortCodeLabel)
@@ -249,8 +256,8 @@ class InitSpec extends BaseSpec with MockServer {
 
     Then("the Welsh copy overrides are displayed")
 
-    assertThat(PersonalAccountEntryPage().getHeading)
-      .isEqualTo(welsh("label.accountDetails.heading.personal").asInstanceOf[JsString].value)
+    PersonalAccountEntryPage().fluentWait().until(titleContains(cyPersonalHeading))
+    assertThat(PersonalAccountEntryPage().getHeading).isEqualTo(cyPersonalHeading)
     assertThat(PersonalAccountEntryPage().getAccountNameLabel)
       .isEqualTo(welsh("label.accountName.personal").asInstanceOf[JsString].value)
     assertThat(PersonalAccountEntryPage().getSortCodeLabel)
@@ -271,12 +278,14 @@ class InitSpec extends BaseSpec with MockServer {
     //Two clicks on back due to the switch to welsh
     PersonalAccountEntryPage().clickBackLink()
     PersonalAccountEntryPage().clickBackLink()
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
 
     Then("the Welsh copy overrides are not displayed")
 
-    assertThat(BusinessAccountEntryPage().getHeading)
-      .isNotEqualTo(welsh("label.accountDetails.heading.personal").asInstanceOf[JsString].value)
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
+    assertThat(BusinessAccountEntryPage().getHeading).isNotEqualTo(cyPersonalHeading)
     assertThat(BusinessAccountEntryPage().getCompanyNameLabel)
       .isNotEqualTo(welsh("label.accountName.personal").asInstanceOf[JsString].value)
     assertThat(BusinessAccountEntryPage().getSortCodeLabel)
@@ -298,8 +307,8 @@ class InitSpec extends BaseSpec with MockServer {
 
     Then("the English language copy overrides are not displayed")
 
-    assertThat(BusinessAccountEntryPage().getHeading)
-      .isNotEqualTo(english("label.accountDetails.heading.personal").asInstanceOf[JsString].value)
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
+    assertThat(BusinessAccountEntryPage().getHeading).isNotEqualTo(enPersonalHeading)
     assertThat(BusinessAccountEntryPage().getCompanyNameLabel)
       .isNotEqualTo(english("label.accountName.personal").asInstanceOf[JsString].value)
     assertThat(BusinessAccountEntryPage().getSortCodeLabel)
@@ -331,27 +340,28 @@ class InitSpec extends BaseSpec with MockServer {
     val signOutURL                          = s"${TestConfig.environmentHost}:${TestConfig.mockServerPort()}/sign-out"
     val journeyData: JourneyBuilderResponse =
       journeyBuilder.initializeJourneyV3(InitRequest(signOutUrl = Some(signOutURL)).asJsonString())
-    startGGJourney(journeyData)
 
     When("A user starts a bank account entry journey")
 
-    assertThat(SelectAccountTypePage().isOnPage).isTrue
+    startGGJourney(journeyData)
 
     Then("The sign out link is displayed and links to the correct sign out URL")
 
-    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isTrue
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
+    SelectAccountTypePage().isSignOutLinkDisplayed(isDisplayed = true)
     assertThat(SelectAccountTypePage().getSignOutLinkLocation).isEqualTo(signOutURL)
 
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     assertThat(PersonalAccountEntryPage().isOnPage).isTrue
-    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isTrue
+    SelectAccountTypePage().isSignOutLinkDisplayed(isDisplayed = true)
     assertThat(SelectAccountTypePage().getSignOutLinkLocation).isEqualTo(signOutURL)
 
     PersonalAccountEntryPage().clickBackLink()
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
 
-    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isTrue
+    SelectAccountTypePage().isSignOutLinkDisplayed(isDisplayed = true)
     assertThat(SelectAccountTypePage().getSignOutLinkLocation).isEqualTo(signOutURL)
 
     When("The user clicks on the sign out link")
@@ -372,16 +382,17 @@ class InitSpec extends BaseSpec with MockServer {
     assertThat(SelectAccountTypePage().isOnPage).isTrue
 
     Then("The sign out link is not displayed")
-    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isFalse
+    SelectAccountTypePage().isSignOutLinkDisplayed(isDisplayed = false)
 
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     assertThat(PersonalAccountEntryPage().isOnPage).isTrue
-    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isFalse
+    SelectAccountTypePage().isSignOutLinkDisplayed(isDisplayed = false)
 
     PersonalAccountEntryPage().clickBackLink()
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
-    assertThat(SelectAccountTypePage().isSignOutLinkDisplayed).isFalse
+    SelectAccountTypePage().isSignOutLinkDisplayed(isDisplayed = false)
   }
 
   Scenario("Cannot initialize a new journey with a maxCallCount but no maxCallCountRedirectUrl") {

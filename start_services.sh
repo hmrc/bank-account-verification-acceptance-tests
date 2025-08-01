@@ -13,7 +13,7 @@ sm2 --start BANK_ACCOUNT_VERIFICATION --appendArgs '{
     "-Dauditing.consumer.baseUri.host=localhost",
     "-Dauditing.enabled=true",
     "-Dproxy.proxyRequiredForThisEnvironment=false",
-    "-Dmicroservice.services.eiscd.aws.endpoint=http://0.0.0.0:6002",
+    "-Dmicroservice.services.eiscd.aws.endpoint=http://localhost:4566",
     "-Dmicroservice.services.eiscd.aws.bucket=txm-dev-bacs-eiscd",
     "-Dmicroservice.services.eiscd.cache-schedule.initial-delay=86400",
     "-Dmicroservice.services.modcheck.cache-schedule.initial-delay=86400",

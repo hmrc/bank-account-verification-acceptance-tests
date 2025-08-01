@@ -26,11 +26,10 @@ import uk.gov.hmrc.ui.models.response.v3.CompleteResponse
 import uk.gov.hmrc.ui.pages.bavfe.{BusinessAccountEntryPage, ConfirmDetailsPage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.ui.pages.stubbed.JourneyCompletePage
 import uk.gov.hmrc.ui.specs.BaseSpec
-import uk.gov.hmrc.ui.utils.MockServer
 
 import java.util.UUID
 
-class CheckBusinessAccountSpec extends BaseSpec with MockServer {
+class CheckBusinessAccountSpec extends BaseSpec {
 
   val DEFAULT_COMPANY_NAME                      = "P@cking & $orting"
   val DEFAULT_BUILDING_SOCIETY_DETAILS: Account =
@@ -67,13 +66,11 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     val session     = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
-
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters all required information and clicks continue")
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
     BusinessAccountEntryPage()
       .enterCompanyName(DEFAULT_COMPANY_NAME)
       .enterSortCode(DEFAULT_BUILDING_SOCIETY_DETAILS.sortCode)
@@ -82,6 +79,9 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the company representative is redirected to continue URL")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -102,9 +102,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = journeyBuilder.getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
@@ -146,16 +143,14 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to audit where a request came from")
 
-    startGGJourney(journeyBuilder.initializeJourneyV3())
+    val session = startGGJourney(journeyBuilder.initializeJourneyV3())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
-
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters all required information and clicks continue")
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
     BusinessAccountEntryPage()
       .enterCompanyName(DEFAULT_COMPANY_NAME + UUID.randomUUID().toString)
       .enterSortCode(DEFAULT_BUILDING_SOCIETY_DETAILS.sortCode)
@@ -164,6 +159,9 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the user agent and true calling client is sent over to BARS and correctly audited")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -214,13 +212,11 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     val session     = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
-
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters all required information and clicks continue")
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
     BusinessAccountEntryPage()
       .enterCompanyName(DEFAULT_COMPANY_NAME)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -228,6 +224,9 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the company representative is redirected to continue URL")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -248,9 +247,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = journeyBuilder.getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
@@ -297,13 +293,11 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     val session     = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
-
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters all required information and clicks continue")
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
     BusinessAccountEntryPage()
       .enterCompanyName(s"$DEFAULT_COMPANY_NAME LTD")
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -311,6 +305,9 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the company representative is redirected to continue URL")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -331,9 +328,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = journeyBuilder.getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
@@ -380,13 +374,11 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     startGGJourney(journeyBuilder.initializeJourneyV3())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
-
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters all required information and clicks continue")
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
     BusinessAccountEntryPage()
       .enterCompanyName(companyName)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -394,6 +386,10 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("an error message is displayed to the company representative telling them that the account is invalid")
+
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    PersonalAccountEntryPage().assertThatErrorSummaryLinkExists("accountNumber")
+    PersonalAccountEntryPage().assertThatInputFieldErrorMessageExists("accountNumber")
 
     mockServer.verify(
       HttpRequest
@@ -414,10 +410,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
-    assertThatErrorSummaryLinkExists("accountNumber")
-    assertThatInputFieldErrorMessageExists("accountNumber")
   }
 
   Scenario("Business Bank Account Verification unable to find bank account") {
@@ -450,13 +442,11 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     val session     = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
-
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters all required information and clicks continue")
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
     BusinessAccountEntryPage()
       .enterCompanyName(companyName)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -474,6 +464,9 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     ConfirmDetailsPage().clickContinue()
 
     Then("the company representative is redirected to the continue URL")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -494,9 +487,6 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = journeyBuilder.getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
@@ -542,13 +532,11 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     startGGJourney(journeyBuilder.initializeJourneyV3())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
-
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters HMRC bank account information and clicks continue")
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
     BusinessAccountEntryPage()
       .enterCompanyName(companyName)
       .enterSortCode(HMRC_ACCOUNT_DETAILS.sortCode)
@@ -558,8 +546,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Then("an error message is displayed to the user")
 
     assertThat(BusinessAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
-    assertThatErrorSummaryLinkExists("sortCode")
-    assertThatInputFieldErrorMessageExists("sortCode")
+    BusinessAccountEntryPage().assertThatErrorSummaryLinkExists("sortCode")
+    BusinessAccountEntryPage().assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
       HttpRequest
@@ -617,13 +605,11 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     )
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
-
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters HMRC bank account information and clicks continue")
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
     BusinessAccountEntryPage()
       .enterCompanyName(companyName)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -633,8 +619,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Then("an error message is displayed to the user")
 
     assertThat(BusinessAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
-    assertThatErrorSummaryLinkExists("sortCode")
-    assertThatInputFieldErrorMessageExists("sortCode")
+    BusinessAccountEntryPage().assertThatErrorSummaryLinkExists("sortCode")
+    BusinessAccountEntryPage().assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
       HttpRequest
@@ -692,13 +678,11 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     )
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
-
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters HMRC bank account information and clicks continue")
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
     BusinessAccountEntryPage()
       .enterCompanyName(companyName)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -708,8 +692,8 @@ class CheckBusinessAccountSpec extends BaseSpec with MockServer {
     Then("an error message is displayed to the user")
 
     assertThat(BusinessAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
-    assertThatErrorSummaryLinkExists("sortCode")
-    assertThatInputFieldErrorMessageExists("sortCode")
+    BusinessAccountEntryPage().assertThatErrorSummaryLinkExists("sortCode")
+    BusinessAccountEntryPage().assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
       HttpRequest

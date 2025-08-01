@@ -16,21 +16,18 @@
 
 package uk.gov.hmrc.ui.pages.bavfe
 
+import org.openqa.selenium.By
 import uk.gov.hmrc.ui.pages.BasePage
 
 case class TimeoutDialoguePartial() extends BasePage {
 
-  private lazy val timeoutDialogue: IdQuery    = id("hmrc-timeout-dialog")
-  private lazy val staySignedInButton: IdQuery = id("hmrc-timeout-keep-signin-btn")
-  private lazy val timeoutSignOutLink: IdQuery = id("hmrc-timeout-sign-out-link")
-
   def isVisible: Boolean =
-    timeoutDialogue.webElement.isDisplayed
+    find(By.id("hmrc-timeout-dialog")).isDisplayed
 
   def clickStaySignedIn(): Unit =
-    click on staySignedInButton
+    click(By.id("hmrc-timeout-keep-signin-btn"))
 
   def clickTimeoutSignOut(): Unit =
-    click on timeoutSignOutLink
+    click(By.id("hmrc-timeout-sign-out-link"))
 
 }

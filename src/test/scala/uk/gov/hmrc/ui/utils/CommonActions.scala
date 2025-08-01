@@ -20,10 +20,10 @@ import uk.gov.hmrc.ui.config.TestConfig
 import uk.gov.hmrc.ui.models.{InitResponse, JourneyBuilderResponse}
 import uk.gov.hmrc.ui.pages.auth.{GGAuthStubPage, StrideAuthStubPage}
 
-trait CommonActions extends BrowserDriver {
+trait CommonActions {
 
   def startGGJourney(journeyStart: JourneyBuilderResponse): InitResponse = {
-    go to s"${TestConfig.url("auth-login-stub")}/gg-sign-in"
+    GGAuthStubPage().navigateTo(s"${TestConfig.url("auth-login-stub")}/gg-sign-in")
     GGAuthStubPage()
       .enterCredID(journeyStart.credId)
       .enterRedirectUrl(s"${TestConfig.getHost("bank-account-verification")}${journeyStart.initResponse.startUrl}")
@@ -32,7 +32,7 @@ trait CommonActions extends BrowserDriver {
   }
 
   def continueGGJourney(journeyStart: JourneyBuilderResponse): Unit = {
-    go to s"${TestConfig.url("auth-login-stub")}/gg-sign-in"
+    GGAuthStubPage().navigateTo(s"${TestConfig.url("auth-login-stub")}/gg-sign-in")
     GGAuthStubPage()
       .enterCredID(journeyStart.credId)
       .enterRedirectUrl(
@@ -42,7 +42,8 @@ trait CommonActions extends BrowserDriver {
   }
 
   def startStrideJourney(journeyStart: JourneyBuilderResponse): InitResponse = {
-    go to s"${TestConfig.url("auth-login-stub")}/application-login?continue=${TestConfig.getHost("bank-account-verification")}${journeyStart.initResponse.startUrl}"
+    StrideAuthStubPage().navigateTo(s"${TestConfig.url("auth-login-stub")}/application-login?continue=${TestConfig
+      .getHost("bank-account-verification")}${journeyStart.initResponse.startUrl}")
     StrideAuthStubPage()
       .enterClientID(journeyStart.credId)
       .submit()
