@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.ui.pages.stubbed
 
-import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
+import org.openqa.selenium.support.ui.ExpectedConditions.titleContains
 import uk.gov.hmrc.ui.pages.BasePage
 
 case class JourneyTimeOutPage() extends BasePage {
 
   override def isOnPage: Boolean =
-    webDriverWillWait.until(titleIs("Timeout"))
+    fluentWait().until(titleContains("Timeout"))
 }

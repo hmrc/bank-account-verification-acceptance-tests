@@ -16,22 +16,24 @@
 
 package uk.gov.hmrc.ui.utils
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.{Materializer, SystemMaterializer}
 import play.api.libs.ws.DefaultBodyWritables._
-import play.api.libs.ws.ahc.{AhcWSClientConfig, StandaloneAhcWSClient}
-import play.api.libs.ws.{StandaloneWSRequest, WSClientConfig}
+import play.api.libs.ws.StandaloneWSRequest
+import play.api.libs.ws.ahc.StandaloneAhcWSClient
+import play.shaded.ahc.org.asynchttpclient._
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.reflectiveCalls
 
 trait HttpClient {
 
-  implicit val actorSystem: ActorSystem = ActorSystem()
-  val wsClient: StandaloneAhcWSClient   = StandaloneAhcWSClient(
-    AhcWSClientConfig(WSClientConfig())
-  )
+  implicit lazy val actorSystem: ActorSystem   = ActorSystem("wsClient")
+  implicit lazy val materializer: Materializer = SystemMaterializer(actorSystem).materializer
+  implicit lazy val ec: ExecutionContext       = ExecutionContext.global
 
-  implicit val ec: ExecutionContext = ExecutionContext.global
+  lazy val asyncHttpClientConfig: DefaultAsyncHttpClientConfig = new DefaultAsyncHttpClientConfig.Builder().build
+  lazy val asyncHttpClient                                     = new DefaultAsyncHttpClient(asyncHttpClientConfig)
+  lazy val wsClient                                            = new StandaloneAhcWSClient(asyncHttpClient)
 
   def get(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
     wsClient

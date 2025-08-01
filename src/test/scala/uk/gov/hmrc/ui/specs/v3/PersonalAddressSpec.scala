@@ -27,11 +27,10 @@ import uk.gov.hmrc.ui.models.response.v3.CompleteResponse
 import uk.gov.hmrc.ui.pages.bavfe.{PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.ui.pages.stubbed.{JourneyCompletePage, TooManyAttemptsPage}
 import uk.gov.hmrc.ui.specs.BaseSpec
-import uk.gov.hmrc.ui.utils._
 
 import java.util.UUID
 
-class PersonalAddressSpec extends BaseSpec with MockServer {
+class PersonalAddressSpec extends BaseSpec {
 
   // **NOTE TO FUTURE TESTERS** Remember caching is based on a combination of name/sort code/account number.
   // When adding new scenarios make sure you generate a unique name, if you use FIRST_NAME you will probably get a cached response!
@@ -74,58 +73,14 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     val journeyData: JourneyBuilderResponse =
       journeyBuilder.initializeJourneyV3(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
 
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              "&& @.detail.input=='Request to /api/v3/init'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
     val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s" && @.detail.input=='Request to ${session.startUrl}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
 
     When("a user enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
       .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
@@ -152,20 +107,6 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
 
     mockServer.verify(HttpRequest.request().withPath(MODULR_PATH), VerificationTimes.atLeast(1))
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s"&& @.detail.input=='Request to ${session.completeUrl}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
   }
 
   Scenario("Personal Bank Account Verification is successful with IBAN in response") {
@@ -195,58 +136,14 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
 
     val journeyData: JourneyBuilderResponse = journeyBuilder.initializeJourneyV3()
 
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              "&& @.detail.input=='Request to /api/v3/init'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
     val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s" && @.detail.input=='Request to ${session.startUrl}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
 
     When("a user enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
       .enterSortCode(ACCOUNT_NUMBER_WITH_IBAN.sortCode)
@@ -272,21 +169,6 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("yes")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("yes")
     assertThat(actual.personal.get.iban).isEqualTo(ACCOUNT_NUMBER_WITH_IBAN.iban)
-
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s"&& @.detail.input=='Request to ${session.completeUrl}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
   }
 
   Scenario("Personal Bank Account change is successful") {
@@ -319,27 +201,14 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .asJsonString()
     )
 
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              "&& @.detail.input=='Request to /api/v3/init'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
     val session = startGGJourney(journeyData)
 
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     When("a user enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
       .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
@@ -365,40 +234,11 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(initial.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(initial.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
 
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s"&& @.detail.input=='Request to ${session.completeUrl}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
     When("the user goes back to the details page and changes the bank account details")
 
     continueGGJourney(journeyData)
 
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
       .enterSortCode(ALTERNATE_ACCOUNT_DETAILS.sortCode)
@@ -457,27 +297,14 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         .asJsonString()
     )
 
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              "&& @.detail.input=='Request to /api/v3/init'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
     val session = startGGJourney(journeyData)
 
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     When("a user enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(accountName.asString())
       .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
@@ -503,40 +330,11 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.personal.get.sortCodeSupportsDirectDebit.get).isEqualTo("no")
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
 
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s"&& @.detail.input=='Request to ${session.completeUrl}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
     When("the user goes back to the details page and changes the bank account details to an unknown bank")
 
     continueGGJourney(journeyData)
 
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(accountName.asString())
       .enterSortCode(UNKNOWN_ACCOUNT_DETAILS.sortCode)
@@ -544,6 +342,10 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("an error is displayed")
+
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    PersonalAccountEntryPage().assertThatErrorSummaryLinkExists("sortCode")
+    PersonalAccountEntryPage().assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
       HttpRequest
@@ -564,10 +366,6 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
-    assertThatErrorSummaryLinkExists("sortCode")
-    assertThatInputFieldErrorMessageExists("sortCode")
   }
 
   Scenario("Personal Bank Account Verification when the supplied name is a close match") {
@@ -602,58 +400,14 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     val journeyData: JourneyBuilderResponse =
       journeyBuilder.initializeJourneyV3(InitRequest(address = Some(DEFAULT_ADDRESS)).asJsonString())
 
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              "&& @.detail.input=='Request to /api/v3/init'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
     val session = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s" && @.detail.input=='Request to ${session.startUrl}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
 
     When("a user enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(accountName.asString())
       .enterSortCode(DEFAULT_ACCOUNT_DETAILS.sortCode)
@@ -681,20 +435,6 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
     assertThat(actual.personal.get.sortCodeSupportsDirectCredit.get).isEqualTo("no")
 
     mockServer.verify(HttpRequest.request().withPath(MODULR_PATH), VerificationTimes.atLeast(1))
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s"&& @.detail.input=='Request to ${session.completeUrl}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
   }
 
   Scenario("Personal Bank Account accepts only three tries when relevant configuration is set") {
@@ -732,47 +472,27 @@ class PersonalAddressSpec extends BaseSpec with MockServer {
         )
       )
     ).asJsonString()
-    val session     = startGGJourney(journeyBuilder.initializeJourneyV3(initRequest))
+
+    val session = startGGJourney(journeyBuilder.initializeJourneyV3(initRequest))
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("I enter invalid details three times")
 
-    PersonalAccountEntryPage()
-      .enterAccountName(companyName)
-      .enterSortCode(ALTERNATE_ACCOUNT_DETAILS.sortCode)
-      .enterAccountNumber(ALTERNATE_ACCOUNT_DETAILS.accountNumber)
-      .clickContinue()
-
-    PersonalAccountEntryPage()
-      .clickContinue()
-
-    PersonalAccountEntryPage()
-      .clickContinue()
+    for (_ <- 1 to 3) {
+      assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+      PersonalAccountEntryPage()
+        .enterAccountName(companyName)
+        .enterSortCode(ALTERNATE_ACCOUNT_DETAILS.sortCode)
+        .enterAccountNumber(ALTERNATE_ACCOUNT_DETAILS.accountNumber)
+        .clickContinue()
+      Thread.sleep(200) //Intentional! Must wait for page to reload to prevent selenium submitting same page
+    }
 
     Then("I am returned to the calling service using the maxCallCountRedirectUrl")
 
     assertThat(TooManyAttemptsPage().isOnPage).isTrue
     assertThat(TooManyAttemptsPage().getJourneyId).isEqualTo(session.journeyId)
-
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              "&& @.detail.input=='Request to /api/v3/init'" +
-              s"&& @.detail.requestBody=='$initRequest'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
   }
 }

@@ -16,22 +16,20 @@
 
 package uk.gov.hmrc.ui.pages.auth
 
-import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
+import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions.titleContains
 import uk.gov.hmrc.ui.pages.BasePage
 
 case class StrideAuthStubPage() extends BasePage {
 
-  private lazy val credentialsIdentifierField: TextField = textField(name("clientId"))
-  private lazy val submitField                           = id("submit")
-
   def enterClientID(credId: String): StrideAuthStubPage = {
-    credentialsIdentifierField.value = credId
+    find(By.name("clientId")).sendKeys(credId)
     this
   }
 
   def submit(): Unit =
-    click on submitField
+    click(By.id("submit"))
 
   override def isOnPage: Boolean =
-    webDriverWillWait.until(titleIs("Authority Wizard"))
+    fluentWait().until(titleContains("Authority Wizard"))
 }

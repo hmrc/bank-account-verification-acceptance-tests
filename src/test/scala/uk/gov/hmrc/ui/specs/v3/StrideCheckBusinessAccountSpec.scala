@@ -25,9 +25,8 @@ import uk.gov.hmrc.ui.models.response.v3.CompleteResponse
 import uk.gov.hmrc.ui.pages.bavfe.{BusinessAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.ui.pages.stubbed.JourneyCompletePage
 import uk.gov.hmrc.ui.specs.BaseSpec
-import uk.gov.hmrc.ui.utils.MockServer
 
-class StrideCheckBusinessAccountSpec extends BaseSpec with MockServer {
+class StrideCheckBusinessAccountSpec extends BaseSpec {
 
   val DEFAULT_COMPANY_NAME                      = "P@cking & $orting"
   val DEFAULT_BUILDING_SOCIETY_DETAILS: Account = Account("07-00-93", "33333334", Some("NW/1356"), Some("Lloyds"))
@@ -63,13 +62,11 @@ class StrideCheckBusinessAccountSpec extends BaseSpec with MockServer {
     val session     = startStrideJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
-
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters all required information and clicks continue")
 
+    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
     BusinessAccountEntryPage()
       .enterCompanyName(DEFAULT_COMPANY_NAME)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -77,6 +74,9 @@ class StrideCheckBusinessAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the company representative is redirected to continue URL")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -97,9 +97,6 @@ class StrideCheckBusinessAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = journeyBuilder.getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 

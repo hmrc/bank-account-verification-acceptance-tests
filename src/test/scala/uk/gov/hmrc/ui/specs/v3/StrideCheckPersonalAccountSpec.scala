@@ -22,12 +22,11 @@ import org.mockserver.verify.VerificationTimes
 import uk.gov.hmrc.ui.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.ui.models.response.v3.CompleteResponse
 import uk.gov.hmrc.ui.models.{Account, Individual}
-import uk.gov.hmrc.ui.pages.bavfe.{BusinessAccountEntryPage, PersonalAccountEntryPage, SelectAccountTypePage}
+import uk.gov.hmrc.ui.pages.bavfe.{PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.ui.pages.stubbed.JourneyCompletePage
 import uk.gov.hmrc.ui.specs.BaseSpec
-import uk.gov.hmrc.ui.utils.MockServer
 
-class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
+class StrideCheckPersonalAccountSpec extends BaseSpec {
 
   val DEFAULT_NAME: Individual              =
     Individual(title = Some("Mr"), firstName = Some("Paddy"), lastName = Some("O'Conner-Smith"))
@@ -62,13 +61,11 @@ class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
     val session     = startStrideJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(BusinessAccountEntryPage().isOnPage).isTrue
 
     When("a company representative enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -76,6 +73,9 @@ class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the company representative is redirected to continue URL")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -96,9 +96,6 @@ class StrideCheckPersonalAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = journeyBuilder.getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 

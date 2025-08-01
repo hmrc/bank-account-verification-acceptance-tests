@@ -16,52 +16,44 @@
 
 package uk.gov.hmrc.ui.specs
 
-import io.findify.s3mock.S3Mock
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, GivenWhenThen}
-import uk.gov.hmrc.selenium.webdriver.{Browser, ScreenshotOnFailure}
-import uk.gov.hmrc.ui.config.TestConfig
-import uk.gov.hmrc.ui.utils.{BrowserDriver, CommonActions, CommonAssertions, JourneyBuilder}
-
-import java.io.File
+import uk.gov.hmrc.selenium.webdriver.{Browser, Driver, ScreenshotOnFailure}
+import uk.gov.hmrc.ui.utils._
 
 trait BaseSpec
     extends AnyFeatureSpec
     with GivenWhenThen
     with BeforeAndAfterAll
     with BeforeAndAfterEach
-    with BrowserDriver
     with Browser
-    with CommonAssertions
     with CommonActions
     with Matchers
+    with S3Helper
+    with MockServer
     with ScreenshotOnFailure {
 
   val journeyBuilder = new JourneyBuilder
 
-  val s3Dir          = new File(getClass.getResource("/sThreeBucket").getFile)
-  private val s3Mock = S3Mock(port = TestConfig.s3MockPort(), dir = s3Dir.getAbsolutePath)
-
   override def beforeAll(): Unit = {
     super.beforeAll()
-
-    startBrowser()
-    s3Mock.start
-
-    sys.addShutdownHook {
-      quitBrowser()
+    if (Driver.instance == null) {
+      startBrowser()
     }
 
     journeyBuilder.initializeEISCDCache()
     journeyBuilder.initializeModCheckCache()
   }
 
-  override def afterEach: Unit =
-    webDriver.manage().deleteAllCookies()
+  override def afterEach(): Unit = {
+    super.afterEach()
+    Driver.instance.manage().deleteAllCookies()
+  }
 
   override def afterAll(): Unit = {
+    super.afterAll()
     quitBrowser()
-    s3Mock.stop
+    Driver.instance = null //Ensures the instance is nullified after being quit. Helps prevent multiple browser startup
   }
 }

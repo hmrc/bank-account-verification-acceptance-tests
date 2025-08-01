@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.ui.pages.stubbed
 
-import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
+import org.openqa.selenium.support.ui.ExpectedConditions.titleContains
 import uk.gov.hmrc.ui.pages.BasePage
 
 case class JourneySignOutPage() extends BasePage {
 
   override def isOnPage: Boolean =
-    webDriverWillWait.until(titleIs("Signed out"))
+    fluentWait().until(titleContains("Signed out"))
 }

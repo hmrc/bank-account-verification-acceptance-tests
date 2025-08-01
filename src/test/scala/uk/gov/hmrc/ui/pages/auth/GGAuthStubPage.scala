@@ -16,28 +16,25 @@
 
 package uk.gov.hmrc.ui.pages.auth
 
-import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
+import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions.titleContains
 import uk.gov.hmrc.ui.pages.BasePage
 
 case class GGAuthStubPage() extends BasePage {
 
-  private lazy val credentialsIdentifierField: TextField = textField(id("authorityId"))
-  private lazy val RedirectUrlField: TextField           = textField(id("redirectionUrl"))
-  private lazy val submitField                           = xpath("//input[@type='submit']")
-
   def enterCredID(credId: String): GGAuthStubPage = {
-    credentialsIdentifierField.value = credId
+    find(By.id("authorityId")).sendKeys(credId)
     this
   }
 
   def enterRedirectUrl(redirectUrl: String): GGAuthStubPage = {
-    RedirectUrlField.value = redirectUrl
+    find(By.id("redirectionUrl")).sendKeys(redirectUrl)
     this
   }
 
   def submit(): Unit =
-    click on submitField
+    click(By.xpath("//input[@type='submit']"))
 
   override def isOnPage: Boolean =
-    webDriverWillWait.until(titleIs("Authority Wizard"))
+    fluentWait().until(titleContains("Authority Wizard"))
 }

@@ -16,52 +16,109 @@
 
 package uk.gov.hmrc.ui.pages
 
-import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated
-import org.openqa.selenium.{By, WebElement}
-import uk.gov.hmrc.ui.utils.BrowserDriver
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.ObjectAssert
+import org.openqa.selenium.support.ui.ExpectedConditions._
+import org.openqa.selenium.support.ui.{ExpectedConditions, FluentWait, Wait}
+import org.openqa.selenium.{By, WebDriver, WebElement}
+import uk.gov.hmrc.selenium.component.PageObject
+import uk.gov.hmrc.selenium.webdriver.Driver
 
-trait BasePage extends BrowserDriver {
+import java.time.Duration
+import scala.jdk.CollectionConverters._
 
-  private lazy val pageHeading: Option[Element]    = find(id("pageHeading"))
-  private lazy val backLink: IdQuery               = id("back")
-  private lazy val signOutLink: CssSelectorQuery   = cssSelector(".hmrc-sign-out-nav__link")
-  private lazy val selectEnglish: CssSelectorQuery = cssSelector("a[hreflang=en]")
-  private lazy val selectWelsh: CssSelectorQuery   = cssSelector("a[hreflang=cy]")
+trait BasePage extends PageObject {
+
+  def fluentWait(): Wait[WebDriver] = new FluentWait[WebDriver](Driver.instance)
+    .withTimeout(Duration.ofSeconds(5))
+    .pollingEvery(Duration.ofMillis(100))
+    .ignoring(classOf[Exception])
+
+  def navigateTo(url: String): Unit = get(url)
+
+  def currentUrl(): String = getCurrentUrl
+
+  def find(by: By): WebElement =
+    fluentWait().until(presenceOfElementLocated(by))
+
+  def findAll(by: By): Seq[WebElement] =
+    fluentWait().until(presenceOfAllElementsLocatedBy(by)).asScala.toSeq
+
+  def linkText(text: String): WebElement =
+    find(By.linkText(text))
+
+  private lazy val pageHeading: By   = By.id("pageHeading")
+  private lazy val backLink: By      = By.id("back")
+  private lazy val signOutLink: By   = By.cssSelector(".hmrc-sign-out-nav__link")
+  private lazy val selectEnglish: By = By.cssSelector("a[hreflang=en]")
+  private lazy val selectWelsh: By   = By.cssSelector("a[hreflang=cy]")
 
   def isOnPage: Boolean = false
 
   def errorSummaryLink(element: String): WebElement =
-    webDriverWillWait.until(visibilityOfElementLocated(By.cssSelector(s"a[href*='$element']")))
+    fluentWait().until(visibilityOfElementLocated(By.cssSelector(s"a[href*='$element']")))
 
   def errorNotificationField(field: String): WebElement =
-    webDriverWillWait.until(visibilityOfElementLocated(By.id(s"$field-error")))
+    fluentWait().until(visibilityOfElementLocated(By.id(s"$field-error")))
 
-  def isSignOutLinkDisplayed: Boolean =
-    signOutLink.findAllElements.nonEmpty
+  def isSignOutLinkDisplayed(isDisplayed: Boolean): ObjectAssert[Any] =
+    assertThat(if (isDisplayed) {
+      fluentWait().until(visibilityOfElementLocated(signOutLink)).isDisplayed
+    } else {
+      fluentWait().until(invisibilityOfElementLocated(signOutLink))
+    })
 
   def getSignOutLinkLocation: String =
-    signOutLink.webElement.getAttribute("href")
+    find(signOutLink).getAttribute("href")
 
   def getPageHeading: String =
-    pageHeading.get.text
+    getText(pageHeading)
 
   def clickBackLink(): Unit = {
-    webDriverWillWait.until(ExpectedConditions.elementToBeClickable(backLink.by))
-    click on backLink
+    fluentWait().until(ExpectedConditions.elementToBeClickable(backLink))
+    click(backLink)
   }
 
   def clickSignOut(): Unit =
-    click on signOutLink
+    click(signOutLink)
 
   def switchToWelsh(): Unit =
-    click on selectWelsh
+    click(selectWelsh)
 
   def switchToEnglish(): Unit =
-    click on selectEnglish
+    click(selectEnglish)
 
-  def errorMessageSummaryCount(): Int = {
-    webDriverWillWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".govuk-error-summary__list")))
-    cssSelector(".govuk-error-summary__list > li").findAllElements.length
+  def getHeading: String =
+    getText(By.cssSelector("h1"))
+
+  def clickContinue(): Unit =
+    click(By.id("continue"))
+
+  def getJourneyId: String =
+    getText(By.id("journeyId"))
+
+  def errorMessageSummaryCount(): Int =
+    findAll(By.cssSelector(".govuk-error-summary__list > li")).length
+
+  def assertThatErrorSummaryLinkExists(elementIdentifier: String): Unit = {
+    val errorSummary: WebElement = find(By.cssSelector(s"a[href*='$elementIdentifier']"))
+    assertThat(errorSummary.isDisplayed).isTrue
+    assertThat(errorSummary.getText).isNotEmpty
+  }
+
+  def assertThatInputFieldErrorMessageExists(elementIdentifier: String): Unit = {
+    val dataEntryField = find(By.id(s"$elementIdentifier"))
+    val errorMessage   = find(By.id(s"$elementIdentifier-error"))
+
+    assertThat(errorMessage.isDisplayed).isTrue
+    assertThat(errorMessage.getText).isNotEmpty
+    assertThat(dataEntryField.getAttribute("class").contains("govuk-input--error"))
+  }
+
+  def assertThatRadioButtonErrorMessageIsDisplayed(elementIdentifier: String): Unit = {
+    val errorMessage = find(By.id(s"$elementIdentifier-error"))
+
+    assertThat(errorMessage.isDisplayed).isTrue
+    assertThat(errorMessage.getText).isNotEmpty
   }
 }

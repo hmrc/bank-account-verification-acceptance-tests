@@ -16,73 +16,26 @@
 
 package uk.gov.hmrc.ui.pages.bavfe
 
-import org.openqa.selenium.support.ui.ExpectedConditions.titleIs
+import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions.{or, titleContains}
 import uk.gov.hmrc.ui.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
-import uk.gov.hmrc.ui.pages.BasePage
+import uk.gov.hmrc.ui.pages.BankAccountPage
 
-case class BusinessAccountEntryPage() extends BasePage {
-
-  private lazy val pageHeading                 = cssSelector("h1")
-  private lazy val companyNameLabel            = cssSelector("label[for=companyName]")
-  private lazy val companyNameField: TextField = textField(id("companyName"))
-  private lazy val sortCodeLabel               = cssSelector("label[for=sortCode]")
-  private lazy val sortCodeHint                = id("sortCode-hint")
-  private lazy val sortCodeField               = textField(id("sortCode"))
-  private lazy val accountNumberLabel          = cssSelector("label[for=accountNumber]")
-  private lazy val accountNumberHint           = id("accountNumber-hint")
-  private lazy val accountNumberField          = textField(id("accountNumber"))
-  private lazy val rollNumberLabel             = cssSelector("label[for=rollNumber]")
-  private lazy val rollNumberHint              = id("rollNumber-hint")
-  private lazy val rollNumberField             = textField(id("rollNumber"))
-  private lazy val continueButton: IdQuery     = id("continue")
+case class BusinessAccountEntryPage() extends BankAccountPage {
 
   def enterCompanyName(companyName: String): BusinessAccountEntryPage = {
-    companyNameField.value = companyName
+    sendKeys(By.id("companyName"), companyName)
     this
   }
-
-  def enterSortCode(sortCode: String): BusinessAccountEntryPage = {
-    sortCodeField.value = sortCode
-    this
-  }
-
-  def enterAccountNumber(accountNumber: String): BusinessAccountEntryPage = {
-    accountNumberField.value = accountNumber
-    this
-  }
-
-  def enterRollNumber(rollNumber: String): BusinessAccountEntryPage = {
-    rollNumberField.value = rollNumber
-    this
-  }
-
-  def getHeading: String =
-    pageHeading.webElement.getText
 
   def getCompanyNameLabel: String =
-    companyNameLabel.webElement.getText
-
-  def getSortCodeLabel: String =
-    sortCodeLabel.webElement.getText
-
-  def getSortCodeHint: String =
-    sortCodeHint.webElement.getText
-
-  def getAccountNumberLabel: String =
-    accountNumberLabel.webElement.getText
-
-  def getAccountNumberHint: String =
-    accountNumberHint.webElement.getText
-
-  def getRollNumberLabel: String =
-    rollNumberLabel.webElement.getText
-
-  def getRollNumberHint: String =
-    rollNumberHint.webElement.getText
-
-  def clickContinue(): Unit =
-    click on continueButton
+    getText(By.cssSelector("label[for=companyName]"))
 
   override def isOnPage: Boolean =
-    webDriverWillWait.until(titleIs(s"Bank or building society account details - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK"))
+    fluentWait().until(
+      or(
+        titleContains(s"Bank or building society account details - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK"),
+        titleContains(s"Manylion eich cyfrif banc neu gymdeithas adeiladu - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK")
+      )
+    )
 }

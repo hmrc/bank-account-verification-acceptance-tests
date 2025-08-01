@@ -30,10 +30,8 @@ trait MockServer extends AnyFeatureSpec with Eventually with BeforeAndAfterAll w
   private val mockServerPort           = TestConfig.mockServerPort()
   lazy val mockServer: ClientAndServer = ClientAndServer.startClientAndServer(mockServerPort)
 
-  override def beforeAll(): Unit =
-    super.beforeAll()
-
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     mockServer
       .when(
         HttpRequest
@@ -159,11 +157,13 @@ trait MockServer extends AnyFeatureSpec with Eventually with BeforeAndAfterAll w
       )
   }
 
-  override def afterEach: Unit =
+  override def afterEach(): Unit = {
+    super.afterEach()
     mockServer.reset()
+  }
 
   override def afterAll(): Unit = {
-    mockServer.stop()
     super.afterAll()
+    mockServer.stop()
   }
 }

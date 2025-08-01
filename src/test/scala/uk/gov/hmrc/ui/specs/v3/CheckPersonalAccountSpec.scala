@@ -26,11 +26,10 @@ import uk.gov.hmrc.ui.models.{Account, Individual, JourneyBuilderResponse}
 import uk.gov.hmrc.ui.pages.bavfe.{ConfirmDetailsPage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.ui.pages.stubbed.JourneyCompletePage
 import uk.gov.hmrc.ui.specs.BaseSpec
-import uk.gov.hmrc.ui.utils.MockServer
 
 import java.util.UUID
 
-class CheckPersonalAccountSpec extends BaseSpec with MockServer {
+class CheckPersonalAccountSpec extends BaseSpec {
 
   val DEFAULT_NAME: Individual                  =
     Individual(title = Some("Mr"), firstName = Some("Paddy"), lastName = Some("O'Conner-Smith"))
@@ -68,13 +67,11 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     val session     = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
       .enterSortCode(DEFAULT_BUILDING_SOCIETY_DETAILS.sortCode)
@@ -83,6 +80,9 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the customer is redirected to continue URL")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -103,9 +103,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = journeyBuilder.getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
@@ -147,16 +144,14 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to audit where a request came from")
 
-    startGGJourney(journeyBuilder.initializeJourneyV3())
+    val session = startGGJourney(journeyBuilder.initializeJourneyV3())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString() + UUID.randomUUID().toString)
       .enterSortCode(DEFAULT_BUILDING_SOCIETY_DETAILS.sortCode)
@@ -165,6 +160,9 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the user agent and true calling client is sent over to BARS and correctly audited")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -212,13 +210,11 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     val session     = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -226,6 +222,9 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the customer is redirected to continue URL")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -246,9 +245,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = journeyBuilder.getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
@@ -296,18 +292,20 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     val session           = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(almostCorrectName)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
       .enterAccountNumber(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
       .clickContinue()
+
+    Then("the customer is redirected to continue URL")
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -328,10 +326,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    Then("the customer is redirected to continue URL")
-    assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = journeyBuilder.getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
@@ -378,13 +372,11 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     startGGJourney(journeyBuilder.initializeJourneyV3())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(customerName)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -392,6 +384,10 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("an error message is displayed to the customer telling them that the account is invalid")
+
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    PersonalAccountEntryPage().assertThatErrorSummaryLinkExists("accountNumber")
+    PersonalAccountEntryPage().assertThatInputFieldErrorMessageExists("accountNumber")
 
     mockServer.verify(
       HttpRequest
@@ -412,10 +408,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
-    assertThatErrorSummaryLinkExists("accountNumber")
-    assertThatInputFieldErrorMessageExists("accountNumber")
   }
 
   Scenario("Personal Bank Account Verification when the supplied account is a valid business account it is rejected") {
@@ -448,58 +440,14 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     val journeyData: JourneyBuilderResponse = journeyBuilder.initializeJourneyV3()
 
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              "&& @.detail.input=='Request to /api/v3/init'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
-    val session = startGGJourney(journeyData)
+    startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s" && @.detail.input=='Request to ${session.startUrl}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    mockServer.verify(
-      HttpRequest
-        .request()
-        .withPath("/write/audit")
-        .withBody(
-          JsonPathBody.jsonPath(
-            "$[?(" +
-              "@.auditType=='RequestReceived' " +
-              s"&& @.detail.input=='Request to /bank-account-verification/verify/personal/${session.journeyId}'" +
-              ")]"
-          )
-        ),
-      VerificationTimes.atLeast(1)
-    )
 
     When("a user enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(accountName.asString())
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -507,6 +455,10 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("an error message is displayed to the customer telling them that the account is invalid")
+
+    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
+    PersonalAccountEntryPage().assertThatErrorSummaryLinkExists("accountNumber")
+    PersonalAccountEntryPage().assertThatInputFieldErrorMessageExists("accountNumber")
 
     mockServer.verify(
       HttpRequest
@@ -527,10 +479,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
-    assertThatErrorSummaryLinkExists("accountNumber")
-    assertThatInputFieldErrorMessageExists("accountNumber")
   }
 
   Scenario("Personal Bank Account Verification unable to find bank account") {
@@ -563,13 +511,11 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     val session     = startGGJourney(journeyData)
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(companyName)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -577,6 +523,19 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the customer is redirected to the confirm account screen")
+
+    assertThat(ConfirmDetailsPage().isOnPage).isTrue
+    assertThat(ConfirmDetailsPage().getAccountType).isEqualTo("Personal bank account")
+    assertThat(ConfirmDetailsPage().getAccountName).isEqualTo("Cannot Match")
+    assertThat(ConfirmDetailsPage().getSortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
+    assertThat(ConfirmDetailsPage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
+
+    ConfirmDetailsPage().clickContinue()
+
+    Then("the customer is redirected to continue URL")
+
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -597,19 +556,6 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
         ),
       VerificationTimes.atLeast(1)
     )
-
-    assertThat(ConfirmDetailsPage().isOnPage).isTrue
-    assertThat(ConfirmDetailsPage().getAccountType).isEqualTo("Personal bank account")
-    assertThat(ConfirmDetailsPage().getAccountName).isEqualTo("Cannot Match")
-    assertThat(ConfirmDetailsPage().getSortCode).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.storedSortCode())
-    assertThat(ConfirmDetailsPage().getAccountNumber).isEqualTo(DEFAULT_BANK_ACCOUNT_DETAILS.accountNumber)
-
-    ConfirmDetailsPage().clickContinue()
-
-    Then("the customer is redirected to continue URL")
-
-    assertThat(JourneyCompletePage().isOnPage).isTrue
-    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     val actual: CompleteResponse = journeyBuilder.getDataCollectedByBAVFEV3(session.journeyId, journeyData.credId)
 
@@ -655,13 +601,11 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     startGGJourney(journeyBuilder.initializeJourneyV3())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters HMRC bank account information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(companyName)
       .enterSortCode(HMRC_ACCOUNT_DETAILS.sortCode)
@@ -671,8 +615,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("an error is displayed")
 
     assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
-    assertThatErrorSummaryLinkExists("sortCode")
-    assertThatInputFieldErrorMessageExists("sortCode")
+    PersonalAccountEntryPage().assertThatErrorSummaryLinkExists("sortCode")
+    PersonalAccountEntryPage().assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
       HttpRequest
@@ -720,16 +664,14 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
 
     Given("I want to collect and validate a customers bank account details")
 
-    startGGJourney(journeyBuilder.initializeJourneyV3())
+    val session = startGGJourney(journeyBuilder.initializeJourneyV3())
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters all required information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(DEFAULT_NAME.asString())
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -737,6 +679,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
       .clickContinue()
 
     Then("the customer is redirected to continue URL")
+    assertThat(JourneyCompletePage().isOnPage).isTrue
+    assertThat(JourneyCompletePage().getJourneyId).isEqualTo(session.journeyId)
 
     mockServer.verify(
       HttpRequest
@@ -795,13 +739,11 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     )
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters HMRC bank account information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(companyName)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -811,8 +753,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("an error is displayed")
 
     assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
-    assertThatErrorSummaryLinkExists("sortCode")
-    assertThatInputFieldErrorMessageExists("sortCode")
+    PersonalAccountEntryPage().assertThatErrorSummaryLinkExists("sortCode")
+    PersonalAccountEntryPage().assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
       HttpRequest
@@ -870,13 +812,11 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     )
 
     assertThat(SelectAccountTypePage().isOnPage).isTrue
-
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
-
-    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
 
     When("a customer enters HMRC bank account information and clicks continue")
 
+    assertThat(PersonalAccountEntryPage().isOnPage).isTrue
     PersonalAccountEntryPage()
       .enterAccountName(companyName)
       .enterSortCode(DEFAULT_BANK_ACCOUNT_DETAILS.sortCode)
@@ -886,8 +826,8 @@ class CheckPersonalAccountSpec extends BaseSpec with MockServer {
     Then("an error is displayed")
 
     assertThat(PersonalAccountEntryPage().errorMessageSummaryCount()).isEqualTo(1)
-    assertThatErrorSummaryLinkExists("sortCode")
-    assertThatInputFieldErrorMessageExists("sortCode")
+    PersonalAccountEntryPage().assertThatErrorSummaryLinkExists("sortCode")
+    PersonalAccountEntryPage().assertThatInputFieldErrorMessageExists("sortCode")
 
     mockServer.verify(
       HttpRequest

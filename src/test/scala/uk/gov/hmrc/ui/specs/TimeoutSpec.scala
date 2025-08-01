@@ -23,11 +23,10 @@ import uk.gov.hmrc.ui.models.JourneyBuilderResponse
 import uk.gov.hmrc.ui.models.init.{InitRequest, InitRequestTimeoutConfig}
 import uk.gov.hmrc.ui.pages.bavfe.{SelectAccountTypePage, TechnicalErrorPage, TimeoutDialoguePartial}
 import uk.gov.hmrc.ui.pages.stubbed.JourneyTimeOutPage
-import uk.gov.hmrc.ui.utils.MockServer
 
 import java.net.URLEncoder
 
-case class TimeoutSpec() extends BaseSpec with MockServer {
+case class TimeoutSpec() extends BaseSpec {
 
   Scenario("Timeout Dialogue links to relative link") {
     Given("I am on a Bank Account Verification Frontend page")
@@ -49,7 +48,7 @@ case class TimeoutSpec() extends BaseSpec with MockServer {
     Then("I click on sign out and I'm sent to a relative URL correctly")
 
     TimeoutDialoguePartial().clickTimeoutSignOut()
-    assertThat(webDriver.getCurrentUrl).isEqualTo(
+    assertThat(TimeoutDialoguePartial().currentUrl()).isEqualTo(
       s"${TestConfig.getHost("bank-account-verification")}$timeoutRelativePath"
     )
   }
@@ -74,7 +73,7 @@ case class TimeoutSpec() extends BaseSpec with MockServer {
     Then("I click on sign out and I'm sent to a relative URL correctly")
 
     TimeoutDialoguePartial().clickTimeoutSignOut()
-    assertThat(webDriver.getCurrentUrl).isEqualTo(
+    assertThat(TimeoutDialoguePartial().currentUrl()).isEqualTo(
       s"${TestConfig.url("bank-account-verification")}/destroySession?journeyId=${session.journeyId}&timeoutUrl=${URLEncoder
         .encode(timeoutURL, "UTF-8")}"
     )
