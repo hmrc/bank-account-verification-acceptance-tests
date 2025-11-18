@@ -21,7 +21,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions.titleContains
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.ui.config.TestConfig
 import uk.gov.hmrc.ui.models._
-import uk.gov.hmrc.ui.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.ui.models.init.{InitRequest, MaxCallConfig}
 import uk.gov.hmrc.ui.pages.bavfe.{BusinessAccountEntryPage, PersonalAccountEntryPage, SelectAccountTypePage}
 import uk.gov.hmrc.ui.pages.stubbed.JourneySignOutPage
@@ -45,6 +44,24 @@ class InitSpec extends BaseSpec {
     }
 
     assert(thrown.getMessage === "Unable to initialize a new journey!")
+  }
+
+  Scenario("Can initialise a journey with useNewGovUkServiceNavigation enabled") {
+    Given("useNewGovUkServiceNavigation is set to true")
+
+    val journeyData: JourneyBuilderResponse = journeyBuilder.initializeJourneyV3(
+      InitRequest(
+        useNewGovUkServiceNavigation = Some(true)
+      ).asJsonString()
+    )
+
+    When("A user starts a bank account entry journey")
+
+    startGGJourney(journeyData)
+
+    Then("The journey initializes successfully with the new navigation enabled")
+
+    assertThat(SelectAccountTypePage().isOnPage).isTrue
   }
 
   Scenario(
@@ -373,7 +390,7 @@ class InitSpec extends BaseSpec {
     assertThat(JourneySignOutPage().isOnPage).isTrue
   }
 
-  Scenario("The sign out link is not displayed by defaul") {
+  Scenario("The sign out link is not displayed by default") {
     Given("A sign out URL has not been supplied in the init call")
 
     startGGJourney(journeyBuilder.initializeJourneyV3())
@@ -399,7 +416,7 @@ class InitSpec extends BaseSpec {
 
     val thrown = intercept[Exception] {
       journeyBuilder.initializeJourneyV3(
-        "{\"serviceIdentifier\":\"bavf-acceptance-test\",\"continueUrl\":\"http://localhost:6001/complete\",\"messages\":{\"en\":{\"service.name\":\"bavf-acceptance-test\"}},\"bacsRequirements\":{\"directDebitRequired\":false,\"directCreditRequired\":false},\"maxCallConfig\":{\"count\":3}}"
+        "{\"serviceIdentifier\":\"bavf-acceptance-test\",\"continueUrl\":\"http://localhost:6001/complete\", \"messages\":{\"en\":{\"service.name\":\"bavf-acceptance-test\"}},\"bacsRequirements\":{\"directDebitRequired\":false,\"directCreditRequired\":false},\"maxCallConfig\":{\"count\":3}}"
       )
     }
 

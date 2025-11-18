@@ -464,6 +464,7 @@ class PersonalAddressSpec extends BaseSpec {
 
     val companyName = "Fail Three Tries"
     val initRequest = InitRequest(
+      useNewGovUkServiceNavigation = Some(true),
       bacsRequirements = Some(InitBACSRequirements(directDebitRequired = true, directCreditRequired = false)),
       maxCallConfig = Some(
         MaxCallConfig(
