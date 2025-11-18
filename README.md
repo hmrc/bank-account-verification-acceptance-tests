@@ -18,7 +18,7 @@ If you don't have mongodb installed locally you can run it in docker using the f
 
     docker run -d --rm --name mongodb -p 27017-27019:27017-27019 mongo:4
 
-To start services locally, run this helper script: `.start_services.sh`. Alternatively, you can manually run the following command:
+To start services locally, run this helper script: `./start_services.sh`. Alternatively, you can manually run the following command:
 
     sm2 --start BANK_ACCOUNT_VERIFICATION -r --appendArgs '{
       "BANK_ACCOUNT_REPUTATION": [

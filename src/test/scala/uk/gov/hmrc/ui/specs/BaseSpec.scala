@@ -53,7 +53,7 @@ trait BaseSpec
 
   override def afterAll(): Unit = {
     super.afterAll()
-    quitBrowser()
+//    quitBrowser()
     Driver.instance = null //Ensures the instance is nullified after being quit. Helps prevent multiple browser startup
   }
 }
