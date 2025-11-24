@@ -416,7 +416,7 @@ class InitSpec extends BaseSpec {
 
     val thrown = intercept[Exception] {
       journeyBuilder.initializeJourneyV3(
-        "{\"serviceIdentifier\":\"bavf-acceptance-test\",\"continueUrl\":\"http://localhost:6001/complete\", \"messages\":{\"en\":{\"service.name\":\"bavf-acceptance-test\"}},\"bacsRequirements\":{\"directDebitRequired\":false,\"directCreditRequired\":false},\"maxCallConfig\":{\"count\":3}}"
+        "{\"serviceIdentifier\":\"bavf-acceptance-test\",\"continueUrl\":\"http://localhost:6001/complete\",\"messages\":{\"en\":{\"service.name\":\"bavf-acceptance-test\"}},\"bacsRequirements\":{\"directDebitRequired\":false,\"directCreditRequired\":false},\"maxCallConfig\":{\"count\":3}}"
       )
     }
 
