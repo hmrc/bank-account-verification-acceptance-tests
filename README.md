@@ -9,7 +9,7 @@ Prior to executing the tests ensure you have:
 
 - Docker - If you want to run a browser (Chrome or Firefox) inside a container, or a ZAP container
 - MongoDB installed and running (If you don't have this you can use a docker version)
-- LocalStack installed and running to mock AWS functionality for S3 [install guide](https://github.com/localstack/localstack?tab=readme-ov-file#install)
+- LocalStack installed and running to mock AWS functionality for S3 [install guide](https://github.com/localstack/localstack?tab=readme-ov-file#install)  ('localstack start -d' if running via Homebrew)
 - Installed/configured [service manager](https://github.com/hmrc/service-manager).
 
 ## Start the local services
@@ -18,7 +18,7 @@ If you don't have mongodb installed locally you can run it in docker using the f
 
     docker run -d --rm --name mongodb -p 27017-27019:27017-27019 mongo:4
 
-To start services locally, run this helper script: `.start_services.sh`. Alternatively, you can manually run the following command:
+To start services locally, run this helper script: `./start_services.sh`. Alternatively, you can manually run the following command:
 
     sm2 --start BANK_ACCOUNT_VERIFICATION -r --appendArgs '{
       "BANK_ACCOUNT_REPUTATION": [
@@ -67,6 +67,9 @@ To start services locally, run this helper script: `.start_services.sh`. Alterna
         "-Dauditing.consumer.baseUri.host=localhost"
       ]
     }'
+
+When running bank-account-verification-frontend locally, ensure you are using:
+[run_for_ui_tests.sh](../bank-account-verification-frontend/run_for_ui_tests.sh) script to start the service so that it uses the correct configuration for local testing.
 
 ## Tests
 

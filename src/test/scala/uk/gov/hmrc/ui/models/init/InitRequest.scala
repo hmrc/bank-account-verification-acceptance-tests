@@ -40,7 +40,8 @@ case class InitRequest(
   ),
   timeoutConfig: Option[InitRequestTimeoutConfig] = None,
   signOutUrl: Option[String] = None,
-  maxCallConfig: Option[MaxCallConfig] = None
+  maxCallConfig: Option[MaxCallConfig] = None,
+  useNewGovUkServiceNavigation: Option[Boolean] = None
 ) {
 
   def asJsonString(): String =
