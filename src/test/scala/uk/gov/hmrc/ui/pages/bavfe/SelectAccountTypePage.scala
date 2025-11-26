@@ -36,6 +36,14 @@ case class SelectAccountTypePage() extends BasePage {
     this
   }
 
+  def isOnPageWithServiceNavigationEnabled: Boolean =
+    fluentWait().until(
+      or(
+        titleContains(s"What type of account details are you providing? - GOV.UK"),
+        titleContains(s"Pa fath o fanylion cyfrif ydych yn eu rhoi? - GOV.UK")
+      )
+    )
+
   override def isOnPage: Boolean =
     fluentWait().until(
       or(

@@ -476,13 +476,13 @@ class PersonalAddressSpec extends BaseSpec {
 
     val session = startGGJourney(journeyBuilder.initializeJourneyV3(initRequest))
 
-    assertThat(SelectAccountTypePage().isOnPage).isTrue
+    assertThat(SelectAccountTypePage().isOnPageWithServiceNavigationEnabled).isTrue
     SelectAccountTypePage().selectPersonalAccount().clickContinue()
 
     When("I enter invalid details three times")
 
     for (_ <- 1 to 3) {
-      assertThat(PersonalAccountEntryPage().isOnPage).isTrue
+      assertThat(PersonalAccountEntryPage().isOnPageWithServiceNavigationEnabled).isTrue
       PersonalAccountEntryPage()
         .enterAccountName(companyName)
         .enterSortCode(ALTERNATE_ACCOUNT_DETAILS.sortCode)

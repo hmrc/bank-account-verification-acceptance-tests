@@ -545,13 +545,13 @@ class BusinessAddressSpec extends BaseSpec {
 
     val session = startGGJourney(journeyBuilder.initializeJourneyV3(initRequest))
 
-    assertThat(SelectAccountTypePage().isOnPage).isTrue
+    assertThat(SelectAccountTypePage().isOnPageWithServiceNavigationEnabled).isTrue
     SelectAccountTypePage().selectBusinessAccount().clickContinue()
 
     When("I enter invalid details three times")
 
     for (_ <- 1 to 3) {
-      assertThat(BusinessAccountEntryPage().isOnPage).isTrue
+      assertThat(BusinessAccountEntryPage().isOnPageWithServiceNavigationEnabled).isTrue
       BusinessAccountEntryPage()
         .enterCompanyName(companyName)
         .enterSortCode(ALTERNATE_ACCOUNT_DETAILS.sortCode)

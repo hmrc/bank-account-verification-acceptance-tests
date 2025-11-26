@@ -31,6 +31,14 @@ case class PersonalAccountEntryPage() extends BankAccountPage {
   def getAccountNameLabel: String =
     getText(By.cssSelector("label[for=accountName]"))
 
+  def isOnPageWithServiceNavigationEnabled: Boolean =
+    fluentWait().until(
+      or(
+        titleContains(s"Bank or building society account details - GOV.UK"),
+        titleContains(s"Manylion eich cyfrif banc neu gymdeithas adeiladu - GOV.UK")
+      )
+    )
+
   override def isOnPage: Boolean =
     fluentWait().until(
       or(

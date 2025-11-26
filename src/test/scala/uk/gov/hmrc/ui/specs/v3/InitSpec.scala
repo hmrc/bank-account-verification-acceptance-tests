@@ -61,7 +61,7 @@ class InitSpec extends BaseSpec {
 
     Then("The journey initializes successfully with the new navigation enabled")
 
-    assertThat(SelectAccountTypePage().isOnPage).isTrue
+    assertThat(SelectAccountTypePage().isOnPageWithServiceNavigationEnabled).isTrue
   }
 
   Scenario(
