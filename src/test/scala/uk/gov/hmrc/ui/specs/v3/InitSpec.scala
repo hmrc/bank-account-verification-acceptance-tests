@@ -98,7 +98,10 @@ class InitSpec extends BaseSpec {
     val cyBusinessHeading = welsh("label.accountDetails.heading.business").asInstanceOf[JsString].value
 
     val journeyData: JourneyBuilderResponse = journeyBuilder.initializeJourneyV3(
-      InitRequest(address = DEFAULT_BUSINESS_ADDRESS, messages = Some(Messages(en = english, cy = Some(welsh))))
+      InitRequest(address = DEFAULT_BUSINESS_ADDRESS, messages = Some(Messages(
+        en = english,
+        cy = Some(welsh))),
+        useNewGovUkServiceNavigation = Some(true))
         .asJsonString()
     )
 
