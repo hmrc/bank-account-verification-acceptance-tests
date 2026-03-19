@@ -31,5 +31,5 @@ case class StrideAuthStubPage() extends BasePage {
     click(By.id("submit"))
 
   override def isOnPage: Boolean =
-    fluentWait().until(titleContains("Authority Wizard"))
+    untilTrue(titleContains("Authority Wizard"))
 }

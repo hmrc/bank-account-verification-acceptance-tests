@@ -22,5 +22,5 @@ import uk.gov.hmrc.ui.pages.BasePage
 case class JourneySignOutPage() extends BasePage {
 
   override def isOnPage: Boolean =
-    fluentWait().until(titleContains("Signed out"))
+    untilTrue(titleContains("Signed out"))
 }

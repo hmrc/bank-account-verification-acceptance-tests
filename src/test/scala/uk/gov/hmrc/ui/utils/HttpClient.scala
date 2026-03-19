@@ -18,10 +18,10 @@ package uk.gov.hmrc.ui.utils
 
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.{Materializer, SystemMaterializer}
-import play.api.libs.ws.DefaultBodyWritables._
-import play.api.libs.ws.StandaloneWSRequest
+import play.api.libs.ws.DefaultBodyWritables.*
+import play.api.libs.ws.StandaloneWSResponse
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
-import play.shaded.ahc.org.asynchttpclient._
+import play.shaded.ahc.org.asynchttpclient.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,19 +35,19 @@ trait HttpClient {
   lazy val asyncHttpClient                                     = new DefaultAsyncHttpClient(asyncHttpClientConfig)
   lazy val wsClient                                            = new StandaloneAhcWSClient(asyncHttpClient)
 
-  def get(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+  def get(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     wsClient
       .url(url)
       .withHttpHeaders(headers: _*)
       .get()
 
-  def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+  def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     wsClient
       .url(url)
       .withHttpHeaders(headers: _*)
       .post(bodyAsJson)
 
-  def delete(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+  def delete(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     wsClient
       .url(url)
       .withHttpHeaders(headers: _*)

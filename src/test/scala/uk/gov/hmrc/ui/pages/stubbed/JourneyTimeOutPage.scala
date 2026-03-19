@@ -22,5 +22,5 @@ import uk.gov.hmrc.ui.pages.BasePage
 case class JourneyTimeOutPage() extends BasePage {
 
   override def isOnPage: Boolean =
-    fluentWait().until(titleContains("Timeout"))
+    untilTrue(titleContains("Timeout"))
 }

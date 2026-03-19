@@ -12,61 +12,27 @@ Prior to executing the tests ensure you have:
 - LocalStack installed and running to mock AWS functionality for S3 [install guide](https://github.com/localstack/localstack?tab=readme-ov-file#install)  ('localstack start -d' if running via Homebrew)
 - Installed/configured [service manager](https://github.com/hmrc/service-manager).
 
+## Service Manager profile
+
+These acceptance tests expect the backend services to be started via Service Manager using the `BANK_ACCOUNT_VERIFICATION` profile.
+
+You can start everything with the helper script:
+
+    ./start_services.sh
+
+Or run the equivalent Service Manager command directly:
+
+    sm2 --start BANK_ACCOUNT_VERIFICATION
+
+(Additional JVM args are applied by `start_services.sh` via `--appendArgs` to configure the services for local UI testing and LocalStack S3.)
+
 ## Start the local services
 
 If you don't have mongodb installed locally you can run it in docker using the following command
 
-    docker run -d --rm --name mongodb -p 27017-27019:27017-27019 mongo:4
+    docker run --rm -d -p 27017:27017 --name mongo percona/percona-server-mongodb:7.0
 
-To start services locally, run this helper script: `./start_services.sh`. Alternatively, you can manually run the following command:
-
-    sm2 --start BANK_ACCOUNT_VERIFICATION -r --appendArgs '{
-      "BANK_ACCOUNT_REPUTATION": [
-        "-Dplay.http.router=testOnlyDoNotUseInAppConf.Routes",
-        "-Dmicroservice.services.modulr.protocol=http",
-        "-Dmicroservice.services.modulr.host=localhost",
-        "-Dmicroservice.services.modulr.port=6001",
-        "-Dmicroservice.services.modulr.enabled=true",
-        "-Dmicroservice.services.modulr.business.cache.enabled=false",
-        "-Dmicroservice.services.modulr.personal.cache.enabled=false",
-        "-Dauditing.consumer.baseUri.port=6001",
-        "-Dauditing.consumer.baseUri.host=localhost",
-        "-Dauditing.enabled=true",
-        "-Dproxy.proxyRequiredForThisEnvironment=false",
-        "-Dmicroservice.services.eiscd.aws.endpoint=http://localhost:4566",
-        "-Dmicroservice.services.eiscd.aws.bucket=txm-dev-bacs-eiscd",
-        "-Dmicroservice.services.eiscd.cache-schedule.initial-delay=86400",
-        "-Dmicroservice.services.modcheck.cache-schedule.initial-delay=86400",
-        "-Dmicroservice.services.thirdPartyCache.endpoint=http://localhost:9899/cache",
-        "-Dmicroservice.services.access-control.endpoint.verify.enabled=true",
-        "-Dmicroservice.services.access-control.endpoint.verify.allow-list.0=bars-acceptance-tests",
-        "-Dmicroservice.services.access-control.endpoint.verify.allow-list.1=some-upstream-service",
-        "-Dmicroservice.services.access-control.endpoint.verify.allow-list.2=bank-account-reputation-frontend",
-        "-Dmicroservice.services.access-control.endpoint.verify.allow-list.3=bank-account-verification-frontend",
-        "-Dmicroservice.services.access-control.endpoint.validate.enabled=true",
-        "-Dmicroservice.services.access-control.endpoint.validate.allow-list.0=bars-acceptance-tests",
-        "-Dmicroservice.services.access-control.endpoint.validate.allow-list.1=some-upstream-service",
-        "-Dmicroservice.services.access-control.endpoint.validate.allow-list.2=bank-account-reputation-frontend",
-        "-Dmicroservice.services.access-control.endpoint.validate.allow-list.3=bank-account-verification-frontend",
-        "-Dmicroservice.services.modcheck.useLocal=true"
-      ],
-      "BANK_ACCOUNT_REPUTATION_THIRD_PARTY_CACHE": [
-        "-Dcontrollers.confidenceLevel.uk.gov.hmrc.bankaccountreputationthirdpartycache.controllers.CacheController.needsLogging=true"
-      ],
-      "BANK_ACCOUNT_VERIFICATION_FRONTEND": [
-        "-Dmicroservice.hosts.allowList.1=localhost",
-        "-Dauditing.consumer.baseUri.port=6001",
-        "-Dauditing.consumer.baseUri.host=localhost",
-        "-Dauditing.enabled=true",
-        "-Dmicroservice.services.access-control.enabled=true",
-        "-Dmicroservice.services.access-control.allow-list.0=bavfe-acceptance-tests"
-      ],
-      "BANK_ACCOUNT_REPUTATION_FRONTEND": [
-        "-Dauditing.enabled=true",
-        "-Dauditing.consumer.baseUri.port=6001",
-        "-Dauditing.consumer.baseUri.host=localhost"
-      ]
-    }'
+To start services locally, run this helper script: `./start_services.sh`. 
 
 When running bank-account-verification-frontend locally, ensure you are using:
 [run_for_ui_tests.sh](../bank-account-verification-frontend/run_for_ui_tests.sh) script to start the service so that it uses the correct configuration for local testing.
@@ -106,4 +72,3 @@ sbt scalafmtAll
 ## License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
-

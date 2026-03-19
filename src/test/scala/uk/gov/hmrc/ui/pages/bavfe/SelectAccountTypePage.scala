@@ -17,7 +17,6 @@
 package uk.gov.hmrc.ui.pages.bavfe
 
 import org.openqa.selenium.By
-import org.openqa.selenium.support.ui.ExpectedConditions.{or, titleContains}
 import uk.gov.hmrc.ui.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.ui.pages.BasePage
 
@@ -37,10 +36,10 @@ case class SelectAccountTypePage() extends BasePage {
   }
 
   override def isOnPage: Boolean =
-    fluentWait().until(
-      or(
-        titleContains(s"What type of account details are you providing? - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK"),
-        titleContains(s"Pa fath o fanylion cyfrif ydych yn eu rhoi? - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK")
+    titleContainsAny(
+      Seq(
+        s"What type of account details are you providing? - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK",
+        s"Pa fath o fanylion cyfrif ydych yn eu rhoi? - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK"
       )
     )
 }

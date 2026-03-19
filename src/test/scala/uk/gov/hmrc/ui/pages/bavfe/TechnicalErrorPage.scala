@@ -22,5 +22,5 @@ import uk.gov.hmrc.ui.pages.BasePage
 case class TechnicalErrorPage() extends BasePage {
 
   override def isOnPage: Boolean =
-    fluentWait().until(titleContains("Error - GOV.UK"))
+    untilTrue(titleContains("Error - GOV.UK"))
 }

@@ -29,7 +29,7 @@ import java.io.File
 import java.net.URI
 import scala.util.{Failure, Success, Try}
 
-trait S3Helper extends LazyLogging with BeforeAndAfterAll { _: TestSuite =>
+trait S3Helper extends LazyLogging with BeforeAndAfterAll { self: TestSuite =>
 
   lazy val s3Port: Int         = TestConfig.config.getInt("aws.s3.port")
   lazy val accessKeyId: String = TestConfig.config.getString("aws.s3.accessKeyId")
