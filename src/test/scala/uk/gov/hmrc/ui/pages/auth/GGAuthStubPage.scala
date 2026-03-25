@@ -36,5 +36,5 @@ case class GGAuthStubPage() extends BasePage {
     click(By.xpath("//input[@type='submit']"))
 
   override def isOnPage: Boolean =
-    fluentWait().until(titleContains("Authority Wizard"))
+    untilTrue(titleContains("Authority Wizard"))
 }

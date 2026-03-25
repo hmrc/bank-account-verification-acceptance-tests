@@ -22,5 +22,5 @@ import uk.gov.hmrc.ui.pages.BasePage
 case class JourneyCompletePage() extends BasePage {
 
   override def isOnPage: Boolean =
-    fluentWait().until(titleContains("Journey complete"))
+    untilTrue(titleContains("Journey complete"))
 }

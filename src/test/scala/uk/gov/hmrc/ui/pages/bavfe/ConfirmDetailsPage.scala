@@ -69,6 +69,6 @@ case class ConfirmDetailsPage() extends BasePage {
     click(getChangeLinkDataForEntryCalled("Roll number"))
 
   override def isOnPage: Boolean =
-    fluentWait().until(titleContains(s"Check the account details - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK"))
+    untilTrue(titleContains(s"Check the account details - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK"))
 
 }

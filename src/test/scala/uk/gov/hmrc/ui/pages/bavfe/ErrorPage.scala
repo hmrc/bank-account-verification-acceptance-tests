@@ -22,5 +22,5 @@ import uk.gov.hmrc.ui.pages.BasePage
 case class ErrorPage() extends BasePage {
 
   override def isOnPage: Boolean =
-    fluentWait().until(titleContains("Sorry, we are experiencing technical difficulties - 500 - - GOV.UK"))
+    untilTrue(titleContains("Sorry, we are experiencing technical difficulties - 500 - - GOV.UK"))
 }

@@ -22,5 +22,5 @@ import uk.gov.hmrc.ui.pages.BasePage
 case class TooManyAttemptsPage() extends BasePage {
 
   override def isOnPage: Boolean =
-    fluentWait().until(titleContains("Too many attempts"))
+    untilTrue(titleContains("Too many attempts"))
 }

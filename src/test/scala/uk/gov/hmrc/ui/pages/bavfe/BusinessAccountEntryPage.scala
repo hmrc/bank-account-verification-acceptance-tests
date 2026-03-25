@@ -17,7 +17,6 @@
 package uk.gov.hmrc.ui.pages.bavfe
 
 import org.openqa.selenium.By
-import org.openqa.selenium.support.ui.ExpectedConditions.{or, titleContains}
 import uk.gov.hmrc.ui.models.init.InitRequest.DEFAULT_SERVICE_IDENTIFIER
 import uk.gov.hmrc.ui.pages.BankAccountPage
 
@@ -32,10 +31,10 @@ case class BusinessAccountEntryPage() extends BankAccountPage {
     getText(By.cssSelector("label[for=companyName]"))
 
   override def isOnPage: Boolean =
-    fluentWait().until(
-      or(
-        titleContains(s"Bank or building society account details - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK"),
-        titleContains(s"Manylion eich cyfrif banc neu gymdeithas adeiladu - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK")
+    titleContainsAny(
+      Seq(
+        s"Bank or building society account details - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK",
+        s"Manylion eich cyfrif banc neu gymdeithas adeiladu - $DEFAULT_SERVICE_IDENTIFIER - GOV.UK"
       )
     )
 }

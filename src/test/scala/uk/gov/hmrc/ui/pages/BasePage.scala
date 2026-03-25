@@ -18,14 +18,14 @@ package uk.gov.hmrc.ui.pages
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.ObjectAssert
-import org.openqa.selenium.support.ui.ExpectedConditions._
+import org.openqa.selenium.support.ui.ExpectedConditions.*
 import org.openqa.selenium.support.ui.{ExpectedConditions, FluentWait, Wait}
 import org.openqa.selenium.{By, WebDriver, WebElement}
 import uk.gov.hmrc.selenium.component.PageObject
 import uk.gov.hmrc.selenium.webdriver.Driver
 
 import java.time.Duration
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 trait BasePage extends PageObject {
 
@@ -79,8 +79,18 @@ trait BasePage extends PageObject {
     click(backLink)
   }
 
-  def clickSignOut(): Unit =
-    click(signOutLink)
+  def clickSignOut(): Unit = {
+    def clickOnce(): Unit = {
+      fluentWait().until(ExpectedConditions.elementToBeClickable(signOutLink))
+      Driver.instance.findElement(signOutLink).click()
+    }
+
+    try clickOnce()
+    catch {
+      case _: org.openqa.selenium.StaleElementReferenceException =>
+        clickOnce()
+    }
+  }
 
   def switchToWelsh(): Unit =
     click(selectWelsh)
@@ -121,4 +131,20 @@ trait BasePage extends PageObject {
     assertThat(errorMessage.isDisplayed).isTrue
     assertThat(errorMessage.getText).isNotEmpty
   }
+
+  protected def until[T](condition: org.openqa.selenium.support.ui.ExpectedCondition[T]): T =
+    fluentWait().until(new java.util.function.Function[WebDriver, T] {
+      override def apply(d: WebDriver): T = condition.apply(d)
+    })
+
+  protected def untilTrue(condition: org.openqa.selenium.support.ui.ExpectedCondition[java.lang.Boolean]): Boolean =
+    java.lang.Boolean.TRUE == until(condition)
+
+  protected def titleContainsAny(expected: Seq[String]): Boolean =
+    java.lang.Boolean.TRUE == until(new org.openqa.selenium.support.ui.ExpectedCondition[java.lang.Boolean] {
+      override def apply(d: WebDriver): java.lang.Boolean = {
+        val t = d.getTitle
+        java.lang.Boolean.valueOf(t != null && expected.exists(t.contains))
+      }
+    })
 }
